@@ -28,6 +28,7 @@ import {
 import { cancelNotification, scheduleFocusEnd } from '@/features/nudges/schedule';
 import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { haptics } from '@/lib/haptics';
+import { backOrHome } from '@/lib/nav';
 import { play, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { PetStandin } from '@/pet/pet-standin';
@@ -48,8 +49,7 @@ let exiting = false;
 const exitFocus = () => {
   if (exiting) return;
   exiting = true;
-  if (router.canGoBack()) router.back();
-  else router.replace('/');
+  backOrHome();
 };
 const SOUNDS: FocusSound[] = ['none', 'brown', 'rain', 'keys'];
 const SOUND_LABEL: Record<FocusSound, string> = { none: 'silence', brown: 'brown noise', rain: 'rain', keys: 'soft keys' };

@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { backOrHome } from '@/lib/nav';
 import { CaretLeft } from 'phosphor-react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -16,7 +16,7 @@ export function ScreenHeader({ title }: { title: string }) {
         accessibilityRole="button"
         accessibilityLabel="Back"
         hitSlop={10}
-        onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        onPress={backOrHome}
         style={[styles.back, { backgroundColor: colors.card, borderColor: colors.line }]}>
         <CaretLeft size={22} weight="bold" color={colors.ink} />
       </PressScale>
