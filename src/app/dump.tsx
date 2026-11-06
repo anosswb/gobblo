@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -20,6 +19,7 @@ import type { Size } from '@/state/schema';
 import { duration } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
+import { backOrHome } from '@/lib/nav';
 
 const d = en.dump;
 type Edit = { size?: Size; removed?: boolean };
@@ -55,7 +55,7 @@ export default function DumpScreen() {
     addBites(items.map((b) => ({ text: b.text, size: b.size })));
     haptics.success();
     play('spark');
-    router.back();
+    backOrHome();
     setTimeout(() => toast(d.served(items.length)), 350);
   };
 
@@ -68,7 +68,7 @@ export default function DumpScreen() {
           <Text variant="title2" accessibilityRole="header">{d.title}</Text>
           <Text variant="subhead" tone="ink2">{d.sub}</Text>
         </View>
-        <PressScale accessibilityRole="button" accessibilityLabel="close" hitSlop={8} onPress={() => router.back()} style={[styles.close, { backgroundColor: colors.fill }]}>
+        <PressScale accessibilityRole="button" accessibilityLabel="close" hitSlop={8} onPress={backOrHome} style={[styles.close, { backgroundColor: colors.fill }]}>
           <Icon name="close" size={14} weight="bold" color={colors.ink2} />
         </PressScale>
       </View>

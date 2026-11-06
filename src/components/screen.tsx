@@ -1,5 +1,4 @@
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
 import type { PropsWithChildren, ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -11,6 +10,7 @@ import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
+import { backOrHome } from '@/lib/nav';
 
 const BAR = 44;
 
@@ -94,7 +94,7 @@ export function Screen({
               accessibilityRole="button"
               accessibilityLabel="back"
               hitSlop={6}
-              onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
+              onPress={backOrHome}>
               <Glass interactive radius={22} style={styles.backBtn}>
                 <Icon name="back" size={20} weight="semibold" color={colors.ink} />
               </Glass>

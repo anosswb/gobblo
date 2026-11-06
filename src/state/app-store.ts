@@ -5,7 +5,7 @@ import { addBites, feed, newDayCheck, newId, removeBite, reorder, rewardStart, t
 import { startTimer } from '@/features/focus/timer';
 import { mmkvStateStorage } from '@/lib/storage';
 
-import { migrate } from './migrations';
+import { mergeDefaults, migrate } from './migrations';
 import {
   freshState,
   SCHEMA_VERSION,
@@ -137,6 +137,9 @@ export const useAppStore = create<AppState>()(
       version: SCHEMA_VERSION,
       storage: createJSONStorage(() => mmkvStateStorage),
       migrate: (saved, version) => migrate(saved, version),
+      // deep-merge saved data onto fresh defaults, so settings added later (soundOnSilent…)
+      // get their default instead of `undefined` on phones that already have data
+      merge: (saved, current) => ({ ...current, ...mergeDefaults(freshState(), saved) }),
       partialize: (s) => pick(s),
     },
   ),

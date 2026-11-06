@@ -70,6 +70,9 @@ export function SettingsScreen() {
 
       <Section title={t.soundFeel}>
         <Row leading={<IconTile name="sound" color="pink" />} label={t.sounds} right={<Toggle accessibilityLabel={t.sounds} value={s.sound} onChange={set('sound')} />} />
+        <Row leading={<IconTile name="sound" color="orange" />} label={t.soundOnSilent} hint={t.soundOnSilentHint} right={
+          <Toggle accessibilityLabel={t.soundOnSilent} value={s.soundOnSilent} onChange={(v) => { update({ soundOnSilent: v }); if (v) setTimeout(() => play('pop'), 150); }} />
+        } />
         <Row stacked label={t.volume} right={
           <Segmented accessibilityLabel={t.volume} value={s.volume >= 0.85 ? '1' : s.volume >= 0.55 ? '0.7' : '0.4'}
             onChange={(v) => { update({ volume: Number(v) }); setTimeout(() => play('pop'), 50); }}

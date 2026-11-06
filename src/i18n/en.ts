@@ -198,6 +198,8 @@ export const en = {
     off: 'off',
     soft: 'soft',
     strong: 'strong',
+    soundOnSilent: 'Play sounds on silent',
+    soundOnSilentHint: 'Most phones live on vibrate. Off = no sounds while yours is on silent',
     mix: 'mix with my music',
     mixHint: 'off = other audio gets quieter while you focus',
     nudges: 'nudges',

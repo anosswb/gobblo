@@ -39,11 +39,12 @@ import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
 
 import { TimerRing as TimerRingSlot } from './timer-ring';
+import { backOrHome } from '@/lib/nav';
 
 const f = en.focus;
 /** the modal's close animation; the session is saved after it */
 const CLOSE_MS = 380;
-const exitFocus = () => (router.canGoBack() ? router.back() : router.replace('/'));
+const exitFocus = backOrHome;
 const SOUNDS: FocusSound[] = ['none', 'brown', 'rain', 'keys'];
 const SOUND_LABEL: Record<FocusSound, string> = { none: 'silence', brown: 'brown noise', rain: 'rain', keys: 'soft keys' };
 

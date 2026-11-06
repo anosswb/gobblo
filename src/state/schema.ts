@@ -101,6 +101,8 @@ export interface Settings {
   nudgeSound: NudgeSound;
   focusSound: FocusSound;
   mixWithMusic: boolean;
+  /** play sounds even when the phone is on silent / vibrate (default on) */
+  soundOnSilent: boolean;
   volume: number; // 0..1
   quietStart: number; // hour, local
   quietEnd: number;
@@ -164,6 +166,7 @@ export function freshState(now = Date.now()): PersistedState {
       nudgeSound: 'boop',
       focusSound: 'none',
       mixWithMusic: true,
+      soundOnSilent: true,
       volume: 0.7,
       quietStart: 22,
       quietEnd: 8,
