@@ -25,8 +25,21 @@ export const easing = {
   exitIn: Easing.bezier(0.4, 0, 1, 1),
 } as const;
 
-/** Reanimated withSpring configs. Settle times from Screenrove. */
+/**
+ * Reanimated withSpring configs.
+ * Apple springs (WWDC18 "Designing Fluid Interfaces", Emil's apple-design skill) use the two
+ * designer parameters: dampingRatio 1 = no overshoot (default UI), ~0.8 only after momentum.
+ * The others keep their Screenrove settle times.
+ */
 export const spring = {
+  /** default UI settle: critically damped, ~400 ms response */
+  apple: { duration: 400, dampingRatio: 1 },
+  /** tab lens / selection moving between peers: tiny overshoot like the iOS 26 tab bar */
+  lens: { duration: 350, dampingRatio: 0.85 },
+  /** sheet, drawer, drag release (hand the gesture velocity in) */
+  sheet: { duration: 300, dampingRatio: 0.8 },
+  /** pet squish after a tap (a physical object reacting) */
+  squish: { duration: 450, dampingRatio: 0.45 },
   /** tab plateau (interior-tabs): looks done ~240 ms */
   plateau: { stiffness: 620, damping: 42, mass: 0.35 },
   /** tab panel slide-in 12 px (interior-tabs) */

@@ -1,12 +1,10 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { CaretRight } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
 import { Segmented } from '@/components/segmented';
 import { Chips, Row, Section, Stepper } from '@/components/settings-parts';
 import { Text } from '@/components/text';
@@ -32,7 +30,7 @@ export function SettingsScreen() {
   const update = useAppStore((st) => st.updateSettings);
   const resetAll = useAppStore((st) => st.resetAll);
   const reminders = useAppStore((st) => st.reminders);
-  const { colors, scheme } = useTheme();
+  const { scheme } = useTheme();
   const [bioOk, setBioOk] = useState(false);
   const [armed, setArmed] = useState(false);
 
@@ -49,8 +47,7 @@ export function SettingsScreen() {
   const set = <K extends keyof Settings>(k: K) => (v: Settings[K]) => update({ [k]: v } as Partial<Settings>);
 
   return (
-    <Screen>
-      <ScreenHeader title={t.title} />
+    <Screen back title={t.title}>
 
       <Section title={t.look}>
         <Row stacked label={t.theme} right={
@@ -99,7 +96,7 @@ export function SettingsScreen() {
           <Stepper label={t.to} value={s.quietEnd} min={0} max={23} format={(h) => hourLabel(h, s.clock24h)} onChange={set('quietEnd')} />
         } />
         <Row last label={t.leaving} hint={reminders.length ? `${reminders.length} set · ${t.leavingHint}` : t.leavingHint}
-          onPress={() => router.push('/reminders')} right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
+          onPress={() => router.push('/reminders')} />
       </Section>
 
       <Section title={t.focus}>
@@ -139,10 +136,8 @@ export function SettingsScreen() {
           <Toggle accessibilityLabel={t.lock} disabled={!bioOk} value={s.biometricLock}
             onChange={async (v) => { if (await unlock()) update({ biometricLock: v }); }} />
         } />
-        <Row label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('couldn’t export. try again?'))}
-          right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
-        <Row label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }}
-          right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
+        <Row label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('couldn’t export. try again?'))} />
+        <Row label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }} />
         <Row last danger label={armed ? t.resetConfirm : t.reset} hint={t.resetHint}
           onPress={() => {
             if (!armed) { haptics.warning(); setArmed(true); return; }
@@ -155,9 +150,9 @@ export function SettingsScreen() {
       <Section title={t.about}>
         <Row label={t.version} right={<Text tone="ink2">{Constants.expoConfig?.version ?? '–'}</Text>} />
         <Row label={`${APP_NAME} ${t.notMedical}`} />
-        <Row label={t.privacyPolicy} onPress={() => void WebBrowser.openBrowserAsync(LINKS.privacy)} right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
-        <Row label={t.terms} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)} right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
-        <Row last label={t.contact} onPress={() => void Linking.openURL(`mailto:${LINKS.supportEmail}`)} right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
+        <Row label={t.privacyPolicy} onPress={() => void WebBrowser.openBrowserAsync(LINKS.privacy)} />
+        <Row label={t.terms} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)} />
+        <Row last label={t.contact} onPress={() => void Linking.openURL(`mailto:${LINKS.supportEmail}`)} />
       </Section>
     </Screen>
   );

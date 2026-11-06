@@ -25,7 +25,7 @@ export function SlidingNumber({ value, tone = 'onReward', big = false }: { value
 
 function Digit({ d, tone, big }: { d: number; tone: 'onReward' | 'ink' | 'onFocus'; big: boolean }) {
   const { reduceMotion } = useTheme();
-  const H = big ? 30 : 22;
+  const H = big ? 41 : 22;
   const y = useSharedValue(-d * H);
   useEffect(() => {
     y.set(reduceMotion ? -d * H : withSpring(-d * H, spring.digit));
@@ -35,7 +35,7 @@ function Digit({ d, tone, big }: { d: number; tone: 'onReward' | 'ink' | 'onFocu
     <View style={[styles.cell, { height: H }]}>
       <Animated.View style={col}>
         {DIGITS.map((n) => (
-          <Text key={n} variant={big ? 'heading' : 'bodyBold'} tone={tone} style={[styles.digit, { height: H, lineHeight: H }]}>
+          <Text key={n} variant={big ? 'title' : 'bodyBold'} tone={tone} style={[styles.digit, { height: H, lineHeight: H }]}>
             {n}
           </Text>
         ))}

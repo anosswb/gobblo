@@ -1,12 +1,12 @@
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pause, Play, SpeakerHigh, SpeakerSlash, X } from 'phosphor-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
@@ -30,7 +30,7 @@ import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { haptics } from '@/lib/haptics';
 import { play, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
-import { PetStandin } from '@/pet/pet-standin';
+import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import type { FocusSound } from '@/state/schema';
 import { duration, textSwapIn } from '@/theme/motion';
@@ -64,6 +64,13 @@ export function FocusScreen() {
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [line, setLine] = useState<string>(() => (focus?.mode === '2min' ? f.two : f.working(pet.name)));
   const endedChime = useRef(false);
+  // finishing clears the session, which also renders <NoSession>: leave the screen only once
+  const leaving = useRef(false);
+  const exit = () => {
+    if (leaving.current) return;
+    leaving.current = true;
+    exitFocus();
+  };
 
   // clock: 4 updates a second is plenty for mm:ss (the ring animates on the UI thread)
   useEffect(() => {
@@ -133,7 +140,7 @@ export function FocusScreen() {
   }, []);
 
   if (!focus || !t) {
-    return <NoSession color={colors.focusBottom} />;
+    return <NoSession color={colors.focusBottom} onExit={exit} />;
   }
 
   const food = FOOD[focus.size];
@@ -152,14 +159,14 @@ export function FocusScreen() {
         settings.goodThingsJar ? { label: f.goodThing, onPress: () => router.push('/me') } : undefined,
       );
     }
-    exitFocus();
+    exit();
   };
 
   const leave = () => {
     void cancelNotification(focus.notificationId);
     endFocus(false, spent());
     stopLoop();
-    exitFocus();
+    exit();
   };
 
   const cycleSound = () => {
@@ -170,64 +177,72 @@ export function FocusScreen() {
   };
 
   const swapLine = (l: string) => setLine(l);
+  const petMood: Mood = ended ? 'celebrating' : paused ? 'calm' : focus.drifts > 0 && line !== f.working(pet.name) && line !== f.two ? 'curious' : 'focused';
   const textIn = reduceMotion ? FadeIn.duration(duration.quick) : textSwapIn;
 
   return (
     <View style={styles.fill}>
-      <LinearGradient colors={[colors.focusTop, colors.focusMid, colors.focusBottom]} style={StyleSheet.absoluteFill} />
-      <Image source={require('@/assets/images/focus-room.jpg')} style={[StyleSheet.absoluteFill, styles.room]} contentFit="cover" />
-      <LinearGradient colors={[colors.sceneDim, colors.focusScrim, colors.focusBottom]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[colors.focusTop, colors.focusMid, colors.focusBottom]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none">
+        <Defs>
+          <RadialGradient id="focusGlow" cx="50%" cy="34%" r="45%">
+            <Stop offset="0" stopColor={colors.primary} stopOpacity={0.28} />
+            <Stop offset="1" stopColor={colors.primary} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Circle cx="50" cy="34" r="60" fill="url(#focusGlow)" />
+      </Svg>
 
       <View style={[styles.content, { paddingTop: insets.top + space.s, paddingBottom: insets.bottom + space.l }]}>
         <View style={styles.topBar}>
-          <PressScale accessibilityRole="button" accessibilityLabel={f.closeLabel} hitSlop={10} onPress={() => setConfirmLeave(true)} style={[styles.round, { backgroundColor: colors.focusGlass }]}>
-            <X size={22} weight="bold" color={colors.onFocus} />
+          <PressScale accessibilityRole="button" accessibilityLabel={f.closeLabel} hitSlop={10} onPress={() => setConfirmLeave(true)} style={[styles.round, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
+            <Icon name="close" size={16} weight="bold" color={colors.onFocus} />
           </PressScale>
-          <PressScale accessibilityRole="button" accessibilityLabel={`${f.soundLabel}: ${SOUND_LABEL[settings.focusSound]}`} onPress={cycleSound} style={[styles.pill, { backgroundColor: colors.focusGlass }]}>
-            {settings.focusSound === 'none' ? <SpeakerSlash size={18} weight="bold" color={colors.onFocus} /> : <SpeakerHigh size={18} weight="bold" color={colors.onFocus} />}
-            <Text variant="caption" tone="onFocus">{SOUND_LABEL[settings.focusSound]}</Text>
+          <PressScale accessibilityRole="button" accessibilityLabel={`${f.soundLabel}: ${SOUND_LABEL[settings.focusSound]}`} onPress={cycleSound} style={[styles.pill, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
+            <Icon name={settings.focusSound === 'none' ? 'mute' : 'sound'} size={16} color={colors.onFocus} />
+            <Text variant="caption" tone="onFocus" style={styles.semi}>{SOUND_LABEL[settings.focusSound]}</Text>
           </PressScale>
         </View>
 
         <View style={styles.hero}>
-          <Text variant="caption" tone="onFocus2" numberOfLines={1}>
+          <Text variant="subhead" tone="onFocus2" numberOfLines={1} style={styles.workingOn}>
             {f.workingOn} · {focus.biteText}
           </Text>
           <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={food.emoji} />
           <Text variant="timer" tone="onFocus" accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
             {formatClock(left)}
           </Text>
-          <Text variant="bodyBold" tone="onFocus2">
+          <Text variant="subhead" tone="onFocus2">
             {ended ? f.timeUp : f.endsAt(formatEndsAt(paused ? now + left : t.endsAt, settings.clock24h))}
           </Text>
         </View>
 
         <View style={styles.petRow}>
-          <PetStandin size={96} color={pet.color} headphones working={!paused && !ended} />
-          <View style={[styles.bubble, { backgroundColor: colors.focusGlass }]}>
+          <Pet size={92} color={pet.color} mood={petMood} headphones working={!paused && !ended} />
+          <View style={[styles.bubble, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
             <Animated.View key={line} entering={textIn}>
-              <Text variant="bodyBold" tone="onFocus">{line}</Text>
+              <Text variant="body" tone="onFocus">{line}</Text>
             </Animated.View>
           </View>
         </View>
 
         {confirmLeave ? (
-          <Animated.View entering={FadeIn.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} style={[styles.card, { backgroundColor: colors.card }]}>
-            <Text variant="heading">{f.leaveTitle}</Text>
-            <Text tone="ink2">{f.leaveSub}</Text>
+          <Animated.View entering={FadeIn.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} style={[styles.card, styles.alert, { backgroundColor: colors.card }]}>
+            <Text variant="heading" style={styles.center}>{f.leaveTitle}</Text>
+            <Text variant="subhead" tone="ink2" style={styles.center}>{f.leaveSub}</Text>
             <View style={styles.row}>
-              <PressScale accessibilityRole="button" onPress={() => setConfirmLeave(false)} style={[styles.btn, styles.flex, { backgroundColor: colors.cardAlt }]}>
-                <Text variant="bodyBold" tone="primary">{f.stay}</Text>
+              <PressScale accessibilityRole="button" onPress={() => setConfirmLeave(false)} style={[styles.btn, styles.flex, { backgroundColor: colors.primary }]}>
+                <Text variant="bodyBold" tone="onPrimary">{f.stay}</Text>
               </PressScale>
-              <PressScale accessibilityRole="button" onPress={leave} style={[styles.btn, styles.flex, { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep, borderBottomWidth: 5 }]}>
-                <Text variant="bodyBold" tone="onPrimary">{f.leave}</Text>
+              <PressScale accessibilityRole="button" onPress={leave} style={[styles.btn, styles.flex, { backgroundColor: colors.fill }]}>
+                <Text variant="bodyBold">{f.leave}</Text>
               </PressScale>
             </View>
           </Animated.View>
         ) : keepGoing ? (
-          <Animated.View entering={FadeIn.duration(duration.fast)} style={[styles.card, { backgroundColor: colors.focusGlass }]}>
+          <Animated.View entering={FadeIn.duration(duration.fast)} style={[styles.card, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
             <Text variant="heading" tone="onFocus">{f.twoDone}</Text>
-            <Text tone="onFocus2">{f.twoDoneSub}</Text>
+            <Text variant="subhead" tone="onFocus2">{f.twoDoneSub}</Text>
             <PressScale accessibilityRole="button" onPress={() => {
               haptics.medium();
               play('pop');
@@ -235,7 +250,7 @@ export function FocusScreen() {
               const startNow = Date.now();
               patch({ rodeWave: true, endsAt: startNow + 10 * MIN, totalMs: 10 * MIN, pausedRemaining: null, warned: false });
               swapLine('see? you’re already IN it.');
-            }} style={[styles.btn, { backgroundColor: colors.reward, borderBottomColor: colors.rewardDeep, borderBottomWidth: 5 }]}>
+            }} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.ride}</Text>
             </PressScale>
             <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.focusGlass }]}>
@@ -251,7 +266,7 @@ export function FocusScreen() {
                 patch(paused ? resumeTimer(t, nowMs) : pauseTimer(t, nowMs));
                 swapLine(paused ? f.back : f.paused);
               }} style={[styles.chip, { backgroundColor: colors.focusGlass, opacity: ended ? 0.4 : 1 }]}>
-                {paused ? <Play size={18} weight="fill" color={colors.onFocus} /> : <Pause size={18} weight="fill" color={colors.onFocus} />}
+                <Icon name={paused ? 'play' : 'pause'} size={16} color={colors.onFocus} />
                 <Text variant="bodyBold" tone="onFocus">{paused ? f.resume : f.pause}</Text>
               </PressScale>
               <PressScale accessibilityRole="button" onPress={() => {
@@ -264,7 +279,7 @@ export function FocusScreen() {
                 <Text variant="bodyBold" tone="onFocus">{f.plus5}</Text>
               </PressScale>
             </View>
-            <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.reward, borderBottomColor: colors.rewardDeep, borderBottomWidth: 5 }]}>
+            <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.done(pet.name)} {food.emoji}</Text>
             </PressScale>
             <PressScale accessibilityRole="button" hitSlop={8} onPress={() => {
@@ -272,7 +287,7 @@ export function FocusScreen() {
               play('boop');
               swapLine(f.drifted[focus.drifts % f.drifted.length]);
             }} style={styles.link}>
-              <Text variant="bodyBold" tone="onFocus2">{f.driftBtn}</Text>
+              <Text variant="subhead" tone="onFocus2">{f.driftBtn}</Text>
             </PressScale>
           </View>
         )}
@@ -283,28 +298,33 @@ export function FocusScreen() {
 
 
 /** Opened without a running session (old link, notification after finishing): go home. */
-function NoSession({ color }: { color: string }) {
+function NoSession({ color, onExit }: { color: string; onExit: () => void }) {
   useEffect(() => {
-    exitFocus();
+    onExit();
+    // once, on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <View style={[styles.fill, { backgroundColor: color }]} />;
 }
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
-  room: { opacity: 0.55 },
-  content: { flex: 1, paddingHorizontal: space.gutter, justifyContent: 'space-between' },
+  center: { textAlign: 'center' },
+  semi: { fontWeight: '600' },
+  content: { flex: 1, paddingHorizontal: space.gutter + 4, justifyContent: 'space-between' },
   topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  round: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  pill: { minHeight: 40, borderRadius: radius.chip, paddingHorizontal: space.m, flexDirection: 'row', alignItems: 'center', gap: space.s },
-  hero: { alignItems: 'center', gap: space.s },
+  round: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
+  pill: { height: 44, borderRadius: radius.chip, paddingHorizontal: space.l, flexDirection: 'row', alignItems: 'center', gap: space.s, borderWidth: StyleSheet.hairlineWidth },
+  hero: { alignItems: 'center', gap: space.xs },
+  workingOn: { maxWidth: '90%', marginBottom: space.s },
   petRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.m },
-  bubble: { flex: 1, borderRadius: radius.card, padding: space.l, marginBottom: space.l },
+  bubble: { flex: 1, borderRadius: 22, borderBottomStartRadius: 6, padding: space.l, marginBottom: space.xxl, borderWidth: StyleSheet.hairlineWidth },
   controls: { gap: space.m },
   row: { flexDirection: 'row', gap: space.m },
   flex: { flex: 1 },
-  chip: { flex: 1, minHeight: 48, borderRadius: radius.button, flexDirection: 'row', gap: space.s, alignItems: 'center', justifyContent: 'center' },
+  chip: { flex: 1, minHeight: 50, borderRadius: radius.button, flexDirection: 'row', gap: space.s, alignItems: 'center', justifyContent: 'center' },
   btn: { minHeight: 56, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.l },
   link: { alignSelf: 'center', minHeight: 44, justifyContent: 'center' },
-  card: { borderRadius: radius.card, padding: space.xl, gap: space.m },
+  card: { borderRadius: radius.card, padding: space.xl, gap: space.m, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent' },
+  alert: { alignItems: 'stretch' },
 });

@@ -1,11 +1,10 @@
-import { Trash } from 'phosphor-react-native';
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
+import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
-import { ScreenHeader } from '@/components/screen-header';
 import { Chips, Row, Section, Stepper } from '@/components/settings-parts';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
@@ -48,9 +47,8 @@ export function RemindersScreen() {
   const exit = FadeOut.duration(duration.quick);
 
   return (
-    <Screen>
-      <ScreenHeader title="leaving soon" />
-      <Text tone="ink2">tell me when you have to leave. i’ll nudge you before, so you can wrap up the tiny thing.</Text>
+    <Screen back title="leaving soon">
+      <Text variant="subhead" tone="ink2" style={styles.intro}>tell me when you have to leave. i’ll nudge you before, so you can wrap up the tiny thing.</Text>
 
       <Section title="new">
         <Row stacked label="what is it?" right={
@@ -62,7 +60,7 @@ export function RemindersScreen() {
             maxLength={60}
             returnKeyType="done"
             accessibilityLabel="what is it?"
-            style={[styles.input, { color: colors.ink, backgroundColor: colors.cardAlt, fontFamily: fonts.bodyBold }]}
+            style={[styles.input, fonts.body, { color: colors.ink, backgroundColor: colors.fill }]}
           />
         } />
         <Row label="i leave at" hint={formatEndsAt(at, clock24h)} right={
@@ -92,7 +90,7 @@ export function RemindersScreen() {
           setText('');
           toast(nudge === 'off' ? 'saved. (it still nudges, even with nudges off)' : 'saved. i’ll tap you on the shoulder ✦');
         }}
-        style={[styles.cta, { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep }]}>
+        style={[styles.cta, { backgroundColor: colors.primary }]}>
         <Text variant="bodyBold" tone="onPrimary">add reminder</Text>
       </PressScale>
 
@@ -109,7 +107,7 @@ export function RemindersScreen() {
                   hint={`leave ${formatEndsAt(r.at, clock24h)} · nudge ${r.leadMin} min before${r.at < openedAt ? ' · done' : ''}`}
                   right={
                     <PressScale accessibilityRole="button" accessibilityLabel={`delete ${r.text}`} hitSlop={10} onPress={() => { haptics.light(); remove(r.id); }}>
-                      <Trash size={22} weight="bold" color={colors.ink3} />
+                      <Icon name="trash" size={20} color={colors.danger} />
                     </PressScale>
                   }
                 />
@@ -122,7 +120,8 @@ export function RemindersScreen() {
 }
 
 const styles = StyleSheet.create({
-  input: { minHeight: 48, borderRadius: radius.button - 4, paddingHorizontal: space.l, fontSize: typeScale.m },
+  intro: { paddingHorizontal: space.xs, marginTop: -space.s },
+  input: { minHeight: 44, borderRadius: radius.field, paddingHorizontal: space.m, fontSize: typeScale.body },
   time: { gap: space.s, alignItems: 'flex-end' },
-  cta: { minHeight: 56, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 5 },
+  cta: { minHeight: 52, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
 });

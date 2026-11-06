@@ -47,14 +47,14 @@ export function LockGate({ children }: PropsWithChildren) {
       {children}
       {enabled && locked && (
         <Animated.View exiting={FadeOut.duration(duration.fast)} style={[StyleSheet.absoluteFill, styles.wrap, { backgroundColor: colors.bg }]}>
-          <View style={[styles.badge, { backgroundColor: colors.cardAlt }]}>
+          <View style={[styles.badge, { backgroundColor: colors.primarySoft }]}>
             <LockSimple size={36} weight="fill" color={colors.primary} />
           </View>
           <Text variant="heading">your bites are locked</Text>
           <PressScale
             accessibilityRole="button"
             onPress={() => void tryUnlock()}
-            style={[styles.cta, { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep }]}>
+            style={[styles.cta, { backgroundColor: colors.primary }]}>
             <Text variant="bodyBold" tone="onPrimary">
               unlock
             </Text>
@@ -68,5 +68,5 @@ export function LockGate({ children }: PropsWithChildren) {
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center', gap: space.l, zIndex: 100 },
   badge: { width: 80, height: 80, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
-  cta: { minHeight: 56, minWidth: 200, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 5 },
+  cta: { minHeight: 56, minWidth: 200, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
 });

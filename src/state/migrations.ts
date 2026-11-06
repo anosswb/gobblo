@@ -14,6 +14,11 @@ const steps: Record<number, Step> = {
   0: (s) => s,
   // 1 -> 2: adds goodThings, reminders and new settings (accent, sounds, opt-ins). Defaults fill them.
   1: (s) => ({ ...s, goodThings: Array.isArray(s.goodThings) ? s.goodThings : [], reminders: Array.isArray(s.reminders) ? s.reminders : [] }),
+  // 2 -> 3: Apple redesign. The old default tint (cobalt) becomes the new default (pink, the pet's colour).
+  2: (s) => {
+    const settings = isObject(s.settings) ? s.settings : {};
+    return settings.accent === 'cobalt' ? { ...s, settings: { ...settings, accent: 'berry' } } : s;
+  },
 };
 
 function isObject(v: unknown): v is Record<string, unknown> {

@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
-import { GearSix, Trash } from 'phosphor-react-native';
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
+import { Glass } from '@/components/glass';
+import { Icon, type IconName } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
@@ -18,6 +19,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
 import { BrainCard } from './brain-card';
+import { LevelRing } from './level-ring';
 import { WeekChart } from './week-chart';
 
 /**
@@ -45,52 +47,54 @@ export function MeScreen() {
   const hours = hourBuckets(sessions);
   const maxHour = Math.max(1, ...hours);
 
-  const tiles = [
-    { label: 'bites eaten', value: stats.eaten },
-    { label: 'minutes focused', value: stats.minutes },
-    { label: 'comeback days', value: stats.comebacks },
-    { label: 'all-time sparks', value: stats.total },
+  const tiles: { label: string; value: number; icon: IconName }[] = [
+    { label: 'bites eaten', value: stats.eaten, icon: 'check' },
+    { label: 'minutes focused', value: stats.minutes, icon: 'timer' },
+    { label: 'comeback days', value: stats.comebacks, icon: 'repeat' },
+    { label: 'all-time sparks', value: stats.total, icon: 'sparkle' },
   ];
 
   return (
-    <Screen>
-      <View style={styles.header}>
-        <View style={styles.flex}>
-          <Text variant="caption" tone="ink2">you + {pet.name}</Text>
-          <Text variant="title">your progress</Text>
-        </View>
-        <PressScale accessibilityRole="button" accessibilityLabel="settings" hitSlop={8} onPress={() => router.push('/settings')}
-          style={[styles.gear, { backgroundColor: colors.card, borderColor: colors.line }]}>
-          <GearSix size={24} weight="bold" color={colors.ink} />
+    <Screen
+      eyebrow={`you + ${pet.name}`}
+      title="progress"
+      right={
+        <PressScale accessibilityRole="button" accessibilityLabel="settings" hitSlop={4} onPress={() => router.push('/settings')}>
+          <Glass interactive radius={22} style={styles.gear}>
+            <Icon name="gear" size={20} color={colors.ink} />
+          </Glass>
         </PressScale>
-      </View>
-
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
-        <Text variant="heading">lv {st.stage + 1} · {STAGES[st.stage].name}</Text>
-        <View style={[styles.track, { backgroundColor: colors.cardAlt }]}>
-          <View style={[styles.fill, { width: `${Math.max(4, st.progress * 100)}%`, backgroundColor: colors.primary }]} />
+      }>
+      <View style={[styles.card, styles.levelCard, { backgroundColor: colors.card }]}>
+        <LevelRing progress={st.toNext === null ? 1 : st.progress} color={pet.color} mood={st.toNext === null ? 'confident' : 'proud'} />
+        <View style={styles.flex}>
+          <Text variant="caption" tone="primary" style={styles.kicker}>level {st.stage + 1}</Text>
+          <Text variant="title2">{STAGES[st.stage].name}</Text>
+          <Text variant="subhead" tone="ink2">{st.toNext === null ? 'max level. menace.' : `${st.toNext} ✦ to evolve`}</Text>
         </View>
-        <Text variant="caption" tone="ink2">{st.toNext === null ? 'max level. menace.' : `${st.toNext} ✦ to evolve`}</Text>
       </View>
 
       <View style={styles.tiles}>
         {tiles.map((t) => (
-          <View key={t.label} style={[styles.tile, { backgroundColor: colors.card, borderColor: colors.line }]} accessibilityLabel={`${t.label}: ${t.value}`}>
+          <View key={t.label} style={[styles.tile, { backgroundColor: colors.card }]} accessibilityLabel={`${t.label}: ${t.value}`}>
+            <View style={styles.tileHead}>
+              <Icon name={t.icon} size={14} weight="bold" color={colors.primary} />
+              <Text variant="caption" tone="ink2">{t.label}</Text>
+            </View>
             <SlidingNumber value={t.value} tone="ink" big />
-            <Text variant="caption" tone="ink2">{t.label}</Text>
           </View>
         ))}
       </View>
 
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         <View style={styles.rowBetween}>
           <Text variant="heading">this week</Text>
-          <Text variant="caption" tone="primary">{meter.bites}/{meter.goal} bites</Text>
+          <Text variant="bodyBold" tone="primary">{meter.bites}/{meter.goal}</Text>
         </View>
-        <View style={[styles.track, { backgroundColor: colors.cardAlt }]}>
-          <View style={[styles.fill, { width: `${Math.max(4, meter.progress * 100)}%`, backgroundColor: colors.reward }]} />
+        <View style={[styles.track, { backgroundColor: colors.fill }]}>
+          <View style={[styles.fill, { width: `${Math.max(4, meter.progress * 100)}%`, backgroundColor: colors.primary }]} />
         </View>
-        <Text variant="caption" tone="ink2">
+        <Text variant="subhead" tone="ink2">
           {meter.daysFed === 0 ? 'a fresh week. one bite starts it.' : `you showed up on ${meter.daysFed} ${meter.daysFed === 1 ? 'day' : 'days'}. it refills every week, nothing to lose.`}
         </Text>
         <Segmented accessibilityLabel="chart shows" value={metric} onChange={setMetric}
@@ -98,7 +102,7 @@ export function MeScreen() {
         <WeekChart days={days} metric={metric} />
       </View>
 
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         <Text variant="heading">your best hours</Text>
         <View style={styles.heat} accessibilityLabel="bites finished by hour of day">
           {hours.map((n, hIdx) => (
@@ -115,10 +119,10 @@ export function MeScreen() {
       <BrainCard />
 
       {(settings.goodThingsJar || goodThings.length > 0) && (
-        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
-          <Text variant="heading">🫙 good things jar</Text>
+        <View style={[styles.card, { backgroundColor: colors.card }]}>
+          <Text variant="heading">good things jar</Text>
           <Text variant="caption" tone="ink2">one small good thing from today. totally optional.</Text>
-          <View style={[styles.addRow, { backgroundColor: colors.cardAlt }]}>
+          <View style={[styles.addRow, { backgroundColor: colors.fill }]}>
             <TextInput value={good} onChangeText={setGood} placeholder="the coffee was perfect…" placeholderTextColor={colors.ink3}
               maxLength={120} returnKeyType="done" accessibilityLabel="add a good thing"
               onSubmitEditing={() => {
@@ -128,13 +132,13 @@ export function MeScreen() {
                 haptics.light();
                 play('pop');
               }}
-              style={[styles.input, { color: colors.ink, fontFamily: fonts.bodyBold }]} />
+              style={[styles.input, fonts.body, { color: colors.ink }]} />
           </View>
           {goodThings.slice(0, 20).map((g) => (
             <Animated.View key={g.id} entering={FadeIn.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} layout={LinearTransition} style={styles.goodRow}>
-              <Text style={styles.flex}>✨ {g.text}</Text>
+              <Text style={styles.flex}>{g.text}</Text>
               <PressScale accessibilityRole="button" accessibilityLabel={`delete ${g.text}`} hitSlop={10} onPress={() => removeGoodThing(g.id)}>
-                <Trash size={18} weight="bold" color={colors.ink3} />
+                <Icon name="trash" size={18} color={colors.ink3} />
               </PressScale>
             </Animated.View>
           ))}
@@ -145,18 +149,20 @@ export function MeScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'flex-start', gap: space.m },
-  gear: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
-  card: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, padding: space.xl, gap: space.m },
-  track: { height: 12, borderRadius: 6, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: 6 },
+  flex: { flex: 1, gap: 2 },
+  gear: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: space.xs },
+  card: { borderRadius: radius.card, padding: space.l + 2, gap: space.m },
+  levelCard: { flexDirection: 'row', alignItems: 'center', gap: space.l },
+  kicker: { fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.4 },
+  track: { height: 8, borderRadius: 4, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 4 },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.m },
-  tile: { flexBasis: '47%', flexGrow: 1, borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, padding: space.l, gap: space.xs },
+  tile: { flexBasis: '46%', flexGrow: 1, borderRadius: radius.card - 6, padding: space.l, gap: space.s },
+  tileHead: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 2 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   heat: { flexDirection: 'row', gap: 3, height: 28 },
   cell: { flex: 1, borderRadius: 4 },
-  addRow: { borderRadius: radius.button, paddingHorizontal: space.l },
-  input: { minHeight: 48, fontSize: typeScale.m },
+  addRow: { borderRadius: radius.field, paddingHorizontal: space.l },
+  input: { minHeight: 44, fontSize: typeScale.body },
   goodRow: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 36 },
 });

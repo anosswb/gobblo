@@ -9,9 +9,9 @@ import { radius, space } from '@/theme/tokens';
 export function PlaceholderCard({ title }: { title: string }) {
   const { colors } = useTheme();
   return (
-    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line, shadowColor: colors.shadow }]}>
+    <View style={[styles.card, { backgroundColor: colors.card }]}>
       <Text variant="heading">{title}</Text>
-      <Text tone="ink2">{en.placeholder.soon}</Text>
+      <Text variant="subhead" tone="ink2">{en.placeholder.soon}</Text>
     </View>
   );
 }
@@ -19,12 +19,7 @@ export function PlaceholderCard({ title }: { title: string }) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: radius.card,
-    borderWidth: StyleSheet.hairlineWidth,
     padding: space.xl,
-    gap: space.s,
-    shadowOpacity: 1,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 2,
+    gap: space.xs,
   },
 });

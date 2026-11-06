@@ -1,10 +1,10 @@
 import * as Sharing from 'expo-sharing';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ShareNetwork } from 'phosphor-react-native';
 import { useRef } from 'react';
 import { Platform, StyleSheet, View, type HostInstance } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 
+import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
@@ -12,7 +12,7 @@ import { APP_NAME } from '@/config/app';
 import { brainType } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
-import { PetStandin } from '@/pet/pet-standin';
+import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
@@ -51,7 +51,7 @@ export function BrainCard() {
             <Text variant="caption" tone="onFocus2">
               my brain type
             </Text>
-            <Text variant="heading" tone="onFocus">
+            <Text variant="title2" tone="onFocus">
               {bt.title}
             </Text>
             <Text variant="caption" tone="onFocus2">
@@ -66,16 +66,16 @@ export function BrainCard() {
               {APP_NAME.toLowerCase()} · feed it by starting
             </Text>
           </View>
-          <PetStandin size={92} color={pet.color} />
+          <Pet size={92} color={pet.color} mood="confident" />
         </LinearGradient>
       </View>
       <PressScale
         accessibilityRole="button"
         accessibilityLabel="share your brain card"
         onPress={() => void share()}
-        style={[styles.share, { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep }]}>
-        <ShareNetwork size={20} weight="bold" color={colors.onPrimary} />
-        <Text variant="bodyBold" tone="onPrimary">
+        style={[styles.share, { backgroundColor: colors.primarySoft }]}>
+        <Icon name="share" size={18} color={colors.primary} />
+        <Text variant="bodyBold" tone="primary">
           share my brain card
         </Text>
       </PressScale>
@@ -91,12 +91,11 @@ const styles = StyleSheet.create({
   stats: { marginTop: space.s },
   mark: { marginTop: space.m, opacity: 0.8 },
   share: {
-    minHeight: 52,
+    minHeight: 50,
     borderRadius: radius.button,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: space.s,
-    borderBottomWidth: 5,
   },
 });

@@ -46,3 +46,12 @@ describe('todayKey', () => {
     expect(todayKey(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
   });
 });
+
+describe('migration 2 -> 3', () => {
+  it('moves the old default tint (cobalt) to the new default (pink) once', () => {
+    const v2 = { ...freshState(), settings: { ...freshState().settings, accent: 'cobalt' } };
+    expect(migrate(v2, 2).settings.accent).toBe('berry');
+    const picked = { ...freshState(), settings: { ...freshState().settings, accent: 'jade' } };
+    expect(migrate(picked, 2).settings.accent).toBe('jade');
+  });
+});

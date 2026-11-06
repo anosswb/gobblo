@@ -10,7 +10,9 @@ esac
 case "$file" in
   */node_modules/*|*/reference/*|*/research/*) exit 0 ;;
 esac
-cd "$CLAUDE_PROJECT_DIR" || exit 0
+# run in the checkout that owns the file (worktrees too), not always the main one
+root=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null)
+cd "${root:-$CLAUDE_PROJECT_DIR}" || exit 0
 out=$(npx tsc --noEmit 2>&1 | head -30)
 lint=$(npx eslint --no-warn-ignored --quiet "$file" 2>&1 | head -30)
 lint_status=${PIPESTATUS[0]}

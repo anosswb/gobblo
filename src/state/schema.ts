@@ -4,7 +4,7 @@ import type { PetColor } from '@/theme/tokens';
  * Persisted data model (docs/01 + DECISIONS.md). Bump SCHEMA_VERSION and add a step
  * in migrations.ts for every shape change. Never lose user data on update.
  */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export type Size = 0 | 1 | 2 | 3; // tiny, small, medium, big
 export type ThemePreference = 'system' | 'light' | 'dark';
@@ -156,7 +156,7 @@ export function freshState(now = Date.now()): PersistedState {
     focus: null,
     settings: {
       theme: 'system',
-      accent: 'cobalt',
+      accent: 'berry',
       sound: true,
       haptics: 'soft',
       reduceMotion: false,

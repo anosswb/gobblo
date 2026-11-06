@@ -29,6 +29,12 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 - Checks: tsc, lint, 28 tests, expo-doctor 20/20.
 - Still later (needs a server): sync across devices, team boards (docs/12).
 
+## Apple redesign (2026-11-06) — DONE in web preview (not yet on a phone)
+- Tokens, type, Glass, Icon (SF Symbols / Phosphor), floating glass tab bar, large-title screens with blur header, inset-grouped lists, iOS switch + segmented, floating sheet, glass toasts.
+- New pet rig with 18 moods from the emote sheet; Closet mood gallery; Spin + Dump placeholders restyled.
+- Fixed: focus screen went back twice after finishing (GO_BACK warning).
+- Checks: tsc, lint, 29 tests. expo-doctor 18/20 (the 2 fails are network timeouts to exp.host).
+
 ## Next
 - Dev build on Anass's phone (he is logged in to EAS).
 - Phase 2: the pet (Skia, from R1 art).

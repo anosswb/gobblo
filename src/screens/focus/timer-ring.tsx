@@ -19,7 +19,7 @@ export function TimerRing({
   running,
   runKey,
   emoji,
-  size = 248,
+  size = 224,
 }: {
   left: number;
   msLeft: number;
@@ -31,7 +31,7 @@ export function TimerRing({
 }) {
   const { colors, reduceMotion } = useTheme();
   const p = useSharedValue(left);
-  const stroke = 18;
+  const stroke = 16;
   const r = (size - stroke) / 2;
   const C = 2 * Math.PI * r;
 
@@ -51,12 +51,12 @@ export function TimerRing({
   return (
     <View style={{ width: size, height: size }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
-        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.glassBorder} strokeWidth={stroke} fill="none" />
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.focusGlass} strokeWidth={stroke} fill="none" />
         <AnimatedCircle
           cx={size / 2}
           cy={size / 2}
           r={r}
-          stroke={colors.sun}
+          stroke={colors.reward}
           strokeWidth={stroke}
           strokeLinecap="round"
           fill="none"

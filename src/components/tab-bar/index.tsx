@@ -1,91 +1,76 @@
 import { router, usePathname } from 'expo-router';
 import { TabTrigger, type TabTriggerSlotProps } from 'expo-router/ui';
-import { House, Plus, Shuffle, Smiley, TShirt, type IconProps } from 'phosphor-react-native';
-import { useEffect, useState, type ComponentType, type Ref } from 'react';
-import { StyleSheet, View, type HostInstance, type LayoutChangeEvent } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import { useEffect, useState, type Ref } from 'react';
+import { Pressable, StyleSheet, View, type HostInstance, type LayoutChangeEvent } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Glass } from '@/components/glass';
+import { Icon, type IconName } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { haptics } from '@/lib/haptics';
 import { en } from '@/i18n/en';
 import { duration, easing, spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
-import { radius, space } from '@/theme/tokens';
+import { space } from '@/theme/tokens';
 
 type TabName = 'index' | 'spin' | 'closet' | 'me';
-type TabDef = { name: TabName; label: string; Icon: ComponentType<IconProps>; slot: number };
+type TabDef = { name: TabName; label: string; icon: IconName };
 
-/** 5 slots: home, spin, [dump FAB], closet, me */
 const TABS: TabDef[] = [
-  { name: 'index', label: en.tabs.home, Icon: House, slot: 0 },
-  { name: 'spin', label: en.tabs.spin, Icon: Shuffle, slot: 1 },
-  { name: 'closet', label: en.tabs.closet, Icon: TShirt, slot: 3 },
-  { name: 'me', label: en.tabs.me, Icon: Smiley, slot: 4 },
+  { name: 'index', label: en.tabs.home, icon: 'home' },
+  { name: 'spin', label: en.tabs.spin, icon: 'spin' },
+  { name: 'closet', label: en.tabs.closet, icon: 'closet' },
+  { name: 'me', label: en.tabs.me, icon: 'me' },
 ];
-const SLOTS = 5;
-const BAR_HEIGHT = 64;
-const PLATEAU_INSET = 10;
+const BAR_H = 62;
+const PAD = 4;
 
-function activeSlot(pathname: string): number {
+function activeIndex(pathname: string): number {
   if (pathname.startsWith('/spin')) return 1;
-  if (pathname.startsWith('/closet')) return 3;
-  if (pathname.startsWith('/me')) return 4;
+  if (pathname.startsWith('/closet')) return 2;
+  if (pathname.startsWith('/me')) return 3;
   return 0;
 }
 
 /**
- * Custom tab bar: one plateau springs between tabs (Screenrove interior-tabs, 620/42/0.35),
- * the active icon pops, and a raised dump FAB sits in the middle (docs/02).
+ * iOS 26 tab bar: a floating Liquid Glass capsule with the tabs, and the primary action
+ * (brain dump) as its own tinted glass circle beside it, the way Apple splits out Search.
+ * Content scrolls under it. Switching tabs never slides content (tabs are peers); only the
+ * selection lens moves, on a near-critically-damped spring so it can be interrupted.
  */
 export function TabBar() {
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
-  const pathname = usePathname();
-  const slot = activeSlot(pathname);
-  const [width, setWidth] = useState(0);
-  const slotW = width / SLOTS;
+  const index = activeIndex(usePathname());
+  const [w, setW] = useState(0);
+  const tabW = (w - PAD * 2) / TABS.length;
   const x = useSharedValue(0);
 
   useEffect(() => {
-    if (!slotW) return;
-    const to = slot * slotW + PLATEAU_INSET;
-    x.set(reduceMotion ? to : withSpring(to, spring.plateau));
-  }, [slot, slotW, reduceMotion, x]);
+    if (!tabW) return;
+    const to = PAD + index * tabW;
+    x.set(reduceMotion ? to : withSpring(to, spring.lens));
+  }, [index, tabW, reduceMotion, x]);
 
-  const plateau = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
+  const lens = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
 
   return (
-    <View
-      onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
-      style={[
-        styles.bar,
-        { backgroundColor: colors.tabBar, borderTopColor: colors.line, paddingBottom: insets.bottom, height: BAR_HEIGHT + insets.bottom },
-      ]}>
-      {slotW > 0 && (
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.plateau, { width: slotW - PLATEAU_INSET * 2, backgroundColor: colors.cardAlt }, plateau]}
-        />
-      )}
-      {TABS.slice(0, 2).map((t) => (
-        <TabTrigger key={t.name} name={t.name} asChild>
-          <TabButton def={t} />
-        </TabTrigger>
-      ))}
-      <DumpFab />
-      {TABS.slice(2).map((t) => (
-        <TabTrigger key={t.name} name={t.name} asChild>
-          <TabButton def={t} />
-        </TabTrigger>
-      ))}
+    <View pointerEvents="box-none" style={[styles.wrap, { bottom: Math.max(insets.bottom - 6, space.m) }]}>
+      <Glass interactive radius={BAR_H / 2} style={styles.bar}>
+        <View style={styles.row} onLayout={(e: LayoutChangeEvent) => setW(e.nativeEvent.layout.width)}>
+          {tabW > 0 && (
+            <Animated.View pointerEvents="none" style={[styles.lens, { width: tabW, backgroundColor: colors.fill }, lens]} />
+          )}
+          {TABS.map((t) => (
+            <TabTrigger key={t.name} name={t.name} asChild>
+              <TabButton def={t} />
+            </TabTrigger>
+          ))}
+        </View>
+      </Glass>
+      <DumpButton />
     </View>
   );
 }
@@ -93,20 +78,11 @@ export function TabBar() {
 type TabButtonProps = TabTriggerSlotProps & { def: TabDef };
 
 function TabButton({ def, isFocused, onPress, ref, ...rest }: TabButtonProps) {
-  const { colors, reduceMotion } = useTheme();
-  const pop = useSharedValue(1);
-
-  useEffect(() => {
-    if (isFocused && !reduceMotion) pop.set(withSequence(withTiming(0.86, { duration: 0 }), withSpring(1, spring.pop)));
-  }, [isFocused, reduceMotion, pop]);
-
-  const iconStyle = useAnimatedStyle(() => ({ transform: [{ scale: pop.get() }] }));
-  const tint = isFocused ? colors.primary : colors.ink3;
-
+  const { colors } = useTheme();
+  const tint = isFocused ? colors.primary : colors.ink;
   return (
-    <PressScale
+    <Pressable
       {...rest}
-      // expo-router types the slot ref as Ref<typeof View>; at runtime it is the host instance.
       ref={ref as Ref<HostInstance>}
       onPress={(e) => {
         if (!isFocused) haptics.select();
@@ -116,77 +92,48 @@ function TabButton({ def, isFocused, onPress, ref, ...rest }: TabButtonProps) {
       accessibilityState={{ selected: !!isFocused }}
       accessibilityLabel={en.a11y.tab(def.label)}
       style={styles.tab}>
-      <Animated.View style={iconStyle}>
-        <def.Icon size={26} color={tint} weight={isFocused ? 'fill' : 'bold'} />
-      </Animated.View>
-      <Text variant="caption" style={{ color: tint }}>
+      <Icon name={def.icon} size={22} color={tint} />
+      <Text variant="label" style={[styles.label, { color: tint }]} numberOfLines={1}>
         {def.label}
       </Text>
+    </Pressable>
+  );
+}
+
+function DumpButton() {
+  const { colors, reduceMotion } = useTheme();
+  const turn = useSharedValue(0);
+  const style = useAnimatedStyle(() => ({ transform: [{ rotate: `${turn.get()}deg` }] }));
+  return (
+    <PressScale
+      accessibilityRole="button"
+      accessibilityLabel={en.a11y.dumpButton}
+      pressedScale={0.92}
+      onPressIn={() => {
+        if (!reduceMotion) turn.set(withTiming(90, { duration: duration.quick, easing: easing.strongOut }));
+      }}
+      onPressOut={() => {
+        turn.set(reduceMotion ? 0 : withSpring(0, spring.apple));
+      }}
+      onPress={() => {
+        haptics.light();
+        router.push('/dump');
+      }}>
+      <Glass interactive tint={colors.primary} radius={BAR_H / 2} style={styles.fab}>
+        <Animated.View style={style}>
+          <Icon name="plus" size={26} weight="bold" color={colors.onPrimary} />
+        </Animated.View>
+      </Glass>
     </PressScale>
   );
 }
 
-function DumpFab() {
-  const { colors, reduceMotion } = useTheme();
-  const tilt = useSharedValue(-6);
-  const style = useAnimatedStyle(() => ({ transform: [{ rotate: `${tilt.get()}deg` }] }));
-
-  return (
-    <View style={styles.tab}>
-      <PressScale
-        accessibilityRole="button"
-        accessibilityLabel={en.a11y.dumpButton}
-        hitSlop={8}
-        onPressIn={() => {
-          tilt.set(reduceMotion ? 0 : withTiming(0, { duration: duration.micro, easing: easing.smoothOut }));
-        }}
-        onPressOut={() => {
-          tilt.set(reduceMotion ? -6 : withSpring(-6, spring.pop));
-        }}
-        onPress={() => {
-          haptics.light();
-          router.push('/dump');
-        }}>
-        <Animated.View
-          style={[
-            styles.fab,
-            { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep, shadowColor: colors.primary },
-            style,
-          ]}>
-          <Plus size={28} weight="bold" color={colors.onPrimary} />
-        </Animated.View>
-      </PressScale>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  bar: {
-    position: 'absolute',
-    start: 0,
-    end: 0,
-    bottom: 0,
-    flexDirection: 'row',
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  plateau: {
-    position: 'absolute',
-    top: 8,
-    height: 48,
-    borderRadius: radius.button,
-  },
-  tab: { flex: 1, height: BAR_HEIGHT, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  fab: {
-    width: 60,
-    height: 60,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -space.xxl,
-    borderBottomWidth: 5,
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
-  },
+  wrap: { position: 'absolute', start: space.l, end: space.l, flexDirection: 'row', alignItems: 'center', gap: space.s + 2 },
+  bar: { flex: 1, height: BAR_H },
+  row: { flex: 1, flexDirection: 'row', paddingHorizontal: PAD, alignItems: 'center' },
+  lens: { position: 'absolute', top: PAD, bottom: PAD, start: 0, borderRadius: (BAR_H - PAD * 2) / 2 },
+  tab: { flex: 1, height: BAR_H - PAD * 2, alignItems: 'center', justifyContent: 'center', gap: 1 },
+  label: { fontSize: 10, lineHeight: 13 },
+  fab: { width: BAR_H, height: BAR_H, alignItems: 'center', justifyContent: 'center' },
 });

@@ -1,23 +1,29 @@
 import type { PropsWithChildren, ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { haptics } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
 
-/** A titled group card (grouped-settings pattern, iOS HIG + Material). */
-export function Section({ title, footer, children }: PropsWithChildren<{ title: string; footer?: string }>) {
+/**
+ * iOS inset-grouped list (Settings, Reminders). Header and footer in footnote grey, rows on
+ * one rounded card, separators inset to the text so the group reads as one object.
+ */
+export function Section({ title, footer, children }: PropsWithChildren<{ title?: string; footer?: string }>) {
   const { colors } = useTheme();
   return (
     <View style={styles.section}>
-      <Text variant="caption" tone="ink2" style={styles.sectionTitle} accessibilityRole="header">
-        {title}
-      </Text>
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>{children}</View>
+      {title ? (
+        <Text variant="caption" tone="ink2" style={styles.pad} accessibilityRole="header">
+          {title}
+        </Text>
+      ) : null}
+      <View style={[styles.card, { backgroundColor: colors.card }]}>{children}</View>
       {footer ? (
-        <Text variant="caption" tone="ink3" style={styles.footer}>
+        <Text variant="caption" tone="ink2" style={styles.pad}>
           {footer}
         </Text>
       ) : null}
@@ -25,7 +31,7 @@ export function Section({ title, footer, children }: PropsWithChildren<{ title: 
   );
 }
 
-/** One row: label (+ hint) on the start side, control on the end side. */
+/** One row: label (+ hint) on the start side, control on the end side. Tappable rows highlight. */
 export function Row({
   label,
   hint,
@@ -34,41 +40,53 @@ export function Row({
   last,
   stacked,
   danger,
+  leading,
 }: {
   label: string;
   hint?: string;
   right?: ReactNode;
   onPress?: () => void;
   last?: boolean;
-  /** put the control under the label (segmented controls) */
+  /** put the control under the label (segmented controls, chips) */
   stacked?: boolean;
   danger?: boolean;
+  /** an icon tile or emoji on the start side */
+  leading?: ReactNode;
 }) {
   const { colors } = useTheme();
-  const body = (
-    <View style={[stacked ? styles.rowStacked : styles.row, !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line }]}>
-      <View style={styles.rowText}>
-        <Text variant="bodyBold" style={danger ? { color: colors.danger } : undefined}>
-          {label}
-        </Text>
-        {hint ? (
-          <Text variant="caption" tone="ink3">
-            {hint}
+  const body = (pressed = false) => (
+    <View style={[styles.rowWrap, pressed && { backgroundColor: colors.fill }]}>
+      {leading ? <View style={styles.leading}>{leading}</View> : null}
+      <View style={[stacked ? styles.rowStacked : styles.row, styles.flex]}>
+        <View style={stacked ? undefined : styles.rowText}>
+          <Text variant="body" tone={danger ? 'danger' : 'ink'}>
+            {label}
           </Text>
-        ) : null}
+          {hint ? (
+            <Text variant="caption" tone="ink2">
+              {hint}
+            </Text>
+          ) : null}
+        </View>
+        {right ?? (onPress && !danger ? <Icon name="chevron" size={14} weight="bold" color={colors.ink3} /> : null)}
+        {!last ? <View style={[styles.sep, { backgroundColor: colors.line }]} /> : null}
       </View>
-      {right}
     </View>
   );
-  if (!onPress) return body;
+  if (!onPress) return body();
   return (
-    <PressScale pressedScale={0.99} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={hint} onPress={onPress}>
-      {body}
-    </PressScale>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityHint={hint} onPress={onPress}>
+      {({ pressed }) => body(pressed)}
+    </Pressable>
   );
 }
 
-/** Wrapping choice chips (sounds, accents…). */
+/** A small rounded-square icon tile, like iOS Settings rows. */
+export function IconTile({ children, color }: PropsWithChildren<{ color: string }>) {
+  return <View style={[styles.tile, { backgroundColor: color }]}>{children}</View>;
+}
+
+/** Wrapping capsule choices (sounds, tints…). Selected = tinted. */
 export function Chips<T extends string>({
   options,
   value,
@@ -92,15 +110,15 @@ export function Chips<T extends string>({
             accessibilityState={{ selected: on }}
             accessibilityLabel={o.label}
             onPress={() => {
+              if (on) return;
               haptics.select();
               onChange(o.value);
             }}
-            style={[
-              styles.chip,
-              { backgroundColor: on ? colors.cardAlt : colors.card, borderColor: on ? colors.primary : colors.line },
-            ]}>
-            {o.swatch ? <View style={[styles.swatch, { backgroundColor: o.swatch }]} /> : null}
-            <Text variant="caption" tone={on ? 'primary' : 'ink2'}>
+            style={[styles.chip, { backgroundColor: on ? colors.primarySoft : colors.fill }]}>
+            {o.swatch ? (
+              <View style={[styles.swatch, { backgroundColor: o.swatch, borderColor: on ? colors.card : 'transparent' }]} />
+            ) : null}
+            <Text variant="subhead" tone={on ? 'primary' : 'ink'} style={on ? styles.chipOn : undefined}>
               {o.label}
             </Text>
           </PressScale>
@@ -110,7 +128,7 @@ export function Chips<T extends string>({
   );
 }
 
-/** − value + stepper (quiet hours). */
+/** iOS stepper: value, then a − | + capsule. Wraps around (hours, minutes). */
 export function Stepper({
   value,
   onChange,
@@ -127,53 +145,48 @@ export function Stepper({
   label: string;
 }) {
   const { colors } = useTheme();
-  const btn = (delta: number, glyph: string) => (
-    <PressScale
-      accessibilityRole="button"
-      accessibilityLabel={`${label} ${delta > 0 ? 'later' : 'earlier'}`}
-      hitSlop={6}
-      onPress={() => {
-        haptics.select();
-        const span = max - min + 1;
-        onChange(((value - min + delta + span) % span) + min);
-      }}
-      style={[styles.stepBtn, { backgroundColor: colors.cardAlt }]}>
-      <Text variant="bodyBold" tone="primary">
-        {glyph}
-      </Text>
-    </PressScale>
-  );
+  const step = (delta: number) => {
+    haptics.select();
+    const span = max - min + 1;
+    onChange(((value - min + delta + span) % span) + min);
+  };
   return (
     <View style={styles.stepper}>
-      {btn(-1, '−')}
       <Text variant="bodyBold" style={styles.stepValue} accessibilityLiveRegion="polite">
         {format(value)}
       </Text>
-      {btn(1, '+')}
+      <View style={[styles.stepPill, { backgroundColor: colors.fill }]}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`${label} earlier`} hitSlop={4} onPress={() => step(-1)} style={styles.stepBtn}>
+          <Text variant="heading">−</Text>
+        </Pressable>
+        <View style={[styles.stepSep, { backgroundColor: colors.line }]} />
+        <Pressable accessibilityRole="button" accessibilityLabel={`${label} later`} hitSlop={4} onPress={() => step(1)} style={styles.stepBtn}>
+          <Text variant="heading">+</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  section: { gap: space.s },
-  sectionTitle: { marginStart: space.xs, textTransform: 'lowercase' },
-  footer: { marginStart: space.xs },
-  card: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: space.l },
-  row: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: space.m, paddingVertical: space.m },
-  rowStacked: { paddingVertical: space.m, gap: space.m },
-  rowText: { flex: 1, gap: 2 },
+  flex: { flex: 1 },
+  section: { gap: space.s - 2 },
+  pad: { paddingHorizontal: space.l },
+  card: { borderRadius: radius.card, overflow: 'hidden' },
+  rowWrap: { flexDirection: 'row', alignItems: 'center', paddingStart: space.l },
+  leading: { marginEnd: space.m },
+  row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: space.m, paddingVertical: space.m - 2, paddingEnd: space.l },
+  rowStacked: { paddingVertical: space.m, gap: space.m, paddingEnd: space.l },
+  rowText: { flex: 1, gap: 1 },
+  sep: { position: 'absolute', start: 0, end: 0, bottom: 0, height: StyleSheet.hairlineWidth },
+  tile: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s },
-  chip: {
-    minHeight: 40,
-    paddingHorizontal: space.m,
-    borderRadius: radius.chip,
-    borderWidth: 1.5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.s,
-  },
-  swatch: { width: 16, height: 16, borderRadius: 8 },
-  stepper: { flexDirection: 'row', alignItems: 'center', gap: space.s },
-  stepBtn: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  stepValue: { minWidth: 64, textAlign: 'center', fontVariant: ['tabular-nums'] },
+  chip: { minHeight: 36, paddingHorizontal: space.m + 2, borderRadius: radius.chip, flexDirection: 'row', alignItems: 'center', gap: space.s },
+  chipOn: { fontWeight: '600' },
+  swatch: { width: 16, height: 16, borderRadius: 8, borderWidth: 2 },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: space.m },
+  stepValue: { minWidth: 48, textAlign: 'right', fontVariant: ['tabular-nums'] },
+  stepPill: { flexDirection: 'row', alignItems: 'center', borderRadius: radius.chip, height: 34 },
+  stepBtn: { width: 46, height: 34, alignItems: 'center', justifyContent: 'center' },
+  stepSep: { width: StyleSheet.hairlineWidth * 2, height: 18 },
 });

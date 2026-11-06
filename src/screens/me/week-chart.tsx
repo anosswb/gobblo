@@ -24,7 +24,7 @@ export function WeekChart({ days, metric }: { days: DayBucket[]; metric: 'bites'
 
   return (
     <View style={styles.wrap}>
-      <Text variant="bodyBold" accessibilityLiveRegion="polite">
+      <Text variant="subhead" tone="ink2" accessibilityLiveRegion="polite">
         {sel.isToday ? 'today' : sel.label}: {sel.bites} {sel.bites === 1 ? 'bite' : 'bites'} · {sel.minutes} min
       </Text>
       <View style={styles.bars} accessibilityRole="adjustable" accessibilityLabel={`this week, ${metric}`}>
@@ -61,7 +61,7 @@ function Bar({ value, index, active, today }: { value: number; index: number; ac
       <Animated.View
         style={[
           styles.bar,
-          { backgroundColor: active ? colors.primary : today ? colors.pink : colors.cardAlt },
+          { backgroundColor: active ? colors.primary : today ? colors.primarySoft : colors.fill },
           style,
         ]}
       />
@@ -74,5 +74,5 @@ const styles = StyleSheet.create({
   bars: { flexDirection: 'row', alignItems: 'flex-end', gap: space.s },
   col: { flex: 1, alignItems: 'center', gap: space.xs, minHeight: 44 },
   track: { height: CHART_H, width: '100%', justifyContent: 'flex-end' },
-  bar: { width: '100%', borderRadius: radius.button / 2 },
+  bar: { width: '100%', borderRadius: radius.row - 6 },
 });
