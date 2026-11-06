@@ -156,7 +156,7 @@ export function Stepper({
 
 const styles = StyleSheet.create({
   section: { gap: space.s },
-  sectionTitle: { marginStart: space.xs, textTransform: 'lowercase' },
+  sectionTitle: { marginStart: space.xs },
   footer: { marginStart: space.xs },
   card: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: space.l },
   row: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: space.m, paddingVertical: space.m },

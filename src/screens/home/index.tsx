@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { ArrowsClockwise, Plus, Sparkle } from 'phosphor-react-native';
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
 
 import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
@@ -48,6 +48,7 @@ export function HomeScreen() {
   const restoreBite = useAppStore((s) => s.restoreBite);
   const toggleDaily = useAppStore((s) => s.toggleDaily);
   const startFocus = useAppStore((s) => s.startFocus);
+  const updateSettings = useAppStore((s) => s.updateSettings);
 
   const [openedAt] = useState(() => new Date());
   const [text, setText] = useState('');
@@ -115,6 +116,19 @@ export function HomeScreen() {
           <PetStandin size={130} color={pet.color} sleepy={sky === 'night' && settings.autoSleep && list.length === 0} />
         </View>
       </View>
+
+      {settings.onboarded && !settings.tipsSeen ? (
+        <Animated.View exiting={FadeOut.duration(duration.quick)} style={[styles.note, styles.tips, { backgroundColor: colors.card, borderColor: colors.primary }]}>
+          <Text variant="caption" tone="primary">{en.tips.title}</Text>
+          {[`👆 ${en.tips.one}`, `➕ ${en.tips.two}`, `🙂 ${en.tips.three}`].map((line) => (
+            <Text key={line} variant="bodyBold">{line}</Text>
+          ))}
+          <PressScale accessibilityRole="button" onPress={() => { haptics.light(); updateSettings({ tipsSeen: true }); }}
+            style={[styles.tipsBtn, { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep }]}>
+            <Text variant="bodyBold" tone="onPrimary">{en.tips.ok}</Text>
+          </PressScale>
+        </Animated.View>
+      ) : null}
 
       <View style={[styles.note, { backgroundColor: colors.card, borderColor: colors.line }]}>
         <Text variant="caption" tone="primary">{settings.mindfulNote ? h.mindfulTitle : h.wisdomTitle}</Text>
@@ -232,6 +246,8 @@ const styles = StyleSheet.create({
   bubble: { position: 'absolute', top: 64, start: space.xl, end: space.xl, borderRadius: radius.card, padding: space.m },
   pet: { position: 'absolute', bottom: 8, start: 0, end: 0, alignItems: 'center' },
   note: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, padding: space.l, gap: space.xs },
+  tips: { borderWidth: 2, gap: space.s },
+  tipsBtn: { alignSelf: 'flex-start', minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 4, marginTop: space.xs },
   listHead: { gap: 2 },
   addRow: { flexDirection: 'row', alignItems: 'center', gap: space.s, borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, padding: space.s },
   input: { flex: 1, minHeight: 44, fontSize: typeScale.m },

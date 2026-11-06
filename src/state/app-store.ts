@@ -5,7 +5,7 @@ import { addBites, feed, newDayCheck, newId, removeBite, reorder, rewardStart, t
 import { startTimer } from '@/features/focus/timer';
 import { mmkvStateStorage } from '@/lib/storage';
 
-import { migrate } from './migrations';
+import { mergeDefaults, migrate } from './migrations';
 import {
   freshState,
   SCHEMA_VERSION,
@@ -14,12 +14,14 @@ import {
   type PersistedState,
   type Reminder,
   type Session,
+  type Pet,
   type Settings,
   type Size,
 } from './schema';
 
 type Actions = {
   updateSettings: (patch: Partial<Settings>) => void;
+  updatePet: (patch: Partial<Pet>) => void;
   resetAll: () => void;
   importState: (data: PersistedState) => void;
   onAppActive: (now?: Date) => void;
@@ -59,6 +61,7 @@ export const useAppStore = create<AppState>()(
     (set, get) => ({
       ...freshState(),
       updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
+      updatePet: (patch) => set((s) => ({ pet: { ...s.pet, ...patch } })),
       resetAll: () => set(freshState()),
       importState: (data) => set(migrate(data, 0)),
       onAppActive: (now = new Date()) => {
@@ -134,6 +137,9 @@ export const useAppStore = create<AppState>()(
       version: SCHEMA_VERSION,
       storage: createJSONStorage(() => mmkvStateStorage),
       migrate: (saved, version) => migrate(saved, version),
+      // deep-merge saved data onto fresh defaults, so settings added later (soundOnSilent,
+      // tipsSeen…) get their default instead of `undefined` on phones that already have data
+      merge: (saved, current) => ({ ...current, ...mergeDefaults(freshState(), saved) }),
       partialize: (s) => pick(s),
     },
   ),

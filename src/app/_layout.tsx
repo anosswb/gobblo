@@ -13,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LockGate } from '@/components/lock-gate';
 import { ToastHost } from '@/components/toast';
 import { useAppLifecycle } from '@/hooks/use-app-lifecycle';
+import { useAppStore } from '@/state/app-store';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
 
 void SplashScreen.preventAutoHideAsync();
@@ -45,15 +46,22 @@ export default function RootLayout() {
 function RootStack() {
   const { scheme, colors } = useTheme();
   useAppLifecycle();
+  const onboarded = useAppStore((s) => s.settings.onboarded);
   return (
     <LockGate>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="dump" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="focus" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="reminders" />
+        {/* first launch: only the intro exists until it is done (or skipped) */}
+        <Stack.Protected guard={onboarded}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="dump" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="focus" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="reminders" />
+        </Stack.Protected>
+        <Stack.Protected guard={!onboarded}>
+          <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
+        </Stack.Protected>
       </Stack>
       <ToastHost />
     </LockGate>

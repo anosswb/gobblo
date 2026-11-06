@@ -124,7 +124,9 @@ export function SettingsScreen() {
         } />
         <Row label={t.autoSleep} right={<Toggle accessibilityLabel={t.autoSleep} value={s.autoSleep} onChange={set('autoSleep')} />} />
         <Row label={t.mindful} hint={t.mindfulHint} right={<Toggle accessibilityLabel={t.mindful} value={s.mindfulNote} onChange={set('mindfulNote')} />} />
-        <Row last label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
+        <Row label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
+        <Row last label={t.replayIntro} hint={t.replayHint} onPress={() => { haptics.light(); update({ onboarded: false, tipsSeen: false }); }}
+          right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
       </Section>
 
       <Section title={t.time}>

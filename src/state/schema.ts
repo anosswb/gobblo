@@ -119,6 +119,8 @@ export interface Settings {
   /** opt-in "one good thing?" after feeding (docs/12) */
   goodThingsJar: boolean;
   onboarded: boolean;
+  /** the 3 quick tips card on Home after onboarding */
+  tipsSeen: boolean;
   firstOpen: number;
   reviewAskedVersion?: string;
 }
@@ -181,6 +183,7 @@ export function freshState(now = Date.now()): PersistedState {
       mindfulNote: false,
       goodThingsJar: false,
       onboarded: false,
+      tipsSeen: false,
       firstOpen: now,
     },
   };
