@@ -14,7 +14,7 @@ import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
 import { petColors, radius, space, type PetColor } from '@/theme/tokens';
 
-const COLOR_LABEL: Record<PetColor, string> = { pink: 'bubblegum', tangerine: 'tangerine', mint: 'mint', violet: 'grape' };
+const COLOR_LABEL: Record<PetColor, string> = { pink: 'Bubblegum', tangerine: 'Tangerine', mint: 'Mint', violet: 'Grape' };
 
 /**
  * Closet (Phase 5 brings hats, colours and rooms). For now: the pet's whole mood set as a

@@ -23,7 +23,7 @@ import { Chips } from '@/components/settings-parts';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { guessSize } from '@/features/bites/chop';
-import { FOOD } from '@/features/bites/logic';
+import { capFirst, FOOD } from '@/features/bites/logic';
 import { askNotificationPermission } from '@/features/nudges/schedule';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -36,15 +36,17 @@ import { duration } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, petColors, radius, space, stages, typeScale, type PetColor } from '@/theme/tokens';
 
+import { FeelStep } from './feel-step';
+
 const o = en.onboarding;
-type Step = 'hook' | 'quiz' | 'feed' | 'hatch' | 'name' | 'nudge';
-const DOTS: Step[] = ['hook', 'quiz', 'feed', 'name', 'nudge'];
-const COLOR_LABEL: Record<PetColor, string> = { pink: 'bubblegum', tangerine: 'tangerine', mint: 'mint', violet: 'grape' };
+type Step = 'hook' | 'quiz' | 'feel' | 'feed' | 'hatch' | 'name' | 'nudge';
+const DOTS: Step[] = ['hook', 'quiz', 'feel', 'feed', 'name', 'nudge'];
+const COLOR_LABEL: Record<PetColor, string> = { pink: 'Bubblegum', tangerine: 'Tangerine', mint: 'Mint', violet: 'Grape' };
 const ORBIT = ['🍬', '🍪', '🍩', '🍕'];
 
 /**
  * Onboarding (docs/01 §0 + DECISIONS "hatch by feeding"), under 60 s, no paywall, no account:
- * hook → one quiz screen → feed the egg your first thought (it hatches *because it ate*) →
+ * hook → one quiz screen → make it yours (look + sound, Anass) → feed the egg your first thought (it hatches *because it ate*) →
  * name it (🎲) + colour → soft nudge ask (the OS prompt only after "yes") → Home.
  */
 export function OnboardingScreen() {
@@ -115,7 +117,7 @@ export function OnboardingScreen() {
     if (nudges) await askNotificationPermission().catch(() => false);
     updateSettings({ nudge: nudges ? 'gentle' : 'off', onboarded: true });
     router.replace('/');
-    setTimeout(() => toast(o.welcome(name.trim() || 'bean')), 500);
+    setTimeout(() => toast(o.welcome(name.trim() || 'Bean')), 500);
   };
 
   const enter = reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.medium);
@@ -187,8 +189,19 @@ export function OnboardingScreen() {
                 ) : null}
               </View>
               <View style={styles.actions}>
-                <Primary label={picked.length ? o.next : o.skip} onPress={() => go('feed')} soft={!picked.length} />
+                <Primary label={picked.length ? o.next : o.skip} onPress={() => go('feel')} soft={!picked.length} />
               </View>
+            </Animated.View>
+          )}
+
+          {step === 'feel' && (
+            <Animated.View key="feel" entering={enter} exiting={exit} style={styles.page}>
+              <View style={styles.copyTop}>
+                <Text variant="title" accessibilityRole="header">{o.feelTitle}</Text>
+                <Text variant="body" tone="ink2">{o.feelSub}</Text>
+              </View>
+              <FeelStep />
+              <Primary label={o.next} onPress={() => go('feed')} />
             </Animated.View>
           )}
 
@@ -255,7 +268,7 @@ export function OnboardingScreen() {
                     placeholder={o.namePlaceholder}
                     placeholderTextColor={colors.ink3}
                     maxLength={16}
-                    autoCapitalize="none"
+                    autoCapitalize="words"
                     returnKeyType="done"
                     accessibilityLabel={o.namePlaceholder}
                     style={[styles.nameInput, fonts.display, styles.noOutline, { color: colors.ink, backgroundColor: colors.fill }]}
@@ -281,9 +294,9 @@ export function OnboardingScreen() {
                 />
               </View>
               <Primary
-                label={o.meet(name.trim() || 'bean')}
+                label={o.meet(name.trim() || 'Bean')}
                 onPress={() => {
-                  patchPet({ name: name.trim() || 'bean', color });
+                  patchPet({ name: capFirst(name.trim()) || 'Bean', color });
                   go('nudge');
                 }}
               />
@@ -299,7 +312,7 @@ export function OnboardingScreen() {
                 <Pet size={130} color={color} mood="curious" />
               </View>
               <View style={styles.copy}>
-                <Text variant="title" style={styles.center}>{o.nudgeTitle(name.trim() || 'bean')}</Text>
+                <Text variant="title" style={styles.center}>{o.nudgeTitle(name.trim() || 'Bean')}</Text>
                 <Text variant="body" tone="ink2" style={[styles.center, styles.sub]}>{o.nudgeSub}</Text>
               </View>
               <View style={styles.actions}>

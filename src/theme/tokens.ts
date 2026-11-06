@@ -132,10 +132,10 @@ export const dark: ColorTokens = {
 
 /** Tint choices (docs/12 #14), all iOS system colours. Free on both stores. */
 export const accents = {
-  berry: { light: ['#E5307D', '#B81E5E'], dark: ['#FF4F96', '#D02D70'], label: 'pink' },
-  cobalt: { light: ['#007AFF', '#0062CC'], dark: ['#0A84FF', '#0066CC'], label: 'blue' },
-  jade: { light: ['#248A3D', '#1B6B2F'], dark: ['#30D158', '#24A148'], label: 'green' },
-  sunset: { light: ['#C93400', '#A32A00'], dark: ['#FF9F0A', '#CC7F08'], label: 'orange' },
+  berry: { light: ['#E5307D', '#B81E5E'], dark: ['#FF4F96', '#D02D70'], label: 'Pink' },
+  cobalt: { light: ['#007AFF', '#0062CC'], dark: ['#0A84FF', '#0066CC'], label: 'Blue' },
+  jade: { light: ['#248A3D', '#1B6B2F'], dark: ['#30D158', '#24A148'], label: 'Green' },
+  sunset: { light: ['#C93400', '#A32A00'], dark: ['#FF9F0A', '#CC7F08'], label: 'Orange' },
 } as const;
 
 /** iOS Settings-style icon tiles (system colours, same in both schemes; the glyph is white). */

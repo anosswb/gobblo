@@ -20,6 +20,7 @@ import { useAppStore } from '@/state/app-store';
 import type { Accent, FocusSound, NudgeSound, Settings } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
 import { accents, fonts, petColors, typeScale, type PetColor } from '@/theme/tokens';
+import { capFirst } from '@/features/bites/logic';
 
 const t = en.settings;
 
@@ -135,7 +136,7 @@ export function SettingsScreen() {
         } />
         <Row stacked label={t.petColor} right={
           <Chips<PetColor> accessibilityLabel={t.petColor} value={pet.color} onChange={(c) => patchPet({ color: c })}
-            options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: c === 'pink' ? 'bubblegum' : c === 'violet' ? 'grape' : c, swatch: petColors[c] }))} />
+            options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: c === 'pink' ? 'Bubblegum' : c === 'violet' ? 'Grape' : capFirst(c), swatch: petColors[c] }))} />
         } />
         <Row stacked label={t.petTalk} right={
           <Segmented accessibilityLabel={t.petTalk} value={s.petTalk} onChange={set('petTalk')}

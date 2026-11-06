@@ -45,6 +45,8 @@ export const en = {
     hookCta: 'Let’s go',
     quizTitle: 'What wrecks your day?',
     quizSub: 'Pick any. No wrong answers.',
+    feelTitle: 'Make it yours',
+    feelSub: 'Tap around, you’ll hear and feel it. All of this lives in Settings too.',
     quiz: [
       { key: 'start', label: 'Starting things', line: 'Same. That’s literally what I eat.' },
       { key: 'time', label: 'Time vanishes', line: 'I’ll show you when things end. Time gets a shape.' },
