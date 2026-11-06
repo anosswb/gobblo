@@ -12,7 +12,7 @@ Principle (from the review research in docs/07): the core loop stays free foreve
 | **Focus soundscapes**: rain, café, library, lo-fi loop, mixable with brown noise | body-doubling + focus crowd | S |
 | **Alternate app icons**: 6 icons (night pet, crown pet, dino…) | cheap to make, people love it | S |
 | **Weekly "brain wrapped"**: a shareable story card (best day, top hour, bites eaten, brain type) | vanity mirror, free marketing on Instagram/TikTok | M |
-| **Routines**: save bite packs (morning, after school, Sunday reset) and start them with one tap | requested "set routines" | M |
+| **Routine packs**: ready-made bite packs and templates (morning, after school, Sunday reset). Basic "keep daily" repeating bites are FREE on both stores (DECISIONS.md) | requested "set routines"; paywalled basics get 1★ | M |
 | **iCloud sync between iPhone and iPad** | Tiimo's top complaint was sync (50 reviews) | M |
 
 **Pet packs** (non-consumable, $1.99–$2.99): seasonal species or hat drops (Ramadan lanterns, Halloween, winter). These give a reason to post on TikTok every month.
@@ -27,6 +27,9 @@ Principle (from the review research in docs/07): the core loop stays free foreve
   - unlock one room item
 - Widgets, sounds and routines are free on Android (Google can't take payments from a Moroccan account, so we don't hide them behind a wall). Plus species can be earned with sparks + rewarded ads.
 - One small banner on Closet and Me only. No interstitials in v1.
+
+## Promise
+**Plus is yours forever.** One-time buyers are never moved to a subscription. If a Club comes later, it only adds new things (DECISIONS.md, run-2 reviews). No free trial.
 
 ## Paywall rules (both stores)
 Never in onboarding. Never blocking dump → start → feed. Shows the price, "one-time, no subscription", restore purchases, terms and privacy links. Can be opened from the Closet, a locked item, or Settings. Design it from the Screenrove paywall references and the RevenueCat report (deck.gallery). Test the price at $6.99 vs $9.99 later with RevenueCat experiments.

@@ -1,0 +1,512 @@
+{
+ "_about": "Themes reviews.py sorts feedback into. Patterns are Python regular expressions, matched case-insensitively against the review text. kind is complaint (something users hate) or request (something users want that is missing). Edit freely: add the app category's own words (for a booking app: double booking, time zone, no-show). v2 (2026-11-06): adds themes found by reading the Google Play, Goblin Tools and Hacker News rows by hand.",
+ "request_patterns": [
+  "\\bi wish\\b",
+  "\\bplease add\\b",
+  "\\bwould be (nice|great|good|helpful)\\b",
+  "\\bwould love\\b",
+  "\\bneeds? (a|an|the|to|more)\\b",
+  "\\bno way to\\b",
+  "\\bthere'?s no (way|option)\\b",
+  "\\b(can'?t|cannot|unable to) (even )?(add|change|edit|set|choose|export|import|customi[sz]e|connect|undo|delete|turn off)\\b",
+  "\\b(missing|lacks|lacking)\\b",
+  "\\bdoesn'?t (have|support|let|allow)\\b",
+  "\\bif only\\b",
+  "\\bfeature request\\b",
+  "\\bwhy (can'?t|isn'?t|doesn'?t)\\b"
+ ],
+ "themes": [
+  {
+   "id": "pricing",
+   "label": "Price and paywalls",
+   "kind": "complaint",
+   "patterns": [
+    "\\bexpensive\\b",
+    "\\boverpriced\\b",
+    "\\bpric(e|es|ey|ing)\\b",
+    "\\bpaywall",
+    "\\bsubscription\\b",
+    "\\bper (month|seat|user)\\b",
+    "\\bfree (plan|tier|version)\\b",
+    "\\bupgrade to\\b",
+    "\\bpremium\\b",
+    "\\bnot worth\\b",
+    "\\bcost(s|ly)?\\b"
+   ]
+  },
+  {
+   "id": "billing",
+   "label": "Billing, cancelling and refunds",
+   "kind": "complaint",
+   "patterns": [
+    "\\bcharged\\b",
+    "\\brefund",
+    "\\bcancel(l?ing|l?ed|lation)?\\b",
+    "\\bauto.?renew",
+    "\\bhidden (fee|charge)",
+    "\\bbilling\\b",
+    "\\bscam\\b",
+    "\\bcredit card\\b"
+   ]
+  },
+  {
+   "id": "bugs",
+   "label": "Bugs and crashes",
+   "kind": "complaint",
+   "patterns": [
+    "\\bcrash(es|ed|ing)?\\b",
+    "\\bbugs?\\b",
+    "\\bbuggy\\b",
+    "\\bglitch",
+    "\\bfreez(e|es|ing)\\b",
+    "\\bbroken\\b",
+    "\\b(doesn'?t|does not|stopped) work",
+    "\\bnot working\\b",
+    "\\berror\\b"
+   ]
+  },
+  {
+   "id": "performance",
+   "label": "Slow, laggy, heavy",
+   "kind": "complaint",
+   "patterns": [
+    "\\bslow\\b",
+    "\\blag(gy|s)?\\b",
+    "\\bloading\\b",
+    "\\btakes forever\\b",
+    "\\bbattery\\b",
+    "\\bsluggish\\b",
+    "\\bheavy\\b"
+   ]
+  },
+  {
+   "id": "data",
+   "label": "Sync and lost data",
+   "kind": "complaint",
+   "patterns": [
+    "\\bsync(ing|s|ed)?\\b",
+    "\\blost (my|all)\\b",
+    "\\bdisappear",
+    "\\bdata loss\\b",
+    "\\bwiped\\b",
+    "\\bbackup\\b",
+    "\\bduplicat"
+   ]
+  },
+  {
+   "id": "ux",
+   "label": "Confusing or clunky to use",
+   "kind": "complaint",
+   "patterns": [
+    "\\bconfus",
+    "\\bhard to (use|find|navigate|understand)\\b",
+    "\\bcomplicated\\b",
+    "\\bcluttered\\b",
+    "\\bunintuitive\\b",
+    "\\bnot intuitive\\b",
+    "\\bclunky\\b",
+    "\\btoo many (steps|clicks|taps)\\b",
+    "\\blearning curve\\b",
+    "\\bcan'?t find\\b"
+   ]
+  },
+  {
+   "id": "support",
+   "label": "Support that does not answer",
+   "kind": "complaint",
+   "patterns": [
+    "\\bcustomer (service|support)\\b",
+    "\\bsupport (team|is|was)\\b",
+    "\\bno (response|reply)\\b",
+    "\\bnever (replied|responded|heard back)\\b",
+    "\\bticket\\b",
+    "\\bchat ?bot\\b"
+   ]
+  },
+  {
+   "id": "account",
+   "label": "Login and account problems",
+   "kind": "complaint",
+   "patterns": [
+    "\\blog ?in\\b",
+    "\\bsign ?in\\b",
+    "\\bpassword\\b",
+    "\\blocked out\\b",
+    "\\bverification\\b",
+    "\\b2fa\\b",
+    "\\bdelete (my )?account\\b"
+   ]
+  },
+  {
+   "id": "notifications",
+   "label": "Notifications and spam",
+   "kind": "complaint",
+   "patterns": [
+    "\\bnotification",
+    "\\bspam",
+    "\\btoo many emails\\b",
+    "\\bpush\\b",
+    "\\breminders?\\b"
+   ]
+  },
+  {
+   "id": "ads",
+   "label": "Ads",
+   "kind": "complaint",
+   "patterns": [
+    "\\bads\\b",
+    "\\badvert",
+    "\\bad.?supported\\b",
+    "\\bpop.?ups?\\b"
+   ]
+  },
+  {
+   "id": "updates",
+   "label": "A redesign or update made it worse",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(new|latest|recent) (update|version|design)\\b",
+    "\\bredesign",
+    "\\bused to be\\b",
+    "\\bbring back\\b",
+    "\\bsince the update\\b"
+   ]
+  },
+  {
+   "id": "privacy",
+   "label": "Privacy and permissions",
+   "kind": "complaint",
+   "patterns": [
+    "\\bprivacy\\b",
+    "\\btracking\\b",
+    "\\bsell(s|ing)? (my )?data\\b",
+    "\\bpermissions?\\b",
+    "\\bcreepy\\b"
+   ]
+  },
+  {
+   "id": "integrations",
+   "label": "Integrations, import and export",
+   "kind": "request",
+   "patterns": [
+    "\\bintegrat",
+    "\\bzapier\\b",
+    "\\bgoogle (calendar|sheets|drive)\\b",
+    "\\boutlook\\b",
+    "\\bslack\\b",
+    "\\bapi\\b",
+    "\\bexport\\b",
+    "\\bimport\\b",
+    "\\bcsv\\b",
+    "\\bwebhook"
+   ]
+  },
+  {
+   "id": "platforms",
+   "label": "Platforms, offline and mobile",
+   "kind": "request",
+   "patterns": [
+    "\\boffline\\b",
+    "\\bandroid\\b",
+    "\\bipad\\b",
+    "\\btablet\\b",
+    "\\bdesktop app\\b",
+    "\\bmac app\\b",
+    "\\bwindows\\b",
+    "\\bmobile (app|version)\\b",
+    "\\bweb version\\b"
+   ]
+  },
+  {
+   "id": "customisation",
+   "label": "Customisation and control",
+   "kind": "request",
+   "patterns": [
+    "\\bcustomi[sz]",
+    "\\bdark mode\\b",
+    "\\btheme\\b",
+    "\\bbranding\\b",
+    "\\bwhite.?label\\b",
+    "\\btemplates?\\b",
+    "\\bsettings?\\b",
+    "\\boption to\\b"
+   ]
+  },
+  {
+   "id": "collaboration",
+   "label": "Teams and sharing",
+   "kind": "request",
+   "patterns": [
+    "\\bteam(s|mates?)?\\b",
+    "\\bshar(e|ing)\\b",
+    "\\bcollaborat",
+    "\\bmultiple (users|accounts|people)\\b",
+    "\\broles?\\b",
+    "\\bpermissions for\\b"
+   ]
+  },
+  {
+   "id": "adhd-forget",
+   "label": "Novelty wears off / forget to open it",
+   "kind": "complaint",
+   "patterns": [
+    "\\bforget (to|about)\\b",
+    "\\bstopped using\\b",
+    "\\bnovelty\\b",
+    "\\bwore off\\b",
+    "\\bboring\\b",
+    "\\bgot bored\\b",
+    "\\bfell off\\b"
+   ]
+  },
+  {
+   "id": "adhd-overwhelm",
+   "label": "Too complicated / overwhelming setup",
+   "kind": "complaint",
+   "patterns": [
+    "\\boverwhelm",
+    "\\btoo (complicated|complex|many)\\b",
+    "\\bconfusing\\b",
+    "\\bcluttered\\b",
+    "\\btakes too long\\b",
+    "\\btoo much (time|setup)\\b"
+   ]
+  },
+  {
+   "id": "adhd-notifs",
+   "label": "Reminders and notifications",
+   "kind": "complaint",
+   "patterns": [
+    "\\bnotification",
+    "\\breminder",
+    "\\balarm",
+    "\\bnudge"
+   ]
+  },
+  {
+   "id": "adhd-timer",
+   "label": "Timers and time blindness",
+   "kind": "complaint",
+   "patterns": [
+    "\\btimer\\b",
+    "\\btime blind",
+    "\\bcountdown\\b",
+    "\\bpomodoro\\b"
+   ]
+  },
+  {
+   "id": "adhd-guilt",
+   "label": "Guilt, streaks and shame",
+   "kind": "complaint",
+   "patterns": [
+    "\\bguilt",
+    "\\bstreak",
+    "\\bashamed\\b",
+    "\\bshame\\b",
+    "\\bpunish",
+    "\\bfail(ed|ing)? (me|again)\\b"
+   ]
+  },
+  {
+   "id": "sync-widgets",
+   "label": "Sync, calendar and widgets",
+   "kind": "complaint",
+   "patterns": [
+    "\\bsync",
+    "\\bcalendar\\b",
+    "\\bwidget",
+    "\\bapple watch\\b",
+    "\\bwatch app\\b"
+   ]
+  },
+  {
+   "id": "childish",
+   "label": "Feels childish / not for adults",
+   "kind": "complaint",
+   "patterns": [
+    "\\bchildish\\b",
+    "\\bfor kids\\b",
+    "\\bbabyish\\b",
+    "\\binfantiliz"
+   ]
+  },
+  {
+   "id": "adhd-helps",
+   "label": "Says it helps their ADHD",
+   "kind": "praise",
+   "patterns": [
+    "\\badhd\\b",
+    "\\bneurodivergent\\b",
+    "\\bexecutive (function|dysfunction)\\b",
+    "\\bautis"
+   ]
+  },
+  {
+   "id": "android-second",
+   "label": "Android feels second-class (missing features, broken sync/notifications)",
+   "kind": "complaint",
+   "patterns": [
+    "\\bandroid (app|version|user|phone|device)s?\\b",
+    "\\bon (my )?android\\b",
+    "\\bfor android\\b",
+    "\\bsamsung\\b",
+    "\\bfeature parity\\b",
+    "\\bonly available on apple\\b",
+    "\\bnon.apple\\b"
+   ]
+  },
+  {
+   "id": "paid-then-sub",
+   "label": "Paid once, then asked to pay again (switch to subscription)",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(paid|bought|purchased) (for )?(this|the|it)( app| full version| pro version)?\\b.{0,120}\\b(subscri|monthly|pay again|pay more)",
+    "\\bone.?time (fee|purchase|payment)\\b.{0,120}\\bsubscri",
+    "\\bwhy am i paying again\\b",
+    "\\bbooting users who paid\\b",
+    "\\bpay for it again\\b",
+    "\\bnow (they|you) want me to (buy|pay|subscribe)",
+    "\\bnow it wants me to subscribe\\b",
+    "\\bwith an exciting addition of a subscription\\b",
+    "\\bcanceled for favor of a subscription\\b"
+   ]
+  },
+  {
+   "id": "basic-paywalled",
+   "label": "Basic features paywalled (recurring tasks, subtasks, reminders)",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(basic|simple|basics)\\b.{0,60}\\b(paywall|premium|pay|pro)\\b",
+    "\\b(recurring|repeat(ing)?|daily/weekly|weekly events|sub ?tasks)\\b.{0,60}\\b(paywall|premium|pay|pro|locked)\\b",
+    "\\blocked (down|behind)\\b",
+    "\\buseless if you don'?t pay\\b",
+    "\\bwithout (first )?paying\\b"
+   ]
+  },
+  {
+   "id": "setup-then-paywall",
+   "label": "Paywall only after a long setup / quiz",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(setup|set.up|quiz|questions|intro|onboarding)\\b.{0,120}\\b(pay ?wall|paid (app|plan)|subscription|pay)\\b",
+    "\\bbefore telling you it'?s a paid app\\b",
+    "\\buntil i'?d completed the intro\\b",
+    "\\bonce you'?ve done all the setup work\\b"
+   ]
+  },
+  {
+   "id": "review-too-early",
+   "label": "Asks for a rating before you have used it",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(rate|rating|review)\\b.{0,60}\\b(before|30s|after install|first hour|on install|getting started)\\b",
+    "\\b(before|30s after).{0,40}\\b(rate|rating|review)\\b",
+    "\\bbegs for a rating\\b",
+    "\\basked (me )?(twice )?to review\\b",
+    "\\b(rating|review|rate)\\b.{0,80}\\bbefore\\b",
+    "\\bbefore\\b.{0,60}\\brate (you|it)\\b",
+    "\\brating screen\\b"
+   ]
+  },
+  {
+   "id": "ai-wrong",
+   "label": "AI that gets it wrong or costs more effort",
+   "kind": "complaint",
+   "patterns": [
+    "\\bthe ai\\b",
+    "\\bai (feature|assistant|is|sucks)\\b",
+    "\\bin (swedish|spanish|cyrillic)\\b",
+    "\\bcyrillic\\b",
+    "\\bestimated time\\b",
+    "\\bai slop\\b"
+   ]
+  },
+  {
+   "id": "lost-progress",
+   "label": "Lost everything (lists, pet, streak) after an update or logout",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(lost|losing|loosing) (all|everything|my|\\d+)",
+    "\\beverything (was|is) gone\\b",
+    "\\b(all|half) of my (tasks|lists|data|notes)\\b.{0,40}\\b(gone|deleted|wiped)\\b",
+    "\\bwiped out\\b",
+    "\\bdeleting things\\b",
+    "\\bgrieving\\b",
+    "\\bnow it'?s gone\\b"
+   ]
+  },
+  {
+   "id": "too-gamified",
+   "label": "Too gamified / grind / ad partnerships in a paid app",
+   "kind": "complaint",
+   "patterns": [
+    "\\bgamif",
+    "\\bgrind\\b",
+    "\\bfeels like an ad\\b",
+    "\\bad partnerships?\\b",
+    "\\buseless game\\b"
+   ]
+  },
+  {
+   "id": "weak-reminders",
+   "label": "Reminders too weak to work (wants louder / nagging)",
+   "kind": "complaint",
+   "patterns": [
+    "\\bloud (notifications|alarm)",
+    "\\bnagging\\b",
+    "\\bdon'?t get any notifications\\b",
+    "\\bnotifications (don'?t|do not) work\\b",
+    "\\bnot giving me notifications\\b",
+    "\\btune out alarms\\b",
+    "\\bneed nagging\\b",
+    "\\bactually sends you notifications\\b",
+    "\\bdon'?t get any notifications\\b",
+    "\\bnotifications? (don'?t|do not|doesn'?t) work"
+   ]
+  },
+  {
+   "id": "web-wrapper",
+   "label": "Just a website in an app shell",
+   "kind": "complaint",
+   "patterns": [
+    "\\bwebsite in an app\\b",
+    "\\bweb ?view\\b",
+    "\\bjust use the web\\b",
+    "\\bfree on chrome\\b",
+    "\\bweb vers"
+   ]
+  },
+  {
+   "id": "a11y-text",
+   "label": "Readability: font size, dyslexia, dark mode",
+   "kind": "request",
+   "patterns": [
+    "\\bdyslex",
+    "\\bfont size\\b",
+    "\\bincrease (the )?size of font\\b",
+    "\\bdark mode\\b",
+    "\\bocular\\b"
+   ]
+  },
+  {
+   "id": "body-double",
+   "label": "Body doubling / someone with you",
+   "kind": "request",
+   "patterns": [
+    "\\bbody.doubl",
+    "\\bco.?working\\b",
+    "\\baccountability\\b"
+   ]
+  },
+  {
+   "id": "cheat-checkoff",
+   "label": "Easy to tick without doing it (no real start)",
+   "kind": "complaint",
+   "patterns": [
+    "\\bsimply just click\\b",
+    "\\bif you don'?t lie to yourself\\b",
+    "\\bclick and say\\b"
+   ]
+  }
+ ]
+}

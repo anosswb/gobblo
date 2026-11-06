@@ -1,0 +1,46 @@
+{
+  "enabledPlugins": {
+    "expo@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npx expo install *)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx expo lint *)",
+      "Bash(npx expo lint)",
+      "Bash(npx jest *)",
+      "Bash(npx jest)",
+      "Bash(npm test *)",
+      "Bash(npm test)",
+      "Bash(npx expo-doctor *)",
+      "Bash(npx expo-doctor)",
+      "Bash(npx expo config *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(eas *)",
+      "Bash(npx eas-cli *)",
+      "Bash(npx expo prebuild *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git reset --hard *)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/typecheck.sh", "timeout": 120 }]
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+import { freshState, SCHEMA_VERSION, type PersistedState } from './schema';
+
+/**
+ * Migrations run at boot (zustand persist `migrate`). Each step takes the state saved
+ * at version N and returns version N + 1. Unknown or broken data is merged onto fresh
+ * defaults field by field, so nothing the user made is dropped.
+ *
+ * To add a step: bump SCHEMA_VERSION in schema.ts and add `steps[N]` here.
+ */
+type Step = (s: Record<string, unknown>) => Record<string, unknown>;
+
+const steps: Record<number, Step> = {
+  // 0 -> 1: first versioned schema. Version 0 = anything saved before versioning existed.
+  0: (s) => s,
+};
+
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+/** Deep-merge saved values onto defaults (saved wins; arrays are taken as saved). */
+export function mergeDefaults<T>(defaults: T, saved: unknown): T {
+  if (!isObject(defaults) || !isObject(saved)) {
+    return (saved === undefined ? defaults : (saved as T)) as T;
+  }
+  const out: Record<string, unknown> = { ...defaults };
+  for (const key of Object.keys(saved)) {
+    const d = (defaults as Record<string, unknown>)[key];
+    const v = saved[key];
+    out[key] = isObject(d) && isObject(v) ? mergeDefaults(d, v) : v;
+  }
+  return out as T;
+}
+
+export function migrate(saved: unknown, fromVersion: number): PersistedState {
+  let state: Record<string, unknown> = isObject(saved) ? { ...saved } : {};
+  for (let v = Math.max(0, fromVersion); v < SCHEMA_VERSION; v++) {
+    const step = steps[v];
+    if (step) state = step(state);
+  }
+  return mergeDefaults(freshState(), state);
+}
