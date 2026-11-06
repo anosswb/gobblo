@@ -57,3 +57,5 @@ assets/flow/
 .vscode/
 *.md
 !assets/sounds/LICENSES.md
+
+*.xip

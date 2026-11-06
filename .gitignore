@@ -54,3 +54,6 @@ research/reviews*.csv
 research/directions/nomling-directions.html
 
 build-output/
+
+# Xcode installers (multi-GB, never commit)
+*.xip
