@@ -1,6 +1,6 @@
 /**
- * App identity. The name is a working name: "Nomling" failed the name check
- * (docs/brand-name-check.md). Never hard-code the name in copy, always use APP_NAME.
+ * App identity. Name chosen 2026-11-06: "Gobblo" ("Nomling" failed the name check,
+ * docs/brand-name-check.md). Never hard-code the name in copy, always use APP_NAME.
  */
 import identity from './app-identity.json';
 

@@ -11,7 +11,7 @@ const { name: APP_NAME, id: APP_ID, scheme: APP_SCHEME } = identity;
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
-  slug: 'nomling',
+  slug: 'gobblo',
   version: '0.1.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',

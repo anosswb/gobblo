@@ -23,5 +23,5 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 - Phase 2: the pet (Skia, from R1 art).
 
 ## Blocked / needs Anass
-- **App name**: "Nomling" is unsafe (docs/brand-name-check.md). Pick a name before the first store upload (bundle ID can't change).
+- App name: **Gobblo** chosen. Anass to check USPTO/EUIPO/WIPO by hand and register gobblo.app (+ getgobblo.com) and @gobblo handles.
 - Flow art: R1 expression sheet; D1–D4 + E4 at 9:16, 2K, layered.

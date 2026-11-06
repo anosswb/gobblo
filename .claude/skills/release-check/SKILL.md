@@ -1,6 +1,6 @@
 ---
 name: release-check
-description: Run every Nomling quality and store gate before a build (doctor, tsc, lint, tests, Maestro, replica-test, docs/05 checklist). Use before any EAS preview or production build.
+description: Run every Gobblo quality and store gate before a build (doctor, tsc, lint, tests, Maestro, replica-test, docs/05 checklist). Use before any EAS preview or production build.
 ---
 # /release-check
 Stop at the first failure and fix it.

@@ -1,4 +1,6 @@
-# CLAUDE.md — Nomling (working name)
+# CLAUDE.md — Gobblo (formerly "Nomling")
+
+> **Name update 2026-11-06:** the app is now **Gobblo** (see DECISIONS.md). Older docs still say "Nomling": read it as Gobblo. Code takes the name only from `src/config/app-identity.json` via `APP_NAME`.
 
 You are building **Nomling**, an iOS + Android app made with **Expo (React Native)**.
 Owner: Anass (solo founder, Morocco). He is not a native English speaker: keep messages to him short and simple, and explain any step he must do by hand (accounts, payments, store forms) one step at a time.

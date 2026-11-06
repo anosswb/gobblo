@@ -16,3 +16,4 @@
 | 2026-11-06 | **No free trial**, no AI in the core loop (sizes/steps are editable rules) | run 2: 60 reviews on wrong AI; trials tied to billing complaints |
 | 2026-11-06 | **Android parity is a release gate**: reminders tested on 2 real Android phones (battery saver, Doze); a "loud" sound + vibration option inside the capped nudge levels | run 2: 36 Google Play reviews at 2.8★ say Android is second-class |
 | 2026-11-06 | Routes live in `src/app/` (Expo SDK 58 template default) instead of `app/` from docs/04 | expo-project-structure skill; keeps routes-only folder |
+| 2026-11-06 | **App name = Gobblo** (Anass picked). Bundle ID / package `app.gobblo`, scheme `gobblo`, MMKV id `gobblo`. Docs still say "Nomling" in places; the code reads the name only from `src/config/app-identity.json` | "Nomling" unsafe; Gobblo: no App Store app, 0 Trademarkia hits, gobblo.app + getgobblo.com + @gobblo (Instagram) free at check time. Manual USPTO/EUIPO/WIPO check still to do |

@@ -1,6 +1,6 @@
 ---
 name: polish-screen
-description: Polish an existing Nomling screen's motion, sound and states against the transitions.dev tokens and Screenrove specs. Use when asked to polish, refine or juice a screen.
+description: Polish an existing Gobblo screen's motion, sound and states against the transitions.dev tokens and Screenrove specs. Use when asked to polish, refine or juice a screen.
 ---
 # /polish-screen <screen>
 1. Screenshot the screen in light + dark.

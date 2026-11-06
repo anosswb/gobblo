@@ -1,6 +1,6 @@
 ---
 name: add-screen
-description: Add a new Nomling screen the house way (route in src/app, body in src/screens, tokens, i18n, all states, light + dark). Use when asked to add or scaffold a screen.
+description: Add a new Gobblo screen the house way (route in src/app, body in src/screens, tokens, i18n, all states, light + dark). Use when asked to add or scaffold a screen.
 ---
 # /add-screen <name>
 1. Read docs/01 for the screen, docs/02 + docs/03, `.claude/rules/screens.md` and `.claude/rules/animation.md`.
