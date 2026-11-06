@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import { useEffect, useRef, type PropsWithChildren, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/icon';
@@ -168,7 +168,78 @@ export function Stepper({
   );
 }
 
+/**
+ * One time capsule: − 11:00 am +. Steps 5 min; hold to repeat (faster after a moment),
+ * one selection haptic per step. Wraps around midnight.
+ */
+export function TimeStepper({
+  minutes,
+  onChange,
+  format,
+  label,
+}: {
+  /** minutes since midnight */
+  minutes: number;
+  onChange: (m: number) => void;
+  format: (m: number) => string;
+  label: string;
+}) {
+  const { colors } = useTheme();
+  const latest = useRef(minutes);
+  useEffect(() => {
+    latest.current = minutes;
+  }, [minutes]);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stop = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+  };
+  useEffect(() => stop, []);
+
+  const step = (delta: number) => {
+    haptics.select();
+    const next = (((latest.current + delta) % 1440) + 1440) % 1440;
+    latest.current = next;
+    onChange(next);
+  };
+  const hold = (delta: number) => {
+    let n = 0;
+    const tick = () => {
+      step(delta);
+      n += 1;
+      timer.current = setTimeout(tick, n > 6 ? 60 : 140);
+    };
+    timer.current = setTimeout(tick, 380);
+  };
+  const btn = (delta: number, glyph: string, a11y: string) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${label} ${a11y}`}
+      hitSlop={4}
+      onPress={() => step(delta)}
+      // a hold becomes a long press before the first repeat, so release never adds an extra step
+      delayLongPress={350}
+      onLongPress={() => undefined}
+      onPressIn={() => hold(delta)}
+      onPressOut={stop}
+      style={styles.stepBtn}>
+      <Text variant="heading">{glyph}</Text>
+    </Pressable>
+  );
+  return (
+    <View style={[styles.stepPill, styles.timePill, { backgroundColor: colors.fill }]}>
+      {btn(-5, '−', '5 minutes earlier')}
+      <Text variant="bodyBold" style={styles.timeValue} accessibilityLiveRegion="polite" accessibilityLabel={`${label}: ${format(minutes)}`}>
+        {format(minutes)}
+      </Text>
+      {btn(5, '+', '5 minutes later')}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  timePill: { height: 40 },
+  timeValue: { minWidth: 86, textAlign: 'center', fontVariant: ['tabular-nums'] },
   flex: { flex: 1 },
   section: { gap: space.s - 2 },
   pad: { paddingHorizontal: space.l },

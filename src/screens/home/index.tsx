@@ -60,6 +60,17 @@ export function HomeScreen() {
     return () => clearTimeout(t);
   }, [reaction]);
 
+  const today = todayKey(openedAt);
+  const list = plate(bites, today);
+  const shown = settings.oneThingMode ? list.slice(0, 1) : list;
+
+  // new food arrived (typed here or served from the brain dump): the pet gets excited
+  const plateBefore = useRef(list.length);
+  useEffect(() => {
+    if (list.length > plateBefore.current) setReaction('excited');
+    plateBefore.current = list.length;
+  }, [list.length]);
+
   // a bite was eaten (focus finished): chomp, then celebrate with a sparkle burst
   const [burst, setBurst] = useState(0);
   const eatenBefore = useRef(stats.eaten);
@@ -77,9 +88,6 @@ export function HomeScreen() {
     eatenBefore.current = stats.eaten;
   }, [stats.eaten]);
 
-  const today = todayKey(openedAt);
-  const list = plate(bites, today);
-  const shown = settings.oneThingMode ? list.slice(0, 1) : list;
   const sky = skyOf(openedAt.getHours());
   const stage = stageOf(stats.total);
   const away = daysAway(stats.lastVisit, openedAt);
@@ -102,7 +110,6 @@ export function HomeScreen() {
     setText('');
     haptics.light();
     play('pop');
-    setReaction('excited');
   };
 
   const enter = (i: number) =>

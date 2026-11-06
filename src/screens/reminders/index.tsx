@@ -5,7 +5,7 @@ import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanim
 import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
-import { Chips, Row, Section, Stepper } from '@/components/settings-parts';
+import { Chips, Row, Section, TimeStepper } from '@/components/settings-parts';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { formatEndsAt } from '@/features/focus/timer';
@@ -38,11 +38,11 @@ export function RemindersScreen() {
   const [openedAt] = useState(() => Date.now());
   const now = new Date(openedAt);
   const [text, setText] = useState('');
-  const [hour, setHour] = useState((now.getHours() + 2) % 24);
-  const [minute, setMinute] = useState(0);
+  const [clock, setClock] = useState(((now.getHours() + 2) % 24) * 60);
   const [lead, setLead] = useState<'10' | '20' | '30' | '45'>('20');
 
-  const at = nextAt(hour, minute, now);
+  const at = nextAt(Math.floor(clock / 60), clock % 60, now);
+  const fmt = (m: number) => formatEndsAt(nextAt(Math.floor(m / 60), m % 60, now), clock24h);
   const enter = reduceMotion ? FadeIn.duration(duration.quick) : FadeIn.duration(duration.fast);
   const exit = FadeOut.duration(duration.quick);
 
@@ -63,11 +63,8 @@ export function RemindersScreen() {
             style={[styles.input, fonts.body, { color: colors.ink, backgroundColor: colors.fill }]}
           />
         } />
-        <Row label="i leave at" hint={formatEndsAt(at, clock24h)} right={
-          <View style={styles.time}>
-            <Stepper label="hour" value={hour} min={0} max={23} format={(h) => String(h).padStart(2, '0')} onChange={setHour} />
-            <Stepper label="minutes" value={minute / 5} min={0} max={11} format={(m) => String(m * 5).padStart(2, '0')} onChange={(m) => setMinute(m * 5)} />
-          </View>
+        <Row label="i leave at" hint={new Date(at).getDate() === now.getDate() ? 'today' : 'tomorrow'} right={
+          <TimeStepper label="i leave at" minutes={clock} onChange={setClock} format={fmt} />
         } />
         <Row last stacked label="nudge me before" right={
           <Chips accessibilityLabel="nudge me before" value={lead} onChange={setLead}
@@ -122,6 +119,5 @@ export function RemindersScreen() {
 const styles = StyleSheet.create({
   intro: { paddingHorizontal: space.xs, marginTop: -space.s },
   input: { minHeight: 44, borderRadius: radius.field, paddingHorizontal: space.m, fontSize: typeScale.body },
-  time: { gap: space.s, alignItems: 'flex-end' },
   cta: { minHeight: 52, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
 });

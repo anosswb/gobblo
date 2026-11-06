@@ -51,7 +51,7 @@ function RootStack() {
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="dump" options={{ presentation: 'formSheet', sheetGrabberVisible: true, sheetAllowedDetents: [0.6, 1], sheetCornerRadius: 38, contentStyle: { backgroundColor: colors.card } }} />
+        <Stack.Screen name="dump" options={{ presentation: 'formSheet', sheetGrabberVisible: true, sheetAllowedDetents: [1], sheetCornerRadius: 38, contentStyle: { backgroundColor: colors.card } }} />
         <Stack.Screen name="focus" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
         <Stack.Screen name="settings" options={{ animation: 'default' }} />
         <Stack.Screen name="reminders" options={{ animation: 'default' }} />
