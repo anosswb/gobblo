@@ -15,7 +15,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
  * Level ring, Activity-ring style: a thick round-capped arc that closes as the pet grows,
  * with the pet standing inside. Fills once on open on the critically damped Apple spring.
  */
-export function LevelRing({ progress, color, mood, size = 132 }: { progress: number; color: PetColor; mood: Mood; size?: number }) {
+export function LevelRing({ progress, color, mood, stage, size = 132 }: { progress: number; color: PetColor; mood: Mood; stage: number; size?: number }) {
   const { colors, reduceMotion } = useTheme();
   const stroke = 14;
   const r = (size - stroke) / 2;
@@ -46,7 +46,7 @@ export function LevelRing({ progress, color, mood, size = 132 }: { progress: num
         />
       </Svg>
       <View style={styles.center}>
-        <Pet size={size * 0.5} color={color} mood={mood} />
+        <Pet size={size * 0.5} color={color} mood={mood} stage={stage} />
       </View>
     </View>
   );

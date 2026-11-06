@@ -1,6 +1,6 @@
 import { router, usePathname } from 'expo-router';
 import { TabTrigger, type TabTriggerSlotProps } from 'expo-router/ui';
-import { useEffect, useState, type Ref } from 'react';
+import { useEffect, useRef, useState, type Ref } from 'react';
 import { Pressable, StyleSheet, View, type HostInstance, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -47,11 +47,17 @@ export function TabBar() {
   const [w, setW] = useState(0);
   const tabW = (w - PAD * 2) / TABS.length;
   const x = useSharedValue(0);
+  const placed = useRef(false);
 
   useEffect(() => {
     if (!tabW) return;
     const to = PAD + index * tabW;
-    x.set(reduceMotion ? to : withSpring(to, spring.lens));
+    if (!placed.current || reduceMotion) {
+      placed.current = true;
+      x.set(to);
+      return;
+    }
+    x.set(withSpring(to, spring.lens));
   }, [index, tabW, reduceMotion, x]);
 
   const lens = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));

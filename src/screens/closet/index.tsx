@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Segmented } from '@/components/segmented';
 import { Chips } from '@/components/settings-parts';
 import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
+import { STAGES } from '@/features/progress/logic';
+import { usePetStage } from '@/features/progress/use-pet-stage';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { MOODS, Pet, type Mood } from '@/pet/pet';
@@ -22,12 +25,25 @@ export function ClosetScreen() {
   const pet = useAppStore((s) => s.pet);
   const [mood, setMood] = useState<Mood>('happy');
   const [color, setColor] = useState<PetColor>(pet.color);
+  const current = usePetStage();
+  const [stage, setStage] = useState(String(current));
 
   return (
     <Screen eyebrow="hats, colours, rooms soon" title="closet">
       <View style={[styles.preview, { backgroundColor: colors.card }]}>
-        <Pet size={150} color={color} mood={mood} onPress={() => play('boop')} accessibilityLabel={`${pet.name} looks ${mood}`} />
+        <Pet size={150} color={color} mood={mood} stage={Number(stage)} onPress={() => play('boop')} accessibilityLabel={`${pet.name} looks ${mood}`} />
         <Text variant="heading">{pet.name} is {mood}</Text>
+        <Text variant="caption" tone="ink2">
+          {Number(stage) === current ? `now: ${STAGES[current].name}` : Number(stage) > current ? `at ${STAGES[Number(stage)].at} ✦: ${STAGES[Number(stage)].name}` : STAGES[Number(stage)].name}
+        </Text>
+        <View style={styles.full}>
+          <Segmented
+            accessibilityLabel="evolution preview"
+            value={stage}
+            onChange={setStage}
+            options={STAGES.map((_, i) => ({ value: String(i), label: `lv ${i + 1}` }))}
+          />
+        </View>
         <Chips<PetColor>
           accessibilityLabel="colour preview"
           value={color}
@@ -57,7 +73,7 @@ export function ClosetScreen() {
                   styles.cell,
                   { backgroundColor: on ? colors.primarySoft : colors.card, opacity: pressed ? 0.7 : 1 },
                 ]}>
-                <Pet size={58} color={color} mood={m} />
+                <Pet size={58} color={color} mood={m} stage={Number(stage)} />
                 <Text variant="caption" tone={on ? 'primary' : 'ink2'} numberOfLines={1}>
                   {m}
                 </Text>
@@ -72,6 +88,7 @@ export function ClosetScreen() {
 
 const styles = StyleSheet.create({
   preview: { borderRadius: radius.card, padding: space.xl, alignItems: 'center', gap: space.m },
+  full: { alignSelf: 'stretch' },
   section: { gap: space.m },
   head: { paddingHorizontal: space.xs },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s },

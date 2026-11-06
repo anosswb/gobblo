@@ -30,6 +30,7 @@ import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { haptics } from '@/lib/haptics';
 import { play, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
+import { usePetStage } from '@/features/progress/use-pet-stage';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import type { FocusSound } from '@/state/schema';
@@ -57,6 +58,7 @@ export function FocusScreen() {
   const insets = useSafeAreaInsets();
   const focus = useAppStore((s) => s.focus);
   const pet = useAppStore((s) => s.pet);
+  const stage = usePetStage();
   const settings = useAppStore((s) => s.settings);
   const patch = useAppStore((s) => s.patchFocus);
   const endFocus = useAppStore((s) => s.endFocus);
@@ -224,7 +226,7 @@ export function FocusScreen() {
         </View>
 
         <View style={styles.petRow}>
-          <Pet size={92} color={pet.color} mood={petMood} headphones working={!paused && !ended} />
+          <Pet size={92} color={pet.color} mood={petMood} stage={stage} headphones working={!paused && !ended} />
           <View style={[styles.bubble, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
             <Animated.View key={line} entering={textIn}>
               <Text variant="body" tone="onFocus">{line}</Text>

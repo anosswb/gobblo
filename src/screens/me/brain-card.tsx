@@ -12,6 +12,7 @@ import { APP_NAME } from '@/config/app';
 import { brainType } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
+import { usePetStage } from '@/features/progress/use-pet-stage';
 import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
@@ -26,6 +27,7 @@ export function BrainCard() {
   const ref = useRef<HostInstance>(null);
   const stats = useAppStore((s) => s.stats);
   const pet = useAppStore((s) => s.pet);
+  const stage = usePetStage();
   const bt = brainType(stats, pet.name);
 
   const share = async () => {
@@ -66,7 +68,7 @@ export function BrainCard() {
               {APP_NAME.toLowerCase()} · feed it by starting
             </Text>
           </View>
-          <Pet size={92} color={pet.color} mood="confident" />
+          <Pet size={92} color={pet.color} mood="confident" stage={stage} />
         </LinearGradient>
       </View>
       <PressScale

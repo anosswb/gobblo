@@ -13,6 +13,7 @@ import { FOOD } from '@/features/bites/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
+import { usePetStage } from '@/features/progress/use-pet-stage';
 import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import type { Size } from '@/state/schema';
@@ -33,6 +34,7 @@ export default function DumpScreen() {
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
   const pet = useAppStore((s) => s.pet);
+  const stage = usePetStage();
   const addBites = useAppStore((s) => s.addBites);
   const [text, setText] = useState('');
   const [edits, setEdits] = useState<Record<string, Edit>>({});
@@ -100,7 +102,7 @@ export default function DumpScreen() {
 
         {items.length === 0 ? (
           <View style={styles.empty}>
-            <Pet size={88} color={pet.color} mood="hungry" />
+            <Pet size={88} color={pet.color} mood="hungry" stage={stage} />
             <Text variant="subhead" tone="ink2" style={styles.center}>{d.empty}</Text>
           </View>
         ) : (

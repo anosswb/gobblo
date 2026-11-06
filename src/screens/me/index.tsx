@@ -66,7 +66,7 @@ export function MeScreen() {
         </PressScale>
       }>
       <View style={[styles.card, styles.levelCard, { backgroundColor: colors.card }]}>
-        <LevelRing progress={st.toNext === null ? 1 : st.progress} color={pet.color} mood={st.toNext === null ? 'confident' : 'proud'} />
+        <LevelRing progress={st.toNext === null ? 1 : st.progress} color={pet.color} stage={st.stage} mood={st.toNext === null ? 'confident' : 'proud'} />
         <View style={styles.flex}>
           <Text variant="caption" tone="primary" style={styles.kicker}>level {st.stage + 1}</Text>
           <Text variant="title2">{STAGES[st.stage].name}</Text>

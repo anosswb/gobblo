@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
@@ -32,10 +32,17 @@ export function Segmented<T extends string>({
   const index = Math.max(0, options.findIndex((o) => o.value === value));
   const segW = (w - PAD * 2) / options.length;
   const x = useSharedValue(0);
+  const placed = useRef(false);
 
   useEffect(() => {
     if (!segW) return;
-    x.set(reduceMotion ? index * segW : withSpring(index * segW, spring.apple));
+    // the first placement snaps; only a real selection change moves
+    if (!placed.current || reduceMotion) {
+      placed.current = true;
+      x.set(index * segW);
+      return;
+    }
+    x.set(withSpring(index * segW, spring.apple));
   }, [index, segW, reduceMotion, x]);
 
   const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));

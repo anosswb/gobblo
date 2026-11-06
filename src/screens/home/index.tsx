@@ -172,6 +172,7 @@ export function HomeScreen() {
             size={128}
             color={pet.color}
             mood={mood}
+            stage={stage}
             accessibilityLabel={`${pet.name}, ${h.belly(stats.todayEaten)}`}
             onPress={() => {
               play('boop');

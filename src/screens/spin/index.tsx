@@ -12,6 +12,7 @@ import { FOOD, plate } from '@/features/bites/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
+import { usePetStage } from '@/features/progress/use-pet-stage';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import type { Size } from '@/state/schema';
@@ -31,6 +32,7 @@ type Choice = DrumItem & { biteId: string | null; size: Size };
 export function SpinScreen() {
   const { colors, reduceMotion } = useTheme();
   const pet = useAppStore((s) => s.pet);
+  const stage = usePetStage();
   const bites = useAppStore((s) => s.bites);
   const startFocus = useAppStore((s) => s.startFocus);
   const [spinning, setSpinning] = useState(false);
@@ -68,7 +70,7 @@ export function SpinScreen() {
     <Screen eyebrow={sp.eyebrow} title={sp.title}>
       <View style={[styles.card, { backgroundColor: colors.card }]}>
         <View style={styles.head}>
-          <Pet size={72} color={pet.color} mood={mood} />
+          <Pet size={72} color={pet.color} mood={mood} stage={stage} />
           <Text variant="subhead" tone="ink2" style={styles.flex}>
             {mine.length ? sp.sub(pet.name) : sp.snacksOnly}
           </Text>

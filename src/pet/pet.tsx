@@ -309,6 +309,7 @@ export function Pet({
   size = 160,
   color = 'pink',
   mood = 'happy',
+  stage = 0,
   headphones = false,
   working = false,
   onPress,
@@ -317,6 +318,8 @@ export function Pet({
   size?: number;
   color?: PetColor;
   mood?: Mood;
+  /** evolution (docs/01): 0 baby blob · 1 lil gremlin (ears) · 2 big chonk (belly patch, tooth) · 3 cosmic menace (aura) */
+  stage?: number;
   headphones?: boolean;
   /** quicker head-nod while a focus timer runs */
   working?: boolean;
@@ -326,7 +329,7 @@ export function Pet({
 }) {
   const { reduceMotion } = useTheme();
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
-  const ids = { body: `b${uid}`, under: `u${uid}`, orb: `o${uid}`, limb: `l${uid}` };
+  const ids = { body: `b${uid}`, under: `u${uid}`, orb: `o${uid}`, limb: `l${uid}`, aura: `a${uid}` };
   const c = petColors[color];
   const lit = shade(c, 0.22);
   const deep = shade(c, -0.14);
@@ -404,11 +407,27 @@ export function Pet({
             <Stop offset="0" stopColor={ART.orbLight} />
             <Stop offset="1" stopColor={ART.orb} />
           </RadialGradient>
+          <RadialGradient id={ids.aura} cx="50%" cy="56%" r="50%">
+            <Stop offset="0.35" stopColor={ART.mark} stopOpacity={0.45} />
+            <Stop offset="0.7" stopColor={ART.orb} stopOpacity={0.14} />
+            <Stop offset="1" stopColor={ART.orb} stopOpacity={0} />
+          </RadialGradient>
           <RadialGradient id={ids.limb} cx="40%" cy="30%" r="80%">
             <Stop offset="0" stopColor={lit} />
             <Stop offset="1" stopColor={c} />
           </RadialGradient>
         </Defs>
+
+        {/* stage 4: cosmic aura */}
+        {stage >= 3 && (
+          <G>
+            <Circle cx={100} cy={134} r={100} fill={`url(#${ids.aura})`} />
+            <Spark x={22} y={70} s={0.7} fill={ART.orb} />
+            <Spark x={184} y={56} s={0.55} fill={ART.white} />
+            <Spark x={186} y={196} s={0.6} fill={ART.star} />
+            <Spark x={14} y={190} s={0.45} fill={ART.white} />
+          </G>
+        )}
 
         {/* contact shadow */}
         <Ellipse cx={100} cy={229} rx={58} ry={7} fill={ART.shade} opacity={0.14} />
@@ -420,6 +439,15 @@ export function Pet({
             <Circle cx={112} cy={20} r={19} fill={ART.orb} opacity={0.22} />
             <Circle cx={112} cy={20} r={11} fill={`url(#${ids.orb})`} />
             <Circle cx={108.5} cy={16.5} r={3.2} fill={ART.white} opacity={0.9} />
+          </G>
+        )}
+
+        {/* stage 2+: little ears */}
+        {stage >= 1 && (
+          <G>
+            <Path d="M62 78 Q52 44 72 40 Q86 40 84 66Z" fill={`url(#${ids.limb})`} />
+            <Path d="M138 78 Q148 44 128 40 Q114 40 116 66Z" fill={`url(#${ids.limb})`} />
+            <Path d="M66 70 Q61 52 71 49" stroke={ART.white} strokeWidth={3} fill="none" opacity={0.45} strokeLinecap="round" />
           </G>
         )}
 
@@ -436,12 +464,16 @@ export function Pet({
         <Ellipse cx={70} cy={92} rx={17} ry={30} transform="rotate(-24 70 92)" fill={ART.white} opacity={0.32} />
         <Ellipse cx={64} cy={78} rx={6} ry={11} transform="rotate(-24 64 78)" fill={ART.white} opacity={0.85} />
 
+        {/* stage 3+: belly patch */}
+        {stage >= 2 && <Ellipse cx={100} cy={192} rx={34} ry={22} fill={light} opacity={0.42} />}
+
         {/* face */}
         <Ellipse cx={62} cy={152} rx={13} ry={7.5} fill={ART.blush} opacity={0.3} />
         <Ellipse cx={138} cy={152} rx={13} ry={7.5} fill={ART.blush} opacity={0.3} />
         <BrowsArt kind={face.brows ?? 'none'} />
         <EyesArt kind={blink ? 'closed' : face.eyes} />
         <MouthArt kind={face.mouth} />
+        {stage >= 2 && face.mouth === 'smile' && <Path d="M101 155.5 h6 v4 q0 3 -3 3 q-3 0 -3 -3Z" fill={ART.white} />}
         <ExtraArt kind={face.extra ?? 'none'} />
 
         {/* headphones (focus room) */}
