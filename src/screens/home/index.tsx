@@ -26,6 +26,8 @@ import { duration, staggerDelay } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, stages, typeScale } from '@/theme/tokens';
 
+import { BiteRow } from './bite-row';
+
 const h = en.home;
 
 const skyOf = (hour: number) => (hour < 6 || hour >= 19 ? 'night' : hour < 11 ? 'morning' : 'day');
@@ -110,6 +112,12 @@ export function HomeScreen() {
     setText('');
     haptics.light();
     play('pop');
+  };
+
+  const removeWithUndo = (id: string) => {
+    const removed = removeBite(id);
+    haptics.light();
+    if (removed) toast(h.removed, { label: h.undo, onPress: () => restoreBite(removed) });
   };
 
   const enter = (i: number) =>
@@ -241,36 +249,15 @@ export function HomeScreen() {
                 entering={enter(i)}
                 exiting={reduceMotion ? undefined : FadeOut.duration(duration.quick)}
                 layout={reduceMotion ? undefined : LinearTransition.duration(duration.fast)}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`${b.text}. ${FOOD[b.size].label}, about ${FOOD[b.size].min} minutes. tap to start`}
-                  onPress={() => {
+                <BiteRow
+                  bite={b}
+                  onOpen={() => {
                     haptics.select();
                     play('pop');
                     setSelected(b);
-                  }}>
-                  {({ pressed }) => (
-                    <View style={[styles.bite, pressed && { backgroundColor: colors.fill }]}>
-                      <View style={[styles.food, { backgroundColor: colors.fill }]}>
-                        <Text style={styles.foodEmoji}>{FOOD[b.size].emoji}</Text>
-                      </View>
-                      <View style={[styles.biteBody, { borderTopColor: colors.line }]}>
-                        <View style={styles.flex}>
-                          <Text variant="body" numberOfLines={2}>{b.text}</Text>
-                          <Text variant="caption" tone="ink2">
-                            {FOOD[b.size].label} · ~{FOOD[b.size].min} min · +{FOOD[b.size].sparks} ✦
-                          </Text>
-                        </View>
-                        {b.daily ? (
-                          <View style={styles.daily} accessibilityLabel={h.dailyOn}>
-                            <Icon name="repeat" size={13} weight="bold" color={colors.primary} />
-                          </View>
-                        ) : null}
-                        <Icon name="chevron" size={13} weight="bold" color={colors.ink3} />
-                      </View>
-                    </View>
-                  )}
-                </Pressable>
+                  }}
+                  onRemove={() => removeWithUndo(b.id)}
+                />
               </Animated.View>
             ))
           )}
@@ -293,10 +280,8 @@ export function HomeScreen() {
         }}
         onRemove={() => {
           if (!selected) return;
-          const removed = removeBite(selected.id);
           setSelected(null);
-          haptics.light();
-          if (removed) toast(h.removed, { label: h.undo, onPress: () => restoreBite(removed) });
+          removeWithUndo(selected.id);
         }}
         onStart={(minutes, mode) => {
           if (!selected) return;
@@ -335,9 +320,6 @@ const styles = StyleSheet.create({
   addBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   foodEmoji: { fontSize: 22, lineHeight: 28 },
-  bite: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingStart: space.m },
-  biteBody: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.s, minHeight: 64, paddingVertical: space.s + 2, paddingEnd: space.l, borderTopWidth: StyleSheet.hairlineWidth },
-  daily: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   empty: { alignItems: 'center', gap: space.s, padding: space.xl, borderTopWidth: StyleSheet.hairlineWidth },
   cta: { marginTop: space.s, minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   footer: { paddingHorizontal: space.l },

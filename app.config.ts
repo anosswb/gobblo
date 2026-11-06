@@ -35,7 +35,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: APP_ID,
     adaptiveIcon: {
-      backgroundColor: '#3D3BFF',
+      backgroundColor: '#241A55',
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
@@ -45,7 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: { output: 'single', favicon: './assets/images/favicon.png' },
   plugins: [
     'expo-router',
-    ['expo-splash-screen', { backgroundColor: '#3D3BFF', image: './assets/images/splash-icon.png', imageWidth: 96, dark: { backgroundColor: '#0B0A1A' } }],
+    ['expo-splash-screen', { backgroundColor: '#F2F2F7', image: './assets/images/splash-icon.png', imageWidth: 120, dark: { backgroundColor: '#000000' } }],
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
     './plugins/with-gradle-memory',
     'expo-audio',
