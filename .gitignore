@@ -46,3 +46,9 @@ example
 .env
 .env.*
 !.env.example
+
+# third-party material: keep local, never publish (screenshots of other apps, store reviews)
+research/refs/*.jpg
+research/baseline/
+research/reviews*.csv
+research/directions/nomling-directions.html
