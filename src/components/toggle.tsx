@@ -41,7 +41,7 @@ export function Toggle({
       on.set(to);
       return;
     }
-    on.set(withSpring(to, spring.apple));
+    on.set(withSpring(to, spring.snappy));
   }, [value, reduceMotion, on]);
 
   const track = useAnimatedStyle(() => ({ backgroundColor: interpolateColor(on.get(), [0, 1], [colors.fill2, colors.success]) }));

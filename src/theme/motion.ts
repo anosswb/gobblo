@@ -22,7 +22,6 @@ export const easing = {
   sheet: Easing.bezier(0.32, 0.72, 0, 1), // Vaul iOS sheet curve, 500 ms
   bounce: Easing.bezier(0.34, 1.36, 0.64, 1), // entrances only
   inOut: Easing.bezier(0.45, 0, 0.55, 1),
-  exitIn: Easing.bezier(0.4, 0, 1, 1),
 } as const;
 
 /**
@@ -34,8 +33,10 @@ export const easing = {
 export const spring = {
   /** default UI settle: critically damped, ~400 ms response */
   apple: { duration: 400, dampingRatio: 1 },
+  /** controls touched tens of times a day (switch, segmented): same curve, faster (Emil: 150–250 ms) */
+  snappy: { duration: 250, dampingRatio: 1 },
   /** tab lens / selection moving between peers: tiny overshoot like the iOS 26 tab bar */
-  lens: { duration: 350, dampingRatio: 0.85 },
+  lens: { duration: 280, dampingRatio: 0.85 },
   /** sheet, drawer, drag release (hand the gesture velocity in) */
   sheet: { duration: 300, dampingRatio: 0.8 },
   /** pet squish after a tap (a physical object reacting) */

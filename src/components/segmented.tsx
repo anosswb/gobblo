@@ -42,7 +42,7 @@ export function Segmented<T extends string>({
       x.set(index * segW);
       return;
     }
-    x.set(withSpring(index * segW, spring.apple));
+    x.set(withSpring(index * segW, spring.snappy));
   }, [index, segW, reduceMotion, x]);
 
   const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
