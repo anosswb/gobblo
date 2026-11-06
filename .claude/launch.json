@@ -4,14 +4,35 @@
     {
       "name": "prototype",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "reference"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--directory",
+        "reference"
+      ],
       "port": 8765
     },
     {
       "name": "app-web",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["expo", "start", "--web", "--port", "8081"],
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--web",
+        "--port",
+        "8081"
+      ],
       "port": 8081
+    },
+    {
+      "name": "apk-share",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/share-apk.mjs"
+      ],
+      "port": 8770,
+      "autoPort": false
     }
   ]
 }

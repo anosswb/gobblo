@@ -52,3 +52,5 @@ research/refs/*.jpg
 research/baseline/
 research/reviews*.csv
 research/directions/nomling-directions.html
+
+build-output/
