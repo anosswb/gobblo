@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nomling directions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@500;700&display=swap">
+<style>
+:root{--ink:#1B1530;--muted:#6b6584;--bg:#F4F3FA;--line:#e3e1f0}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:500 15px/1.45 Figtree,system-ui,sans-serif;padding:32px 24px 48px}
+h1{font:800 34px/1.05 'Bricolage Grotesque';letter-spacing:-.5px}
+.lead{color:var(--muted);margin:8px 0 28px;max-width:760px}
+.board{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;margin-bottom:28px}
+.bhead{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline;margin-bottom:18px}
+.tag{font:800 13px/1 Figtree;background:var(--ink);color:#fff;border-radius:999px;padding:7px 12px}
+h2{font:800 26px/1.1 'Bricolage Grotesque';letter-spacing:-.3px}
+.sub{color:var(--muted);flex-basis:100%}
+.row{display:flex;gap:20px;overflow-x:auto;padding-bottom:6px}
+.phone{flex:none;width:236px;height:500px;border-radius:38px;border:7px solid #0E0B1F;overflow:hidden;position:relative;background:#fff}
+.cap{font:700 12px/1 Figtree;color:var(--muted);text-align:center;margin-top:8px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+.sw{display:flex;gap:6px;margin-top:6px}.sw i{width:28px;height:28px;border-radius:8px;border:1px solid rgba(0,0,0,.08)}
+.meta b{font:800 13px Figtree;text-transform:lowercase}
+.meta p{color:var(--muted);font-size:14px}
+/* shared mini UI */
+.abs{position:absolute;inset:0}
+.bg{background-size:cover;background-position:center}
+.t-xl{font:800 22px/1.05 'Bricolage Grotesque';letter-spacing:-.4px}
+.t-s{font:700 11px/1.2 Figtree}
+.btn{border-radius:14px;padding:11px;text-align:center;font:800 13px Figtree}
+.pet{position:absolute}.pet svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 10px 14px rgba(40,10,40,.25))}
+.bite{display:flex;gap:8px;align-items:center;border-radius:14px;padding:8px 10px;font:700 11px Figtree}
+.bite span{font-size:16px}
+.tab{position:absolute;left:0;right:0;bottom:0;height:54px;display:flex;justify-content:space-around;align-items:center;font:700 9px Figtree}
+.fab{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font:800 22px Figtree;margin-top:-20px}
+/* A cozy diorama */
+.A .glass{background:rgba(255,255,255,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6)}
+.A.dark .glass{background:rgba(20,17,50,.55);border-color:rgba(255,255,255,.12);color:#F3F1FF}
+/* B toy box */
+.B .chunky{box-shadow:0 4px 0 #2422C2}
+/* C night studio */
+.C{background:#0B0A1A;color:#EDEBFF}
+</style></head><body>
+<h1>3 visual directions for Nomling</h1>
+<p class="lead">All three use your "lo-fi jelly" art (docs/11). They differ in how the UI sits around the art. The pet shown here is a crop of G1 as a stand-in: in the app the pet is rebuilt in Skia so it can blink, look and chomp. Pick one (or mix: "A's home + C's focus").</p>
+
+<!-- A -->
+<section class="board">
+ <div class="bhead"><span class="tag">A</span><h2>cozy diorama</h2><p class="sub">The pet lives inside a full-bleed illustrated world (D1–D4). UI floats on frosted glass. Feels like a premium cozy game. Light = morning/day scene, dark = night scene + room.</p></div>
+ <div class="row">
+  <div><div class="phone A"><div class="abs bg" style="background-image:url(../../assets/flow/keep/D1-scene-morning.jpg)"></div>
+   <div class="pet" style="left:58px;top:120px;width:120px;height:140px"></div>
+   <div class="glass" style="position:absolute;left:12px;right:12px;bottom:14px;border-radius:24px;padding:16px">
+    <div class="t-xl">your brain isn't lazy. it's hungry.</div>
+    <div class="btn" style="background:#3D3BFF;color:#fff;margin-top:12px">hatch my nomling</div></div></div><div class="cap">hook</div></div>
+  <div><div class="phone A"><div class="abs bg" style="background-image:url(../../assets/flow/keep/D2-scene-day.jpg);height:62%"></div>
+   <div class="t-s glass" style="position:absolute;left:12px;top:30px;border-radius:999px;padding:6px 10px">good afternoon</div>
+   <div class="t-s" style="position:absolute;right:12px;top:30px;border-radius:999px;padding:6px 10px;background:#C6F432">✦ 12</div>
+   <div class="pet" style="left:68px;top:110px;width:100px;height:118px"></div>
+   <div class="glass" style="position:absolute;left:0;right:0;top:56%;bottom:0;border-radius:28px 28px 0 0;padding:14px 12px;background:rgba(255,255,255,.9)">
+    <div class="t-s" style="margin-bottom:8px">today's bites</div>
+    <div class="bite" style="background:#F0EFFF"><span>🍬</span>text mom back</div>
+    <div class="bite" style="background:#F0EFFF;margin-top:6px"><span>🍩</span>start the laundry</div>
+    <div class="bite" style="background:#F0EFFF;margin-top:6px"><span>🍕</span>stats assignment</div></div>
+   <div class="tab" style="background:rgba(255,255,255,.95)"><span>home</span><span>spin</span><span class="fab" style="background:#3D3BFF;color:#fff">+</span><span>closet</span><span>me</span></div></div><div class="cap">home (light)</div></div>
+  <div><div class="phone A dark"><div class="abs bg" style="background-image:url(../../assets/flow/keep/D4-focus-room-night.jpg)"></div>
+   <div class="abs" style="background:linear-gradient(transparent 30%,rgba(10,8,30,.85))"></div>
+   <div style="position:absolute;left:0;right:0;top:60px;text-align:center;color:#fff"><div style="font:800 46px/1 'Bricolage Grotesque';font-variant-numeric:tabular-nums">01:42</div><div class="t-s" style="opacity:.75;margin-top:6px">ends at 9:41 pm</div></div>
+   <div class="glass" style="position:absolute;left:12px;right:12px;bottom:14px;border-radius:22px;padding:12px;text-align:center">
+    <div class="t-s">i'm working too. you're not alone in this.</div>
+    <div class="btn" style="background:#C6F432;color:#1B1530;margin-top:10px">done! feed bean 🍬</div></div></div><div class="cap">focus (dark)</div></div>
+ </div>
+ <div class="meta"><div><b>palette</b><div class="sw"><i style="background:#F0EFFF"></i><i style="background:#3D3BFF"></i><i style="background:#C6F432"></i><i style="background:#FF5C8A"></i><i style="background:#14114A"></i></div></div>
+ <div><b>best at</b><p>Wow factor, store screenshots, "aesthetic" TikToks. Most premium. The pet feels like it has a home.</p></div>
+ <div><b>risk</b><p>Needs more art (scenes at 9:16, 2K, + parallax layers). Glass on busy art can hurt contrast; we add scrims.</p></div></div>
+</section>
+
+<!-- B -->
+<section class="board">
+ <div class="bhead"><span class="tag">B</span><h2>toy box</h2><p class="sub">Lilac paper, chunky 3D buttons with a bottom lip, the scene in a big rounded card. Closest to prototype v0.3 and to Duolingo-style "juicy" UI. Most playful.</p></div>
+ <div class="row">
+  <div><div class="phone B" style="background:#3D3BFF"><div class="pet" style="left:58px;top:70px;width:120px;height:140px"></div>
+   <div style="position:absolute;left:16px;right:16px;bottom:22px;color:#fff"><div class="t-xl">your brain isn't lazy. it's <span style="color:#C6F432">hungry.</span></div>
+   <div class="btn" style="background:#C6F432;color:#1B1530;margin-top:14px;box-shadow:0 4px 0 #8DB50E">hatch my nomling</div></div></div><div class="cap">hook</div></div>
+  <div><div class="phone B" style="background:#F0EFFF"><div style="position:absolute;left:14px;top:28px" class="t-xl">what are we<br>eating today?</div>
+   <div class="t-s" style="position:absolute;right:12px;top:30px;border-radius:999px;padding:6px 10px;background:#C6F432;box-shadow:0 3px 0 #8DB50E">✦ 12</div>
+   <div class="bg" style="position:absolute;left:12px;right:12px;top:86px;height:180px;border-radius:24px;background-image:url(../../assets/flow/keep/D2-scene-day.jpg)"></div>
+   <div class="pet" style="left:72px;top:118px;width:92px;height:110px"></div>
+   <div style="position:absolute;left:12px;right:12px;top:278px">
+    <div class="bite" style="background:#fff;box-shadow:0 3px 0 #dcdaf5"><span>🍬</span>text mom back</div>
+    <div class="bite" style="background:#fff;box-shadow:0 3px 0 #dcdaf5;margin-top:8px"><span>🍩</span>start the laundry</div>
+    <div class="bite" style="background:#fff;box-shadow:0 3px 0 #dcdaf5;margin-top:8px"><span>🍕</span>stats assignment</div></div>
+   <div class="tab" style="background:#fff"><span>home</span><span>spin</span><span class="fab chunky" style="background:#3D3BFF;color:#fff">+</span><span>closet</span><span>me</span></div></div><div class="cap">home (light)</div></div>
+  <div><div class="phone B" style="background:radial-gradient(120% 70% at 50% 0%,#4D49FF,#211D74 55%,#120F3D)"><div style="position:absolute;left:0;right:0;top:44px;text-align:center;color:#fff">
+    <div style="width:150px;height:150px;margin:0 auto;border-radius:50%;border:12px solid rgba(255,255,255,.12);border-top-color:#FFC83D;display:grid;place-items:center;font:800 34px 'Bricolage Grotesque'">1:42</div>
+    <div class="t-s" style="opacity:.75;margin-top:8px">ends at 9:41 pm</div></div>
+   <div class="pet" style="left:78px;top:250px;width:80px;height:94px"></div>
+   <div style="position:absolute;left:14px;right:14px;bottom:18px"><div class="btn" style="background:#C6F432;color:#1B1530;box-shadow:0 4px 0 #8DB50E">done! feed bean 🍬</div></div></div><div class="cap">focus</div></div>
+ </div>
+ <div class="meta"><div><b>palette</b><div class="sw"><i style="background:#F0EFFF"></i><i style="background:#3D3BFF"></i><i style="background:#2422C2"></i><i style="background:#C6F432"></i><i style="background:#FFC83D"></i></div></div>
+ <div><b>best at</b><p>Fastest to build (prototype already proves it). Big tap targets, very clear actions, fun to press.</p></div>
+ <div><b>risk</b><p>Closest to the "vibe-coded" look you want to leave. Can read childish next to the 3D pet; feels like other gamified apps.</p></div></div>
+</section>
+
+<!-- C -->
+<section class="board">
+ <div class="bhead"><span class="tag">C</span><h2>night studio</h2><p class="sub">"Study with me" lo-fi stream. Dark-first, deep navy, one neon-lime accent, huge calm numerals, the pet as the only bright thing. Light mode = warm paper. Most adult, most TikTok-native.</p></div>
+ <div class="row">
+  <div><div class="phone C"><div class="abs" style="background:radial-gradient(60% 40% at 50% 38%,rgba(61,59,255,.45),transparent 70%)"></div>
+   <div class="pet" style="left:58px;top:100px;width:120px;height:140px"></div>
+   <div style="position:absolute;left:16px;right:16px;bottom:22px"><div class="t-xl">your brain isn't lazy.<br>it's hungry.</div>
+   <div class="btn" style="background:#C6F432;color:#0B0A1A;margin-top:14px">hatch my nomling</div></div></div><div class="cap">hook</div></div>
+  <div><div class="phone C"><div style="position:absolute;left:14px;top:28px"><div class="t-s" style="opacity:.6">night owl hours</div><div class="t-xl">3 bites left</div></div>
+   <div class="t-s" style="position:absolute;right:12px;top:32px;border-radius:999px;padding:6px 10px;border:1px solid #C6F432;color:#C6F432">✦ 12</div>
+   <div class="bg" style="position:absolute;left:0;right:0;top:84px;height:190px;background-image:url(../../assets/flow/keep/D3-scene-night.jpg);mask-image:linear-gradient(#000 70%,transparent);-webkit-mask-image:linear-gradient(#000 70%,transparent)"></div>
+   <div class="pet" style="left:72px;top:126px;width:92px;height:110px"></div>
+   <div style="position:absolute;left:12px;right:12px;top:286px">
+    <div class="bite" style="background:#16142C;border:1px solid #2A2650"><span>🍬</span>text mom back</div>
+    <div class="bite" style="background:#16142C;border:1px solid #2A2650;margin-top:8px"><span>🍩</span>start the laundry</div>
+    <div class="bite" style="background:#16142C;border:1px solid #2A2650;margin-top:8px"><span>🍕</span>stats assignment</div></div>
+   <div class="tab" style="background:#0B0A1A;border-top:1px solid #221F40"><span>home</span><span>spin</span><span class="fab" style="background:#C6F432;color:#0B0A1A">+</span><span>closet</span><span>me</span></div></div><div class="cap">home (dark)</div></div>
+  <div><div class="phone C"><div class="abs bg" style="background-image:url(../../assets/flow/keep/G2-marketing-focus-desk.jpg);opacity:.9"></div>
+   <div class="abs" style="background:linear-gradient(rgba(11,10,26,.75),transparent 40%,rgba(11,10,26,.9) 75%)"></div>
+   <div style="position:absolute;left:0;right:0;top:40px;text-align:center"><div style="font:600 52px/1 'Bricolage Grotesque';font-variant-numeric:tabular-nums">01:42</div><div class="t-s" style="opacity:.6;margin-top:6px">ends at 9:41 pm · brown noise on</div></div>
+   <div style="position:absolute;left:14px;right:14px;bottom:18px"><div class="t-s" style="text-align:center;opacity:.8;margin-bottom:10px">bean is working too.</div><div class="btn" style="background:#C6F432;color:#0B0A1A">done! feed bean</div></div></div><div class="cap">focus</div></div>
+ </div>
+ <div class="meta"><div><b>palette</b><div class="sw"><i style="background:#0B0A1A"></i><i style="background:#16142C"></i><i style="background:#6F6CFF"></i><i style="background:#C6F432"></i><i style="background:#FF5C8A"></i></div></div>
+ <div><b>best at</b><p>Looks like nothing else in the ADHD category. Calm, low clutter, great for night use and "study with me" videos.</p></div>
+ <div><b>risk</b><p>Light mode needs its own design (not just inverted). Less "cute" on first look; the pet must carry all the warmth.</p></div></div>
+</section>
+
+<script>
+const PET=`<svg viewBox="0 0 200 230" aria-hidden="true"><defs>
+<radialGradient id="pb" cx="35%" cy="28%" r="80%"><stop offset="0" stop-color="#FF9FC0"/><stop offset=".55" stop-color="#F0457E"/><stop offset="1" stop-color="#B8215A"/></radialGradient>
+<radialGradient id="orb" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#F3FFB8"/><stop offset="1" stop-color="#9BD10E"/></radialGradient></defs>
+<ellipse cx="100" cy="222" rx="54" ry="7" fill="rgba(20,10,40,.22)"/>
+<path d="M100 52 Q98 30 108 18" stroke="#2A1A3A" stroke-width="5" fill="none" stroke-linecap="round"/>
+<circle cx="109" cy="16" r="13" fill="#C6F432" opacity=".35"/><circle cx="109" cy="16" r="9" fill="url(#orb)"/>
+<ellipse cx="72" cy="214" rx="20" ry="11" fill="#C42A63"/><ellipse cx="128" cy="214" rx="20" ry="11" fill="#C42A63"/>
+<ellipse cx="34" cy="150" rx="14" ry="11" fill="#E23D74"/><ellipse cx="166" cy="150" rx="14" ry="11" fill="#E23D74"/>
+<path d="M100 48 C150 48 172 92 172 138 C172 186 142 214 100 214 C58 214 28 186 28 138 C28 92 50 48 100 48Z" fill="url(#pb)"/>
+<ellipse cx="68" cy="88" rx="22" ry="12" fill="#fff" opacity=".55" transform="rotate(-30 68 88)"/>
+<ellipse cx="146" cy="120" rx="5" ry="16" fill="#fff" opacity=".25"/>
+<circle cx="80" cy="128" r="7.5" fill="#1B1530"/><circle cx="120" cy="128" r="7.5" fill="#1B1530"/>
+<circle cx="82.5" cy="125.5" r="2.2" fill="#fff"/><circle cx="122.5" cy="125.5" r="2.2" fill="#fff"/>
+<ellipse cx="64" cy="146" rx="11" ry="6" fill="#FF6F98" opacity=".55"/><ellipse cx="136" cy="146" rx="11" ry="6" fill="#FF6F98" opacity=".55"/>
+<path d="M92 146 Q100 154 108 146" stroke="#1B1530" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+document.querySelectorAll('.pet').forEach(e=>e.innerHTML=PET);
+</script>
+<section class="board"><h2>my pick: A + C</h2><p class="sub" style="margin-top:8px">A's illustrated world for Home, onboarding and celebrations (light and day), C's calm night studio for Focus and dark mode, with B's chunky press feel kept only on the main buttons. One art system, two moods, both themes designed separately.</p></section>
+</body></html>

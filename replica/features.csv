@@ -1,0 +1,63 @@
+app,area,feature,paid_or_free,source_url,nomling_decision,priority,notes
+finch,onboarding,"Hatch an egg as the first moment (pick colour, tap to hatch)",free,https://design.lazyweb.com/canvas/flows/finch/onboarding,match,must,"we already plan egg + hatch; make ours faster and more tactile (3 taps, escalating haptics)"
+finch,onboarding,Name pet with shuffle button,free,https://design.lazyweb.com/canvas/flows/finch/onboarding,match,must,ours: dice random-name button
+finch,onboarding,Pronouns / personality trait pick,free,https://screensdesign.com/showcase/finch-self-care-pet,skip,could,adds a step before value; pet personality can come from behaviour later
+finch,onboarding,Long personalisation quiz (18-36 steps reported),free,https://screensdesign.com/showcase/finch-self-care-pet,beat,must,"ours: 1 skippable chip screen, onboarding <= 60 s"
+finch,onboarding,Generated starter goal plan,free,https://design.lazyweb.com/canvas/flows/finch/onboarding,match,should,"ours: 3 example bites pre-filled, swipe to delete"
+finch,paywall,Soft paywall at end of onboarding with 7-day trial and ~43% discount,paid,https://screensdesign.com/showcase/finch-self-care-pet,beat,must,"hard rule: never in onboarding; one-time Plus, no trial tricks"
+finch,onboarding,Account / log in offered on welcome,free,https://design.lazyweb.com/canvas/flows/finch/onboarding,skip,must,no accounts in v1; local only
+finch,daily loop,"Self-care goals with repeat days, reminder time, times per day",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,match,should,"GAP: we have no recurring bites; add a simple 'keep daily' toggle, no forced days or times"
+finch,daily loop,Energy bar fills as goals are done,free,https://screensdesign.com/showcase/finch-self-care-pet,beat,must,"ours: belly meter + sparks, rewarded on START not only finish"
+finch,rewards,"Adventure: pet leaves ~6 h when energy full, returns with discovery",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,beat,should,their reward is delayed; ours is instant chomp + confetti; consider small 'pet found X' surprise after feeding (v1.1)
+finch,rewards,Confetti on goal completion,free,https://screensdesign.com/showcase/finch-self-care-pet,match,must,feed sequence is our peak moment
+finch,rewards,Two currencies: rainbow stones (cosmetics) vs energy (adventures),free,https://help.finchcare.com/hc/en-us/articles/37780134479757-Energy-vs-Rainbow-Stones,beat,should,one currency (sparks) is simpler for ADHD brains
+finch,daily loop,Daily quests (secondary goals),free,https://screensdesign.com/showcase/finch-self-care-pet,skip,could,adds choices; Spin wheel covers novelty
+finch,pet,"Pet grows through age stages, likes/dislikes",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,match,must,our evolution stages by sparks; add mutations v1.1
+finch,pet,Tap pet to hear it / pet it,free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,match,must,ours: squish + random line + eyes follow finger
+finch,customisation,"Clothes shop, furniture shop, colour shop (NPC shopkeepers)",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,match,should,our Closet: hats + colours; never copy their NPC/shop names
+finch,customisation,"Decorate pet's house (furniture, wallpaper)",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,match,could,planned as iOS Plus 'pet's room' (docs/09)
+finch,customisation,"Micropets (companions, seasonal, random eggs)",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,skip,could,v1 scope; seasonal packs later cover collection instinct
+finch,customisation,Extra shop items / outfits,paid,https://makeheadway.com/blog/finch-app-review/,match,should,"ours: Plus species/hats on iOS, sparks + rewarded ads on Android"
+finch,wellbeing,Mood check-ins morning/afternoon/evening,free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,skip,could,lengthens loop; maybe a 1-tap 'how was that' after feed later
+finch,wellbeing,"First Aid menu on low mood (breathing, affirmations, journaling)",free,https://www.androidauthority.com/finch-habit-tracker-app-hands-on-3537434/,skip,must,health-adjacent; conflicts with no-medical-claims scope
+finch,wellbeing,Guided breathing,free,https://apps.apple.com/us/app/finch-self-care-pet/id1528595748,skip,could,not our core loop
+finch,wellbeing,"Quizzes on anxiety, depression, body image",free,https://apps.apple.com/us/app/finch-self-care-pet/id1528595748,skip,must,health assessment; never in Nomling
+finch,wellbeing,Journal / reflection prompts,free,https://apps.apple.com/us/app/finch-self-care-pet/id1528595748,skip,could,extra work; not starting-focused
+finch,wellbeing,Extra journal prompts and 100+ extra exercises,paid,https://www.bustle.com/wellness/finch-app-review-features-price,skip,could,"content library, not our product"
+finch,focus,Soundscapes,paid,https://screensdesign.com/showcase/finch-self-care-pet,beat,should,"brown noise free for all; extra soundscapes in iOS Plus, free on Android"
+finch,focus,Longer focus timers,paid,https://makeheadway.com/blog/finch-app-review/,beat,must,2/15/25 min + '+5 min' free forever
+finch,insights,"Insights combining mood, tags, goals",free,https://apps.apple.com/us/app/finch-self-care-pet/id1528595748,skip,could,ours: simple stats + shareable brain card
+finch,social,"Friends via friend code (Tree Town), send encouragement/gifts",free,https://makeheadway.com/blog/finch-app-review/,skip,should,needs backend; later 'Nomling Club'
+finch,social,Invite friends for currency and exclusive items,free,https://screensdesign.com/showcase/finch-self-care-pet,skip,could,needs backend; brain card share gives organic reach
+finch,widgets,Home-screen widget showing the pet,free,https://www.whistleout.com/CellPhones/Guides/finch-self-care-app-review,match,must,"GAP: docs/09 has widgets in iOS Plus; recommend free basic pet widget, interactive start widget in Plus"
+finch,pricing,"Finch Plus subscription, 8 US price points $5.99-$69.99 (~$9.99/mo, $69.99/yr)",paid,https://apppricinglab.com/iap/apple/1528595748,beat,must,captured 2026-03-21 and listing 2026-11-06; ours: one-time $6.99 -> $9.99
+finch,pricing,Guardian Program $7.99 (pay it forward Plus for others),paid,https://apps.apple.com/us/app/finch-self-care-pet/id1528595748,skip,could,needs server to gift; nice brand idea later
+finch,pricing,Plus free through employer wellness (Wellhub),paid,https://help.finchcare.com/hc/en-us/articles/43822620990989-Wellhub-FAQ,skip,could,"B2B, not for solo v1"
+tiimo,onboarding,14-screen onboarding with account creation,free,https://experiments.lazyweb.com/company/tiimo,beat,must,"ours: 5 steps, no account"
+tiimo,paywall,Onboarding paywall (2 screens) + welcome-back paywall,paid,https://experiments.lazyweb.com/company/tiimo,beat,must,"never in onboarding, no win-back paywall"
+tiimo,paywall,7-day trial on yearly only; monthly charged at once; deleting app does not cancel,paid,https://www.tiimoapp.com/faq,beat,must,"billing = 1.4 star theme; one-time purchase, clear 'no subscription' line"
+tiimo,pricing,"Tiimo Pro subscription, 10 US price points $7-$54",paid,https://apppricinglab.com/iap/apple/1480220328,beat,must,captured 2026-05-17 and listing 2026-11-06
+tiimo,capture,"To-do inbox with lists, templates, priority H/M/L",free,https://www.tiimoapp.com/product/to-do-list,beat,must,ours: brain dump auto-splits text into sized bites; no priorities needed
+tiimo,capture,Drag to reorder tasks,free,https://www.tiimoapp.com/product/to-do-list,match,must,long-press reorder without times (review request)
+tiimo,capture,Quick add from home/lock-screen widget,free,https://www.tiimoapp.com/product/to-do-list,match,should,part of widget gap; v1.1
+tiimo,capture,"AI co-planner: type or speak, breaks tasks into steps with time estimates",paid,https://www.tiimoapp.com/product/ai-planning,skip,should,server + cost; local 'chop it smaller' templates instead; AI unreliability is a 1-star theme
+tiimo,capture,Limited AI chats on free plan,free,https://apps.apple.com/us/app/tiimo-visual-daily-planner/id1480220328,beat,should,our chop/parse is unlimited because it is local
+tiimo,planning,Visual colour-coded day timeline with drag-and-drop,free,https://apps.apple.com/us/app/tiimo-visual-daily-planner/id1480220328,skip,must,scheduling is the 'extra work' we position against
+tiimo,planning,Advanced scheduling options,paid,https://www.tiimoapp.com/,skip,could,not our loop
+tiimo,focus,Visual countdown focus timer (progress ring),free,https://www.tiimoapp.com/product/focus,beat,must,"ours: pet body double, donut ring, 'ends at' time, drift button"
+tiimo,focus,Live Activities + Dynamic Island timer,free,https://www.tiimoapp.com/product/widgets-live-activities,match,should,"v1.1, iOS Plus"
+tiimo,widgets,Home and lock-screen widgets for tasks and timer,free,https://www.tiimoapp.com/product/widgets-live-activities,match,must,see Finch widget row
+tiimo,widgets,Custom widgets,paid,https://www.tiimoapp.com/,match,could,Plus extras later
+tiimo,rewards,"Streaks + trophies (iOS only), soft prompts",free,https://www.tiimoapp.com/product/streaks,beat,must,no streak to lose; comeback days only go up
+tiimo,wellbeing,Mood slider check-in + Apple Health (iOS only),free,https://www.tiimoapp.com/product/mood-tracking,skip,could,not core; health data
+tiimo,insights,Personal insights / stats,free,https://apps.apple.com/us/app/tiimo-visual-daily-planner/id1480220328,match,should,ours: stats + shareable brain card
+tiimo,sync,"Apple Calendar, Google, Outlook, Reminders sync",paid,https://www.tiimoapp.com/faq,skip,should,top complaint (per-device sync); no backend in v1
+tiimo,sync,Cross-device account sync,paid,https://www.tiimoapp.com/faq,skip,should,v1 local only; JSON export/import; iCloud in Plus later
+tiimo,platforms,Web planner (Pro only),paid,https://www.tiimoapp.com/faq,skip,could,mobile only
+tiimo,platforms,Apple Watch app,free,https://apps.apple.com/us/app/tiimo-visual-daily-planner/id1480220328,skip,could,scope
+tiimo,family,Up to 5 profiles / family sharing,paid,https://apps.apple.com/us/app/tiimo-visual-daily-planner/id1480220328,skip,could,"v1.2 Family mode, separate project (Kids policy)"
+tiimo,content,Neuroinclusive courses + community hub,free,https://apps.apple.com/us/app/tiimo-visual-daily-planner/id1480220328,skip,could,expert content + backend
+tiimo,notifications,"Smart notifications, user picks when",free,https://www.tiimoapp.com/product/widgets-live-activities,beat,must,"nudge level off/gentle/normal/chaos + quiet hours, never paywalled"
+tiimo,settings,Restore purchases in account settings,free,https://www.tiimoapp.com/faq,match,must,Settings > restore + on paywall
+tiimo,customisation,"Icons, colours, layouts personalisation",free,https://www.tiimoapp.com/,match,could,theme System/Light/Dark + alt app icons (Plus)
+both,settings,Ad-free claim (Tiimo) / no ads (Finch),free,https://www.tiimoapp.com/,match,must,"iOS: no ads; Android: optional rewarded ads only, never in core loop"
