@@ -111,6 +111,9 @@ export const petColors = {
 } as const;
 export type PetColor = keyof typeof petColors;
 
+/** Spin wheel slices (illustration palette, same in light + dark; ink text sits on all of them). */
+export const wheelColors = ['#6F6CFF', '#FFC83D', '#FF7FA3', '#3DD6A3', '#A08BFF', '#C6F432', '#FFA060', '#6CB8FF'] as const;
+
 /** 8-pt grid (docs/02). */
 export const space = { xs: 4, s: 8, m: 12, l: 16, xl: 24, xxl: 32, xxxl: 48, gutter: 20 } as const;
 export const radius = { chip: 999, button: 18, card: 24, scene: 32, sheet: 32 } as const;

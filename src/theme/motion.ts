@@ -14,6 +14,8 @@ export const duration = {
   medium: 350,
   slow: 400,
   verySlow: 500,
+  /** spin wheel only */
+  spin: 3600,
 } as const;
 
 export const easing = {
@@ -23,6 +25,8 @@ export const easing = {
   bounce: Easing.bezier(0.34, 1.36, 0.64, 1), // entrances only
   inOut: Easing.bezier(0.45, 0, 0.55, 1),
   exitIn: Easing.bezier(0.4, 0, 1, 1),
+  /** spin wheel: fast start, long tease at the end (a game moment, not UI chrome) */
+  spin: Easing.bezier(0.12, 0.8, 0.2, 1),
 } as const;
 
 /** Reanimated withSpring configs. Settle times from Screenrove. */
