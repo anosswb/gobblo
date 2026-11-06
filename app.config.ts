@@ -47,6 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     ['expo-splash-screen', { backgroundColor: '#3D3BFF', image: './assets/images/splash-icon.png', imageWidth: 96, dark: { backgroundColor: '#0B0A1A' } }],
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
+    './plugins/with-gradle-memory',
     'expo-audio',
     'expo-sharing',
     ['expo-local-authentication', { faceIDPermission: 'Lock your bites with Face ID (optional, off by default).' }],
