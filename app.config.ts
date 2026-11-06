@@ -52,6 +52,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: true,
+    // Google's Auto Backup saves files/mmkv (all app data) to the user's Drive; restored on reinstall.
+    // DECISIONS: phone backup in v1 instead of accounts (Anass, 2026-11-06)
+    allowBackup: true,
   },
   web: { output: 'single', favicon: './assets/images/favicon.png' },
   plugins: [

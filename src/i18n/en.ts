@@ -263,6 +263,6 @@ export const en = {
     privacyPolicy: 'Privacy policy',
     terms: 'Terms of use',
     contact: 'Contact us',
-    dataLocal: 'Your tasks stay on your phone. No account, no server.',
+    dataLocal: 'Your tasks stay on your phone. No account, no server. They’re saved in your phone’s own backup (iCloud or Google) and come back when you set up a new phone. Moving between iPhone and Android? Use Export.',
   },
 } as const;
