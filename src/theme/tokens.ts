@@ -29,6 +29,13 @@ export type ColorTokens = {
   focusTop: string;
   focusMid: string;
   focusBottom: string;
+  /** text and glass on the focus room (same in both themes) */
+  onFocus: string;
+  onFocus2: string;
+  focusGlass: string;
+  focusScrim: string;
+  /** dark theme: dims bright day/morning scenes (docs/02: 12% black) */
+  sceneDim: string;
 };
 
 const shared = {
@@ -39,6 +46,11 @@ const shared = {
   focusTop: '#4D49FF',
   focusMid: '#211D74',
   focusBottom: '#120F3D',
+  onFocus: '#FFFFFF',
+  onFocus2: 'rgba(255,255,255,0.78)',
+  focusGlass: 'rgba(255,255,255,0.12)',
+  focusScrim: 'rgba(8,6,30,0.55)',
+  sceneDim: 'rgba(0,0,0,0.12)',
 } as const;
 
 export const light: ColorTokens = {
@@ -82,6 +94,14 @@ export const dark: ColorTokens = {
   shadow: 'rgba(0,0,0,0.45)',
   tabBar: 'rgba(11,10,26,0.96)',
 };
+
+/** App accent themes (docs/12 #14). Primary + its deep edge, per scheme. Free on both stores. */
+export const accents = {
+  cobalt: { light: ['#3D3BFF', '#2422C2'], dark: ['#6F6CFF', '#3D3BCC'], label: 'cobalt' },
+  berry: { light: ['#D6336C', '#9E1F4D'], dark: ['#FF5C8A', '#C2335F'], label: 'berry' },
+  jade: { light: ['#0E8F68', '#086B4D'], dark: ['#22C993', '#128A63'], label: 'jade' },
+  sunset: { light: ['#E2551F', '#A93A10'], dark: ['#FF8A3D', '#C4601F'], label: 'sunset' },
+} as const;
 
 export const petColors = {
   pink: '#FF5C8A',

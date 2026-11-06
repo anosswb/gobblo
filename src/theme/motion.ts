@@ -1,4 +1,4 @@
-import { Easing } from 'react-native-reanimated';
+import { Easing, withTiming } from 'react-native-reanimated';
 
 /**
  * Motion tokens. Sources (kept 1:1, see research/motion-specs.md):
@@ -54,3 +54,18 @@ export const distance = { micro: 4, small: 6, base: 8, medium: 12, large: 30 } a
 /** Max total stagger so the last item never feels late. */
 export const staggerDelay = (index: number, step: number = duration.stagger, maxItems = 8) =>
   Math.min(index, maxItems) * step;
+
+/**
+ * transitions.dev "text states swap": 150 ms, 4 px rise, fade (blur skipped on native).
+ * Reanimated custom entering animation.
+ */
+export const textSwapIn = () => {
+  'worklet';
+  return {
+    initialValues: { opacity: 0, transform: [{ translateY: distance.micro }] },
+    animations: {
+      opacity: withTiming(1, { duration: duration.quick }),
+      transform: [{ translateY: withTiming(0, { duration: duration.quick }) }],
+    },
+  };
+};

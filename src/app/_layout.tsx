@@ -10,6 +10,9 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { LockGate } from '@/components/lock-gate';
+import { ToastHost } from '@/components/toast';
+import { useAppLifecycle } from '@/hooks/use-app-lifecycle';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
 
 void SplashScreen.preventAutoHideAsync();
@@ -41,13 +44,18 @@ export default function RootLayout() {
 
 function RootStack() {
   const { scheme, colors } = useTheme();
+  useAppLifecycle();
   return (
-    <>
+    <LockGate>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="dump" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="focus" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="reminders" />
       </Stack>
-    </>
+      <ToastHost />
+    </LockGate>
   );
 }

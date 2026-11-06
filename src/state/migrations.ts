@@ -12,6 +12,8 @@ type Step = (s: Record<string, unknown>) => Record<string, unknown>;
 const steps: Record<number, Step> = {
   // 0 -> 1: first versioned schema. Version 0 = anything saved before versioning existed.
   0: (s) => s,
+  // 1 -> 2: adds goodThings, reminders and new settings (accent, sounds, opt-ins). Defaults fill them.
+  1: (s) => ({ ...s, goodThings: Array.isArray(s.goodThings) ? s.goodThings : [], reminders: Array.isArray(s.reminders) ? s.reminders : [] }),
 };
 
 function isObject(v: unknown): v is Record<string, unknown> {

@@ -6,8 +6,8 @@ import { TabBar } from '@/components/tab-bar';
 /** Headless expo-router tabs + our own bar (raised FAB, sliding plateau). */
 export default function TabsLayout() {
   return (
-    <Tabs>
-      <TabSlot />
+    <Tabs style={styles.fill}>
+      <TabSlot style={styles.fill} />
       {/* Defines the routes; the visible bar is <TabBar />. */}
       <TabList style={styles.hidden}>
         <TabTrigger name="index" href="/" />
@@ -20,4 +20,4 @@ export default function TabsLayout() {
   );
 }
 
-const styles = StyleSheet.create({ hidden: { display: 'none' } });
+const styles = StyleSheet.create({ hidden: { display: 'none' }, fill: { flex: 1 } });

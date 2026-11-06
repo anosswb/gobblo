@@ -19,7 +19,18 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 8. Guardrails: `.claude/settings.json` permissions, PostToolUse type-check + lint hook, `.claude/rules/*.md`, project skills `/add-screen`, `/polish-screen`, `/release-check`.
 9. Checks: expo-doctor, tsc, lint, jest. Then the first dev build (needs Anass's Expo account + EAS).
 
+## Phase 1.5: Anass's feature list (docs/12) — DONE (web preview checked; not yet on a phone)
+- Home: add bites, food size, tap → start sheet (2/5/15/25), keep daily, delete + undo, one-thing mode, pet wisdom / mindful note, comeback line, time-of-day scene, sleepy pet at night.
+- Focus: wall-clock ring timer (survives reload/kill), ends-at, pause, +5, 2-min "keep going", 2-min warning, drift, leave confirm, keep awake, end notification, brown noise / rain / soft keys.
+- Me: stage, 4 stats, interactive week chart, weekly meter (never breaks), best hours, brain card share, good things jar.
+- Settings: theme, 4 accents, reduce motion, confetti, sounds, volume, haptics, mix with music, nudge level + 4 sounds + quiet hours, leaving-soon reminders, default timer, focus sound, one-thing mode, pet talk, auto-sleep, mindful, jar, week start, 24 h, biometric lock, export/import backup, reset, about (not a medical device).
+- Nudges: capped plan + quiet hours + one comeback note, Android channels per sound, iOS custom sounds. Original sounds from scripts/gen-sounds.py (CC0).
+- Fixed: tab screens couldn't scroll (container height).
+- Checks: tsc, lint, 28 tests, expo-doctor 20/20.
+- Still later (needs a server): sync across devices, team boards (docs/12).
+
 ## Next
+- Dev build on Anass's phone (he is logged in to EAS).
 - Phase 2: the pet (Skia, from R1 art).
 
 ## Blocked / needs Anass

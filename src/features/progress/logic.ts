@@ -1,0 +1,79 @@
+import type { Session, Stats } from '@/state/schema';
+import { todayKey } from '@/state/schema';
+
+export const STAGES = [
+  { at: 0, name: 'baby blob' },
+  { at: 8, name: 'lil gremlin' },
+  { at: 20, name: 'big chonk' },
+  { at: 40, name: 'cosmic menace' },
+] as const;
+
+export function stageOf(total: number): number {
+  let i = 0;
+  STAGES.forEach((s, k) => {
+    if (total >= s.at) i = k;
+  });
+  return i;
+}
+
+/** 0..1 progress to the next stage, 1 at max level. */
+export function stageProgress(total: number): { stage: number; progress: number; toNext: number | null } {
+  const stage = stageOf(total);
+  const next = STAGES[stage + 1];
+  if (!next) return { stage, progress: 1, toNext: null };
+  const from = STAGES[stage].at;
+  return { stage, progress: (total - from) / (next.at - from), toNext: next.at - total };
+}
+
+export type DayBucket = { key: string; label: string; bites: number; minutes: number; isToday: boolean };
+
+const DAY_LABELS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+
+/** The current week, 7 local days (week starts Monday or Sunday). Done sessions only. */
+export function weekBuckets(sessions: Session[], now = new Date(), weekStartsMonday = true): DayBucket[] {
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dow = start.getDay();
+  const back = weekStartsMonday ? (dow + 6) % 7 : dow;
+  start.setDate(start.getDate() - back);
+  const today = todayKey(now);
+  const days: DayBucket[] = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    return { key: todayKey(d), label: DAY_LABELS[d.getDay()], bites: 0, minutes: 0, isToday: todayKey(d) === today };
+  });
+  const index = new Map(days.map((d, i) => [d.key, i]));
+  for (const s of sessions) {
+    if (!s.done) continue;
+    const i = index.get(todayKey(new Date(s.endedAt)));
+    if (i === undefined) continue;
+    days[i].bites += 1;
+    days[i].minutes += Math.round(s.spentMin);
+  }
+  return days;
+}
+
+/**
+ * Weekly bites meter: a gentle goal that never "breaks". It refills every week and only
+ * says how many days you showed up (DECISIONS.md: no streak shame).
+ */
+export function weekMeter(days: DayBucket[], goal = 10) {
+  const bites = days.reduce((n, d) => n + d.bites, 0);
+  const daysFed = days.filter((d) => d.bites > 0).length;
+  return { bites, goal, daysFed, progress: Math.min(1, bites / goal) };
+}
+
+/** Bites finished per hour of day (0..23) over all time: "your best hours". */
+export function hourBuckets(sessions: Session[]): number[] {
+  const out = new Array<number>(24).fill(0);
+  for (const s of sessions) if (s.done) out[new Date(s.startedAt).getHours()] += 1;
+  return out;
+}
+
+export function brainType(stats: Stats, petName: string): { title: string; line: string } {
+  if (!stats.eaten) return { title: 'fresh hatchling', line: `feed ${petName} your first bite to unlock your brain type.` };
+  if (stats.starts2 >= 2 && stats.starts2 >= stats.eaten * 0.5)
+    return { title: '2-minute legend', line: 'you beat the start with the smallest possible step. elite.' };
+  const top = (Object.keys(stats.byPart) as (keyof Stats['byPart'])[]).sort((a, b) => stats.byPart[b] - stats.byPart[a])[0];
+  if (top === 'night') return { title: 'midnight hyperfocus goblin', line: 'your brain boots up when the sun goes down.' };
+  if (top === 'morning') return { title: 'chaotic early bird', line: 'you get it done before your brain notices.' };
+  return { title: 'side-quest hero', line: 'you turn random afternoons into wins.' };
+}

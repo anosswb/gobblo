@@ -4,7 +4,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, MAX_FONT_SCALE, typeScale } from '@/theme/tokens';
 
 type Variant = 'title' | 'heading' | 'body' | 'bodyBold' | 'caption' | 'timer';
-type Tone = 'ink' | 'ink2' | 'ink3' | 'primary' | 'onPrimary' | 'onReward';
+type Tone = 'ink' | 'ink2' | 'ink3' | 'primary' | 'onPrimary' | 'onReward' | 'onFocus' | 'onFocus2';
 
 type Props = TextProps & { variant?: Variant; tone?: Tone };
 

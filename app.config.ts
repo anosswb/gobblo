@@ -43,7 +43,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-audio',
     'expo-sharing',
     ['expo-local-authentication', { faceIDPermission: 'Lock your bites with Face ID (optional, off by default).' }],
-    ['expo-notifications', { color: '#3D3BFF' }],
+    [
+      'expo-notifications',
+      {
+        color: '#3D3BFF',
+        enableRemoteNotifications: false, // local notifications only (docs/05)
+        sounds: ['./assets/sounds/boop.wav', './assets/sounds/chime.wav', './assets/sounds/pop.wav', './assets/sounds/loud.wav'],
+      },
+    ],
   ],
   experiments: { typedRoutes: true, reactCompiler: true },
 });
