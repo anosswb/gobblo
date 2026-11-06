@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
@@ -19,6 +19,7 @@ import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { Burst } from '@/pet/burst';
+import { Evolution } from '@/pet/evolution';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { todayKey, type Bite, type Size } from '@/state/schema';
@@ -65,6 +66,7 @@ export function HomeScreen() {
   const today = todayKey(openedAt);
   const list = plate(bites, today);
   const shown = settings.oneThingMode ? list.slice(0, 1) : list;
+  const stage = stageOf(stats.total);
 
   // new food arrived (typed here or served from the brain dump): the pet gets excited
   const plateBefore = useRef(list.length);
@@ -72,6 +74,25 @@ export function HomeScreen() {
     if (list.length > plateBefore.current) setReaction('excited');
     plateBefore.current = list.length;
   }, [list.length]);
+
+  // crossing a stage threshold: the evolution scene plays on Home only (never behind Focus),
+  // right after the chomp, or when you come back to Home after it happened elsewhere
+  const [evolveTo, setEvolveTo] = useState<number | null>(null);
+  const seenStage = useRef(stage);
+  const evolveIfNew = () => {
+    const now = stageOf(useAppStore.getState().stats.total);
+    if (now > seenStage.current) {
+      seenStage.current = now;
+      setEvolveTo(now);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      const t = setTimeout(evolveIfNew, 900);
+      return () => clearTimeout(t);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   // a bite was eaten (focus finished): chomp, then celebrate with a sparkle burst
   const [burst, setBurst] = useState(0);
@@ -84,14 +105,17 @@ export function HomeScreen() {
         setBurst((b) => b + 1);
         haptics.success();
       }, 700);
+      const t2 = setTimeout(evolveIfNew, 1700);
       eatenBefore.current = stats.eaten;
-      return () => clearTimeout(t);
+      return () => {
+        clearTimeout(t);
+        clearTimeout(t2);
+      };
     }
     eatenBefore.current = stats.eaten;
   }, [stats.eaten]);
 
   const sky = skyOf(openedAt.getHours());
-  const stage = stageOf(stats.total);
   const away = daysAway(stats.lastVisit, openedAt);
   const wisdom = en.wisdom[dayIndex(openedAt) % en.wisdom.length];
   const mindful = en.mindful[dayIndex(openedAt) % en.mindful.length];
@@ -267,6 +291,8 @@ export function HomeScreen() {
           <Text variant="caption" tone="ink2" style={styles.footer}>{h.oneThingMore(list.length - 1)}</Text>
         ) : null}
       </View>
+
+      <Evolution stage={evolveTo} onDone={() => setEvolveTo(null)} />
 
       <StartSheet
         bite={selected}

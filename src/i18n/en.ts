@@ -38,6 +38,16 @@ export const en = {
     mindfulTitle: 'tiny reset',
     sizeLabel: 'change size',
   },
+  evolve: {
+    kicker: (name: string) => `${name} evolved`,
+    cheer: 'let’s goooo ✦',
+    line: [
+      'all from tiny starts. you did that.',
+      'small bites, big chonk. science.',
+      'it’s giving main character.',
+    ],
+    ok: 'nice.',
+  },
   spin: {
     title: 'spin',
     eyebrow: 'can’t pick?',

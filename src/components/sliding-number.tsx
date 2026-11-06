@@ -32,7 +32,7 @@ function Digit({ d, tone, big }: { d: number; tone: 'onReward' | 'ink' | 'onFocu
   }, [d, H, reduceMotion, y]);
   const col = useAnimatedStyle(() => ({ transform: [{ translateY: y.get() }] }));
   return (
-    <View style={[styles.cell, { height: H }]}>
+    <View style={[styles.cell, { height: H }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
       <Animated.View style={col}>
         {DIGITS.map((n) => (
           <Text key={n} variant={big ? 'title' : 'bodyBold'} tone={tone} style={[styles.digit, { height: H, lineHeight: H }]}>

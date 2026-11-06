@@ -17,6 +17,9 @@ export const haptics = {
     const l = level();
     if (l !== 'off') void Haptics.impactAsync(l === 'strong' ? Haptics.ImpactFeedbackStyle.Heavy : Haptics.ImpactFeedbackStyle.Medium);
   },
+  heavy() {
+    if (level() !== 'off') void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  },
   success() {
     if (level() !== 'off') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   },
