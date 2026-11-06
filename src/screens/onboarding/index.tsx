@@ -107,7 +107,10 @@ export function OnboardingScreen() {
     later(crack * 4 + 1700, () => setStep('name'));
   };
 
+  const finishing = useRef(false);
   const finish = async (nudges: boolean) => {
+    if (finishing.current) return; // a double tap must not ask twice or navigate twice
+    finishing.current = true;
     haptics.light();
     if (nudges) await askNotificationPermission().catch(() => false);
     updateSettings({ nudge: nudges ? 'gentle' : 'off', onboarded: true });

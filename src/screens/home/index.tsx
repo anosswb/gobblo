@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
@@ -102,7 +102,6 @@ export function HomeScreen() {
     useCallback(() => {
       const t = setTimeout(evolveIfNew, 900);
       return () => clearTimeout(t);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
 
