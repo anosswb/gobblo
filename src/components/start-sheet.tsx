@@ -53,7 +53,7 @@ export function StartSheet({
       {bite && (
         <View style={styles.fill}>
           <Animated.View entering={FadeIn.duration(duration.slow)} exiting={FadeOut.duration(duration.fast)} style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]}>
-            <Pressable accessibilityRole="button" accessibilityLabel="close" style={styles.fill} onPress={onClose} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Close" style={styles.fill} onPress={onClose} />
           </Animated.View>
           <Animated.View
             entering={enterSheet}
@@ -69,7 +69,7 @@ export function StartSheet({
                 <Text variant="caption" tone="ink2">{s.title}</Text>
                 <Text variant="title2" numberOfLines={2}>{bite.text}</Text>
               </View>
-              <PressScale accessibilityRole="button" accessibilityLabel="close" hitSlop={8} onPress={onClose} style={[styles.close, { backgroundColor: colors.fill }]}>
+              <PressScale accessibilityRole="button" accessibilityLabel="Close" hitSlop={8} onPress={onClose} style={[styles.close, { backgroundColor: colors.fill }]}>
                 <Icon name="close" size={14} weight="bold" color={colors.ink2} />
               </PressScale>
             </View>

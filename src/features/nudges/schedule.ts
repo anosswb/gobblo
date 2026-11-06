@@ -21,14 +21,14 @@ async function ensureChannels() {
   if (Platform.OS !== 'android' || channelsReady) return;
   for (const s of Object.keys(SOUND_FILE) as NudgeSound[]) {
     await Notifications.setNotificationChannelAsync(channelId(s), {
-      name: s === 'loud' ? 'nudges (loud)' : `nudges (${s})`,
+      name: s === 'loud' ? 'Nudges (loud)' : `Nudges (${s})`,
       importance: s === 'loud' ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
       sound: SOUND_FILE[s],
       vibrationPattern: s === 'loud' ? [0, 300, 150, 300] : [0, 120],
     });
   }
   await Notifications.setNotificationChannelAsync('focus', {
-    name: 'focus timer',
+    name: 'Focus timer',
     importance: AndroidImportance.HIGH,
     sound: SOUND_FILE.chime,
   });
@@ -89,7 +89,7 @@ export async function scheduleFocusEnd(endsAt: number, petName: string): Promise
   if (!(await notificationsAllowed())) return null;
   await ensureChannels();
   return Notifications.scheduleNotificationAsync({
-    content: { title: `${petName} is done 🍩`, body: 'time’s up! come feed me.', sound: SOUND_FILE.chime, data: { kind: 'focus', url: '/focus' } },
+    content: { title: `${petName} is done 🍩`, body: 'Time’s up! Come feed me.', sound: SOUND_FILE.chime, data: { kind: 'focus', url: '/focus' } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(endsAt), channelId: 'focus' },
   });
 }

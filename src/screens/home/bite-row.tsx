@@ -42,8 +42,8 @@ export function BiteRow({
       overshootFriction={8}
       leftThreshold={ACTION_W * 0.7}
       rightThreshold={ACTION_W * 0.7}
-      renderLeftActions={(p) => <Action progress={p} side="left" color={colors.success} icon="play" label="start" />}
-      renderRightActions={(p) => <Action progress={p} side="right" color={colors.danger} icon="trash" label="remove" />}
+      renderLeftActions={(p) => <Action progress={p} side="left" color={colors.success} icon="play" label="Start" />}
+      renderRightActions={(p) => <Action progress={p} side="right" color={colors.danger} icon="trash" label="Remove" />}
       onSwipeableWillOpen={() => haptics.light()}
       onSwipeableOpen={(dir) => {
         // removing: the row leaves with the list's exit animation; don't animate it closed
@@ -57,8 +57,8 @@ export function BiteRow({
       }}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${bite.text}. ${food.label}, about ${food.min} minutes. tap to start`}
-        accessibilityActions={[{ name: 'delete', label: 'remove' }]}
+        accessibilityLabel={`${bite.text}. ${food.label}, about ${food.min} minutes. Tap to start`}
+        accessibilityActions={[{ name: 'delete', label: 'Remove' }]}
         onAccessibilityAction={(e) => e.nativeEvent.actionName === 'delete' && onRemove()}
         onPress={onOpen}>
         {({ pressed }) => (

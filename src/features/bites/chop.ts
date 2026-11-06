@@ -1,4 +1,5 @@
 import type { Size } from '@/state/schema';
+import { capFirst } from './logic';
 
 /**
  * Brain dump → bites (docs/01 §5). Pure, rule-based, editable (no AI in the core loop,
@@ -66,7 +67,7 @@ export function chop(input: string, max = 20): Chopped[] {
     const key = text.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push({ text, size: guessSize(text) });
+    out.push({ text: capFirst(text), size: guessSize(text) });
     if (out.length >= max) break;
   }
   return out;

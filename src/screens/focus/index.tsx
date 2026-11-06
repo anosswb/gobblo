@@ -46,7 +46,7 @@ const f = en.focus;
 const CLOSE_MS = 380;
 const exitFocus = backOrHome;
 const SOUNDS: FocusSound[] = ['none', 'brown', 'rain', 'keys'];
-const SOUND_LABEL: Record<FocusSound, string> = { none: 'silence', brown: 'brown noise', rain: 'rain', keys: 'soft keys' };
+const SOUND_LABEL: Record<FocusSound, string> = { none: 'Silence', brown: 'Brown noise', rain: 'Rain', keys: 'Soft keys' };
 
 /**
  * Focus = body double (docs/01 §3), direction C "night studio" in both themes.
@@ -260,7 +260,7 @@ export function FocusScreen() {
               endedChime.current = false;
               const startNow = Date.now();
               patch({ rodeWave: true, endsAt: startNow + 10 * MIN, totalMs: 10 * MIN, pausedRemaining: null, warned: false });
-              swapLine('see? you’re already IN it.');
+              swapLine('See? You’re already IN it.');
             }} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.ride}</Text>
             </PressScale>

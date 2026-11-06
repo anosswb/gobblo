@@ -18,13 +18,13 @@ describe('week', () => {
   const now = new Date(2026, 10, 6, 12); // Friday
   it('buckets done sessions into a Monday week', () => {
     const days = weekBuckets([s(new Date(2026, 10, 3, 9)), s(new Date(2026, 10, 6, 10), 12), s(new Date(2026, 10, 6, 11), 1, false), s(new Date(2026, 9, 30))], now, true);
-    expect(days.map((d) => d.label)).toEqual(['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su']);
+    expect(days.map((d) => d.label)).toEqual(['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']);
     expect(days[1].bites).toBe(1);
     expect(days[4]).toMatchObject({ bites: 1, minutes: 12, isToday: true });
     expect(weekMeter(days, 10)).toMatchObject({ bites: 2, daysFed: 2, progress: 0.2 });
   });
   it('supports Sunday weeks', () => {
-    expect(weekBuckets([], now, false)[0].label).toBe('su');
+    expect(weekBuckets([], now, false)[0].label).toBe('Su');
   });
 });
 
@@ -34,8 +34,8 @@ describe('insights', () => {
   });
   it('picks a brain type', () => {
     const st = freshState(0).stats;
-    expect(brainType(st, 'Bean').title).toBe('fresh hatchling');
+    expect(brainType(st, 'Bean').title).toBe('Fresh hatchling');
     expect(brainType({ ...st, eaten: 4, starts2: 3 }, 'Bean').title).toBe('2-minute legend');
-    expect(brainType({ ...st, eaten: 4, byPart: { morning: 0, day: 1, night: 3 } }, 'Bean').title).toBe('midnight hyperfocus goblin');
+    expect(brainType({ ...st, eaten: 4, byPart: { morning: 0, day: 1, night: 3 } }, 'Bean').title).toBe('Midnight hyperfocus goblin');
   });
 });

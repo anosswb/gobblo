@@ -33,15 +33,15 @@ export function BrainCard() {
   const share = async () => {
     haptics.light();
     if (Platform.OS === 'web' || !(await Sharing.isAvailableAsync())) {
-      toast('sharing works on your phone ✦');
+      toast('Sharing works on your phone ✦');
       return;
     }
     try {
       const uri = await captureRef(ref, { format: 'png', quality: 1, result: 'tmpfile' });
       play('spark');
-      await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'share your brain card' });
+      await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'Share your brain card' });
     } catch {
-      toast('couldn’t make the image. try again?');
+      toast('Couldn’t make the image. Try again?');
     }
   };
 
@@ -65,7 +65,7 @@ export function BrainCard() {
               </Text>
             </View>
             <Text variant="caption" tone="onFocus2" style={styles.mark}>
-              {APP_NAME.toLowerCase()} · feed it by starting
+              {APP_NAME} · Feed it by starting
             </Text>
           </View>
           <Pet size={92} color={pet.color} mood="confident" stage={stage} />
@@ -73,7 +73,7 @@ export function BrainCard() {
       </View>
       <PressScale
         accessibilityRole="button"
-        accessibilityLabel="share your brain card"
+        accessibilityLabel="Share your brain card"
         onPress={() => void share()}
         style={[styles.share, { backgroundColor: colors.primarySoft }]}>
         <Icon name="share" size={18} color={colors.primary} />

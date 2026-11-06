@@ -68,7 +68,7 @@ export default function DumpScreen() {
           <Text variant="title2" accessibilityRole="header">{d.title}</Text>
           <Text variant="subhead" tone="ink2">{d.sub}</Text>
         </View>
-        <PressScale accessibilityRole="button" accessibilityLabel="close" hitSlop={8} onPress={backOrHome} style={[styles.close, { backgroundColor: colors.fill }]}>
+        <PressScale accessibilityRole="button" accessibilityLabel="Close" hitSlop={8} onPress={backOrHome} style={[styles.close, { backgroundColor: colors.fill }]}>
           <Icon name="close" size={14} weight="bold" color={colors.ink2} />
         </PressScale>
       </View>
@@ -117,7 +117,7 @@ export default function DumpScreen() {
                   <View style={[styles.row, i > 0 && { borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth }]}>
                     <PressScale
                       accessibilityRole="button"
-                      accessibilityLabel={`${b.text}: ${FOOD[b.size].label}. change size`}
+                      accessibilityLabel={`${b.text}: ${FOOD[b.size].label}. Change size`}
                       hitSlop={4}
                       onPress={() => {
                         edit(b.key, { size: ((b.size + 1) % 4) as Size });

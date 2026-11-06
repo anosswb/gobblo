@@ -48,18 +48,18 @@ export function MeScreen() {
   const maxHour = Math.max(1, ...hours);
 
   const tiles: { label: string; value: number; icon: IconName }[] = [
-    { label: 'bites eaten', value: stats.eaten, icon: 'check' },
-    { label: 'minutes focused', value: stats.minutes, icon: 'timer' },
-    { label: 'comeback days', value: stats.comebacks, icon: 'repeat' },
-    { label: 'all-time sparks', value: stats.total, icon: 'sparkle' },
+    { label: 'Bites eaten', value: stats.eaten, icon: 'check' },
+    { label: 'Minutes focused', value: stats.minutes, icon: 'timer' },
+    { label: 'Comeback days', value: stats.comebacks, icon: 'repeat' },
+    { label: 'All-time sparks', value: stats.total, icon: 'sparkle' },
   ];
 
   return (
     <Screen
-      eyebrow={`you + ${pet.name}`}
-      title="progress"
+      eyebrow={`You + ${pet.name}`}
+      title="Progress"
       right={
-        <PressScale accessibilityRole="button" accessibilityLabel="settings" hitSlop={4} onPress={() => router.push('/settings')}>
+        <PressScale accessibilityRole="button" accessibilityLabel="Settings" hitSlop={4} onPress={() => router.push('/settings')}>
           <Glass interactive radius={22} style={styles.gear}>
             <Icon name="gear" size={20} color={colors.ink} />
           </Glass>
@@ -70,7 +70,7 @@ export function MeScreen() {
         <View style={styles.flex}>
           <Text variant="caption" tone="primary" style={styles.kicker}>level {st.stage + 1}</Text>
           <Text variant="title2">{STAGES[st.stage].name}</Text>
-          <Text variant="subhead" tone="ink2">{st.toNext === null ? 'max level. menace.' : `${st.toNext} ✦ to evolve`}</Text>
+          <Text variant="subhead" tone="ink2">{st.toNext === null ? 'Max level. Menace.' : `${st.toNext} ✦ to evolve`}</Text>
         </View>
       </View>
 
@@ -88,23 +88,23 @@ export function MeScreen() {
 
       <View style={[styles.card, { backgroundColor: colors.card }]}>
         <View style={styles.rowBetween}>
-          <Text variant="heading">this week</Text>
+          <Text variant="heading">This week</Text>
           <Text variant="bodyBold" tone="primary">{meter.bites}/{meter.goal}</Text>
         </View>
         <View style={[styles.track, { backgroundColor: colors.fill }]}>
           <View style={[styles.fill, { width: `${Math.max(4, meter.progress * 100)}%`, backgroundColor: colors.primary }]} />
         </View>
         <Text variant="subhead" tone="ink2">
-          {meter.daysFed === 0 ? 'a fresh week. one bite starts it.' : `you showed up on ${meter.daysFed} ${meter.daysFed === 1 ? 'day' : 'days'}. it refills every week, nothing to lose.`}
+          {meter.daysFed === 0 ? 'A fresh week. One bite starts it.' : `You showed up on ${meter.daysFed} ${meter.daysFed === 1 ? 'day' : 'days'}. It refills every week, nothing to lose.`}
         </Text>
-        <Segmented accessibilityLabel="chart shows" value={metric} onChange={setMetric}
-          options={[{ value: 'bites', label: 'bites' }, { value: 'minutes', label: 'minutes' }]} />
+        <Segmented accessibilityLabel="Chart shows" value={metric} onChange={setMetric}
+          options={[{ value: 'bites', label: 'Bites' }, { value: 'minutes', label: 'Minutes' }]} />
         <WeekChart days={days} metric={metric} />
       </View>
 
       <View style={[styles.card, { backgroundColor: colors.card }]}>
-        <Text variant="heading">your best hours</Text>
-        <View style={styles.heat} accessibilityLabel="bites finished by hour of day">
+        <Text variant="heading">Your best hours</Text>
+        <View style={styles.heat} accessibilityLabel="Bites finished by hour of day">
           {hours.map((n, hIdx) => (
             <View key={hIdx} style={[styles.cell, { backgroundColor: colors.primary, opacity: 0.08 + 0.92 * (n / maxHour) }]} />
           ))}
@@ -120,11 +120,11 @@ export function MeScreen() {
 
       {(settings.goodThingsJar || goodThings.length > 0) && (
         <View style={[styles.card, { backgroundColor: colors.card }]}>
-          <Text variant="heading">good things jar</Text>
-          <Text variant="caption" tone="ink2">one small good thing from today. totally optional.</Text>
+          <Text variant="heading">Good things jar</Text>
+          <Text variant="caption" tone="ink2">One small good thing from today. Totally optional.</Text>
           <View style={[styles.addRow, { backgroundColor: colors.fill }]}>
-            <TextInput value={good} onChangeText={setGood} placeholder="the coffee was perfect…" placeholderTextColor={colors.ink3}
-              maxLength={120} returnKeyType="done" accessibilityLabel="add a good thing"
+            <TextInput value={good} onChangeText={setGood} placeholder="The coffee was perfect…" placeholderTextColor={colors.ink3}
+              maxLength={120} returnKeyType="done" accessibilityLabel="Add a good thing"
               onSubmitEditing={() => {
                 if (!good.trim()) return;
                 addGoodThing(good);
@@ -137,7 +137,7 @@ export function MeScreen() {
           {goodThings.slice(0, 20).map((g) => (
             <Animated.View key={g.id} entering={FadeIn.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} layout={LinearTransition} style={styles.goodRow}>
               <Text style={styles.flex}>{g.text}</Text>
-              <PressScale accessibilityRole="button" accessibilityLabel={`delete ${g.text}`} hitSlop={10} onPress={() => removeGoodThing(g.id)}>
+              <PressScale accessibilityRole="button" accessibilityLabel={`Delete ${g.text}`} hitSlop={10} onPress={() => removeGoodThing(g.id)}>
                 <Icon name="trash" size={18} color={colors.ink3} />
               </PressScale>
             </Animated.View>

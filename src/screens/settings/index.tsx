@@ -76,7 +76,7 @@ export function SettingsScreen() {
         <Row stacked label={t.volume} right={
           <Segmented accessibilityLabel={t.volume} value={s.volume >= 0.85 ? '1' : s.volume >= 0.55 ? '0.7' : '0.4'}
             onChange={(v) => { update({ volume: Number(v) }); setTimeout(() => play('pop'), 50); }}
-            options={[{ value: '0.4', label: 'soft' }, { value: '0.7', label: 'medium' }, { value: '1', label: 'loud' }]} />
+            options={[{ value: '0.4', label: 'Soft' }, { value: '0.7', label: 'Medium' }, { value: '1', label: 'Loud' }]} />
         } />
         <Row stacked label={t.haptics} right={
           <Segmented accessibilityLabel={t.haptics} value={s.haptics} onChange={(v) => { update({ haptics: v }); setTimeout(() => haptics.medium(), 30); }}
@@ -93,7 +93,7 @@ export function SettingsScreen() {
         <Row stacked label={t.nudgeSound} hint={t.loudHint} right={
           <Chips<NudgeSound> accessibilityLabel={t.nudgeSound} value={s.nudgeSound}
             onChange={(v) => { update({ nudgeSound: v }); previewNudgeSound(v); }}
-            options={[{ value: 'boop', label: '🫧 boop' }, { value: 'chime', label: '🔔 chime' }, { value: 'pop', label: '🍿 pop' }, { value: 'loud', label: '📣 loud' }]} />
+            options={[{ value: 'boop', label: '🫧 Boop' }, { value: 'chime', label: '🔔 Chime' }, { value: 'pop', label: '🍿 Pop' }, { value: 'loud', label: '📣 Loud' }]} />
         } />
         <Row leading={<IconTile name="moon" color="indigo" />} label={`${t.quiet} · ${t.from}`} hint={t.quietHint} right={
           <Stepper label={t.from} value={s.quietStart} min={0} max={23} format={(h) => hourLabel(h, s.clock24h)} onChange={set('quietStart')} />
@@ -161,14 +161,14 @@ export function SettingsScreen() {
           <Toggle accessibilityLabel={t.lock} disabled={!bioOk} value={s.biometricLock}
             onChange={async (v) => { if (await unlock()) update({ biometricLock: v }); }} />
         } />
-        <Row leading={<IconTile name="share" color="blue" />} label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('couldn’t export. try again?'))} />
+        <Row leading={<IconTile name="share" color="blue" />} label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('Couldn’t export. Try again?'))} />
         <Row leading={<IconTile name="download" color="blue" />} label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }} />
         <Row leading={<IconTile name="reset" color="red" />} last danger label={armed ? t.resetConfirm : t.reset} hint={t.resetHint}
           onPress={() => {
             if (!armed) { haptics.warning(); setArmed(true); return; }
             resetAll();
             setArmed(false);
-            toast('fresh start. hi again ✦');
+            toast('Fresh start. Hi again ✦');
           }} />
       </Section>
 

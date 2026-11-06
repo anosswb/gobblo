@@ -11,7 +11,7 @@ describe('bites', () => {
     const s = freshState(0);
     s.bites = [{ id: 'ex', text: 'example', size: 0, example: true, createdAt: 0, order: 0 }];
     const { bites, added } = addBites(s, [{ text: ' email prof ', size: 1 }, { text: '  ', size: 0 }]);
-    expect(bites.map((b) => b.text)).toEqual(['email prof']);
+    expect(bites.map((b) => b.text)).toEqual(['Email prof']);
     expect(added).toHaveLength(1);
   });
 
@@ -46,7 +46,7 @@ describe('bites', () => {
   it('reorders by plate position', () => {
     const s = freshState(0);
     s.bites = addBites(s, [{ text: 'a', size: 0 }, { text: 'b', size: 0 }, { text: 'c', size: 0 }]).bites;
-    expect(plate(reorder(s.bites, 2, 0), '').map((b) => b.text)).toEqual(['c', 'a', 'b']);
+    expect(plate(reorder(s.bites, 2, 0), '').map((b) => b.text)).toEqual(['C', 'A', 'B']);
   });
 });
 

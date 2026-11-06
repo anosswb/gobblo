@@ -3,17 +3,20 @@ import { todayKey } from '@/state/schema';
 
 /** Food by size (docs/01). v1 ships emoji; glossy food icons come with the art round. */
 export const FOOD = [
-  { emoji: '🍬', label: 'tiny', min: 2, sparks: 1 },
-  { emoji: '🍪', label: 'small', min: 5, sparks: 2 },
-  { emoji: '🍩', label: 'medium', min: 15, sparks: 3 },
-  { emoji: '🍕', label: 'big', min: 25, sparks: 5 },
+  { emoji: '🍬', label: 'Tiny', min: 2, sparks: 1 },
+  { emoji: '🍪', label: 'Small', min: 5, sparks: 2 },
+  { emoji: '🍩', label: 'Medium', min: 15, sparks: 3 },
+  { emoji: '🍕', label: 'Big', min: 25, sparks: 5 },
 ] as const;
 
 let seq = 0;
 export const newId = (now = Date.now()) => `${now.toString(36)}${(seq++).toString(36)}`;
 
+/** Sentence case for anything the user types: "text mom" → "Text mom" (DECISIONS: sentence-case copy). */
+export const capFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export function makeBite(text: string, size: Size, order: number, now = Date.now()): Bite {
-  return { id: newId(now), text: text.trim(), size, createdAt: now, order };
+  return { id: newId(now), text: capFirst(text.trim()), size, createdAt: now, order };
 }
 
 /** Bites still on today's plate (daily bites eaten today are hidden until tomorrow). */

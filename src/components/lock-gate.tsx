@@ -50,7 +50,7 @@ export function LockGate({ children }: PropsWithChildren) {
           <View style={[styles.badge, { backgroundColor: colors.primarySoft }]}>
             <LockSimple size={36} weight="fill" color={colors.primary} />
           </View>
-          <Text variant="heading">your bites are locked</Text>
+          <Text variant="heading">Your bites are locked</Text>
           <PressScale
             accessibilityRole="button"
             onPress={() => void tryUnlock()}

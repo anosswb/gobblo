@@ -7,8 +7,8 @@ export async function canUseBiometrics(): Promise<boolean> {
   return (await LocalAuthentication.hasHardwareAsync()) && (await LocalAuthentication.isEnrolledAsync());
 }
 
-export async function unlock(reason = 'unlock your bites'): Promise<boolean> {
+export async function unlock(reason = 'Unlock your bites'): Promise<boolean> {
   if (Platform.OS === 'web') return true;
-  const r = await LocalAuthentication.authenticateAsync({ promptMessage: reason, cancelLabel: 'not now' });
+  const r = await LocalAuthentication.authenticateAsync({ promptMessage: reason, cancelLabel: 'Not now' });
   return r.success;
 }

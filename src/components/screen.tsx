@@ -92,7 +92,7 @@ export function Screen({
           {back ? (
             <PressScale
               accessibilityRole="button"
-              accessibilityLabel="back"
+              accessibilityLabel="Back"
               hitSlop={6}
               onPress={backOrHome}>
               <Glass interactive radius={22} style={styles.backBtn}>

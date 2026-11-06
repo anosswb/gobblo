@@ -47,27 +47,27 @@ export function RemindersScreen() {
   const exit = FadeOut.duration(duration.quick);
 
   return (
-    <Screen back title="leaving soon">
-      <Text variant="subhead" tone="ink2" style={styles.intro}>tell me when you have to leave. i’ll nudge you before, so you can wrap up the tiny thing.</Text>
+    <Screen back title="Leaving soon">
+      <Text variant="subhead" tone="ink2" style={styles.intro}>Tell me when you have to leave. I’ll nudge you before, so you can wrap up the tiny thing.</Text>
 
-      <Section title="new">
-        <Row stacked label="what is it?" right={
+      <Section title="New">
+        <Row stacked label="What is it?" right={
           <TextInput
             value={text}
             onChangeText={setText}
-            placeholder="dentist, class, bus…"
+            placeholder="Dentist, class, bus…"
             placeholderTextColor={colors.ink3}
             maxLength={60}
             returnKeyType="done"
-            accessibilityLabel="what is it?"
+            accessibilityLabel="What is it?"
             style={[styles.input, fonts.body, { color: colors.ink, backgroundColor: colors.fill }]}
           />
         } />
-        <Row label="i leave at" hint={new Date(at).getDate() === now.getDate() ? 'today' : 'tomorrow'} right={
-          <TimeStepper label="i leave at" minutes={clock} onChange={setClock} format={fmt} />
+        <Row label="I leave at" hint={new Date(at).getDate() === now.getDate() ? 'Today' : 'Tomorrow'} right={
+          <TimeStepper label="I leave at" minutes={clock} onChange={setClock} format={fmt} />
         } />
-        <Row last stacked label="nudge me before" right={
-          <Chips accessibilityLabel="nudge me before" value={lead} onChange={setLead}
+        <Row last stacked label="Nudge me before" right={
+          <Chips accessibilityLabel="Nudge me before" value={lead} onChange={setLead}
             options={[{ value: '10', label: '10 min' }, { value: '20', label: '20 min' }, { value: '30', label: '30 min' }, { value: '45', label: '45 min' }]} />
         } />
       </Section>
@@ -78,21 +78,21 @@ export function RemindersScreen() {
           if (!text.trim()) {
             haptics.warning();
             play('nope');
-            toast('type what it is first. “bus” works.');
+            toast('Type what it is first. “Bus” works.');
             return;
           }
           add({ text: text.trim(), at, leadMin: Number(lead) });
           haptics.success();
           play('spark');
           setText('');
-          toast(nudge === 'off' ? 'saved. (it still nudges, even with nudges off)' : 'saved. i’ll tap you on the shoulder ✦');
+          toast(nudge === 'off' ? 'Saved. (It still nudges, even with nudges off)' : 'Saved. I’ll tap you on the shoulder ✦');
         }}
         style={[styles.cta, { backgroundColor: colors.primary }]}>
-        <Text variant="bodyBold" tone="onPrimary">add reminder</Text>
+        <Text variant="bodyBold" tone="onPrimary">Add reminder</Text>
       </PressScale>
 
       {reminders.length > 0 && (
-        <Section title="coming up">
+        <Section title="Coming up">
           {reminders
             .slice()
             .sort((a, b) => a.at - b.at)
@@ -101,9 +101,9 @@ export function RemindersScreen() {
                 <Row
                   last={i === list.length - 1}
                   label={r.text}
-                  hint={`leave ${formatEndsAt(r.at, clock24h)} · nudge ${r.leadMin} min before${r.at < openedAt ? ' · done' : ''}`}
+                  hint={`Leave ${formatEndsAt(r.at, clock24h)} · nudge ${r.leadMin} min before${r.at < openedAt ? ' · done' : ''}`}
                   right={
-                    <PressScale accessibilityRole="button" accessibilityLabel={`delete ${r.text}`} hitSlop={10} onPress={() => { haptics.light(); remove(r.id); }}>
+                    <PressScale accessibilityRole="button" accessibilityLabel={`Delete ${r.text}`} hitSlop={10} onPress={() => { haptics.light(); remove(r.id); }}>
                       <Icon name="trash" size={20} color={colors.danger} />
                     </PressScale>
                   }

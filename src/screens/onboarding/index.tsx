@@ -274,7 +274,7 @@ export function OnboardingScreen() {
                   </PressScale>
                 </View>
                 <Chips<PetColor>
-                  accessibilityLabel="colour"
+                  accessibilityLabel="Colour"
                   value={color}
                   onChange={setColor}
                   options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: COLOR_LABEL[c], swatch: petColors[c] }))}

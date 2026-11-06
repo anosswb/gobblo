@@ -33,7 +33,7 @@ Rules: text on reward (lime) is always `ink` light value (#1B1530) in both theme
 - Display: **Bricolage Grotesque** 600/700/800 (`@expo-google-fonts/bricolage-grotesque`). Chosen over rounded "kids" fonts so the app feels premium, not childish (docs/11)
 - Body: **Figtree** 500/700 (`@expo-google-fonts/figtree`)
 - Scale (only 4 + numerals): 13 / 16 / 22 / 34. Timer numerals 40–56 with `fontVariant: ['tabular-nums']`.
-- Lowercase UI copy. Letter spacing −0.5 on 34, −0.3 on 22.
+- Sentence-case UI copy (capital first letter, "I", ADHD; changed 2026-11-06, DECISIONS.md). Letter spacing −0.5 on 34, −0.3 on 22.
 - Respect font scaling, capped with `maxFontSizeMultiplier={1.4}` on display text.
 
 ## Spacing, radius, elevation

@@ -29,23 +29,23 @@ export function ClosetScreen() {
   const [stage, setStage] = useState(String(current));
 
   return (
-    <Screen eyebrow="hats, colours, rooms soon" title="closet">
+    <Screen eyebrow="Hats, colours, rooms soon" title="Closet">
       <View style={[styles.preview, { backgroundColor: colors.card }]}>
         <Pet size={150} color={color} mood={mood} stage={Number(stage)} onPress={() => play('boop')} accessibilityLabel={`${pet.name} looks ${mood}`} />
         <Text variant="heading">{pet.name} is {mood}</Text>
         <Text variant="caption" tone="ink2">
-          {Number(stage) === current ? `now: ${STAGES[current].name}` : Number(stage) > current ? `at ${STAGES[Number(stage)].at} ✦: ${STAGES[Number(stage)].name}` : STAGES[Number(stage)].name}
+          {Number(stage) === current ? `Now: ${STAGES[current].name}` : Number(stage) > current ? `At ${STAGES[Number(stage)].at} ✦: ${STAGES[Number(stage)].name}` : STAGES[Number(stage)].name}
         </Text>
         <View style={styles.full}>
           <Segmented
-            accessibilityLabel="evolution preview"
+            accessibilityLabel="Evolution preview"
             value={stage}
             onChange={setStage}
-            options={STAGES.map((_, i) => ({ value: String(i), label: `lv ${i + 1}` }))}
+            options={STAGES.map((_, i) => ({ value: String(i), label: `Lv ${i + 1}` }))}
           />
         </View>
         <Chips<PetColor>
-          accessibilityLabel="colour preview"
+          accessibilityLabel="Colour preview"
           value={color}
           onChange={setColor}
           options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: COLOR_LABEL[c], swatch: petColors[c] }))}
