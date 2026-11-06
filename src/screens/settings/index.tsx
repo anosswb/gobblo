@@ -6,7 +6,7 @@ import { Linking } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
-import { Chips, Row, Section, Stepper } from '@/components/settings-parts';
+import { Chips, IconTile, Row, Section, Stepper } from '@/components/settings-parts';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { Toggle } from '@/components/toggle';
@@ -58,7 +58,7 @@ export function SettingsScreen() {
           <Chips<Accent> accessibilityLabel={t.accent} value={s.accent} onChange={set('accent')}
             options={(Object.keys(accents) as Accent[]).map((a) => ({ value: a, label: accents[a].label, swatch: accents[a][scheme][0] }))} />
         } />
-        <Row label={t.reduceMotion} hint={t.reduceMotionHint} right={<Toggle accessibilityLabel={t.reduceMotion} value={s.reduceMotion} onChange={set('reduceMotion')} />} />
+        <Row leading={<IconTile name="motion" color="indigo" />} label={t.reduceMotion} hint={t.reduceMotionHint} right={<Toggle accessibilityLabel={t.reduceMotion} value={s.reduceMotion} onChange={set('reduceMotion')} />} />
         <Row last stacked label={t.confetti} right={
           <Segmented accessibilityLabel={t.confetti} value={s.confetti} onChange={set('confetti')}
             options={[{ value: 'lots', label: t.lots }, { value: 'little', label: t.little }, { value: 'none', label: t.none }]} />
@@ -66,7 +66,7 @@ export function SettingsScreen() {
       </Section>
 
       <Section title={t.soundFeel}>
-        <Row label={t.sounds} right={<Toggle accessibilityLabel={t.sounds} value={s.sound} onChange={set('sound')} />} />
+        <Row leading={<IconTile name="sound" color="pink" />} label={t.sounds} right={<Toggle accessibilityLabel={t.sounds} value={s.sound} onChange={set('sound')} />} />
         <Row stacked label={t.volume} right={
           <Segmented accessibilityLabel={t.volume} value={s.volume >= 0.85 ? '1' : s.volume >= 0.55 ? '0.7' : '0.4'}
             onChange={(v) => { update({ volume: Number(v) }); setTimeout(() => play('pop'), 50); }}
@@ -76,7 +76,7 @@ export function SettingsScreen() {
           <Segmented accessibilityLabel={t.haptics} value={s.haptics} onChange={(v) => { update({ haptics: v }); setTimeout(() => haptics.medium(), 30); }}
             options={[{ value: 'off', label: t.off }, { value: 'soft', label: t.soft }, { value: 'strong', label: t.strong }]} />
         } />
-        <Row last label={t.mix} hint={t.mixHint} right={<Toggle accessibilityLabel={t.mix} value={s.mixWithMusic} onChange={set('mixWithMusic')} />} />
+        <Row leading={<IconTile name="music" color="red" />} last label={t.mix} hint={t.mixHint} right={<Toggle accessibilityLabel={t.mix} value={s.mixWithMusic} onChange={set('mixWithMusic')} />} />
       </Section>
 
       <Section title={t.nudges} footer={t.nudgeFooter}>
@@ -89,13 +89,13 @@ export function SettingsScreen() {
             onChange={(v) => { update({ nudgeSound: v }); previewNudgeSound(v); }}
             options={[{ value: 'boop', label: '🫧 boop' }, { value: 'chime', label: '🔔 chime' }, { value: 'pop', label: '🍿 pop' }, { value: 'loud', label: '📣 loud' }]} />
         } />
-        <Row label={`${t.quiet} · ${t.from}`} hint={t.quietHint} right={
+        <Row leading={<IconTile name="moon" color="indigo" />} label={`${t.quiet} · ${t.from}`} hint={t.quietHint} right={
           <Stepper label={t.from} value={s.quietStart} min={0} max={23} format={(h) => hourLabel(h, s.clock24h)} onChange={set('quietStart')} />
         } />
-        <Row label={`${t.quiet} · ${t.to}`} right={
+        <Row leading={<IconTile name="moon" color="indigo" />} label={`${t.quiet} · ${t.to}`} right={
           <Stepper label={t.to} value={s.quietEnd} min={0} max={23} format={(h) => hourLabel(h, s.clock24h)} onChange={set('quietEnd')} />
         } />
-        <Row last label={t.leaving} hint={reminders.length ? `${reminders.length} set · ${t.leavingHint}` : t.leavingHint}
+        <Row leading={<IconTile name="walk" color="orange" />} last label={t.leaving} hint={reminders.length ? `${reminders.length} set · ${t.leavingHint}` : t.leavingHint}
           onPress={() => router.push('/reminders')} />
       </Section>
 
@@ -110,7 +110,7 @@ export function SettingsScreen() {
             onChange={(v) => { update({ focusSound: v }); startLoop(v); setTimeout(() => stopLoop(), 2500); }}
             options={[{ value: 'none', label: t.soundNone }, { value: 'brown', label: `🟤 ${t.brown}` }, { value: 'rain', label: `🌧 ${t.rain}` }, { value: 'keys', label: `⌨️ ${t.keys}` }]} />
         } />
-        <Row last label={t.oneThing} hint={t.oneThingHint} right={<Toggle accessibilityLabel={t.oneThing} value={s.oneThingMode} onChange={set('oneThingMode')} />} />
+        <Row leading={<IconTile name="target" color="red" />} last label={t.oneThing} hint={t.oneThingHint} right={<Toggle accessibilityLabel={t.oneThing} value={s.oneThingMode} onChange={set('oneThingMode')} />} />
       </Section>
 
       <Section title={t.petYou}>
@@ -118,9 +118,9 @@ export function SettingsScreen() {
           <Segmented accessibilityLabel={t.petTalk} value={s.petTalk} onChange={set('petTalk')}
             options={[{ value: 'chatty', label: t.chatty }, { value: 'quiet', label: t.quietTalk }, { value: 'silent', label: t.silent }]} />
         } />
-        <Row label={t.autoSleep} right={<Toggle accessibilityLabel={t.autoSleep} value={s.autoSleep} onChange={set('autoSleep')} />} />
-        <Row label={t.mindful} hint={t.mindfulHint} right={<Toggle accessibilityLabel={t.mindful} value={s.mindfulNote} onChange={set('mindfulNote')} />} />
-        <Row last label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
+        <Row leading={<IconTile name="bed" color="teal" />} label={t.autoSleep} right={<Toggle accessibilityLabel={t.autoSleep} value={s.autoSleep} onChange={set('autoSleep')} />} />
+        <Row leading={<IconTile name="leaf" color="green" />} label={t.mindful} hint={t.mindfulHint} right={<Toggle accessibilityLabel={t.mindful} value={s.mindfulNote} onChange={set('mindfulNote')} />} />
+        <Row leading={<IconTile name="heart" color="pink" />} last label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
       </Section>
 
       <Section title={t.time}>
@@ -128,17 +128,17 @@ export function SettingsScreen() {
           <Segmented accessibilityLabel={t.weekStart} value={s.weekStartsMonday ? 'mon' : 'sun'} onChange={(v) => update({ weekStartsMonday: v === 'mon' })}
             options={[{ value: 'mon', label: t.monday }, { value: 'sun', label: t.sunday }]} />
         } />
-        <Row last label={t.clock24} right={<Toggle accessibilityLabel={t.clock24} value={s.clock24h} onChange={set('clock24h')} />} />
+        <Row leading={<IconTile name="clock" color="gray" />} last label={t.clock24} right={<Toggle accessibilityLabel={t.clock24} value={s.clock24h} onChange={set('clock24h')} />} />
       </Section>
 
       <Section title={t.privacy} footer={t.dataLocal}>
-        <Row label={t.lock} hint={bioOk ? t.lockHint : t.lockUnavailable} right={
+        <Row leading={<IconTile name="lock" color="green" />} label={t.lock} hint={bioOk ? t.lockHint : t.lockUnavailable} right={
           <Toggle accessibilityLabel={t.lock} disabled={!bioOk} value={s.biometricLock}
             onChange={async (v) => { if (await unlock()) update({ biometricLock: v }); }} />
         } />
-        <Row label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('couldn’t export. try again?'))} />
-        <Row label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }} />
-        <Row last danger label={armed ? t.resetConfirm : t.reset} hint={t.resetHint}
+        <Row leading={<IconTile name="share" color="blue" />} label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('couldn’t export. try again?'))} />
+        <Row leading={<IconTile name="download" color="blue" />} label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }} />
+        <Row leading={<IconTile name="reset" color="red" />} last danger label={armed ? t.resetConfirm : t.reset} hint={t.resetHint}
           onPress={() => {
             if (!armed) { haptics.warning(); setArmed(true); return; }
             resetAll();
@@ -148,11 +148,11 @@ export function SettingsScreen() {
       </Section>
 
       <Section title={t.about}>
-        <Row label={t.version} right={<Text tone="ink2">{Constants.expoConfig?.version ?? '–'}</Text>} />
-        <Row label={`${APP_NAME} ${t.notMedical}`} />
-        <Row label={t.privacyPolicy} onPress={() => void WebBrowser.openBrowserAsync(LINKS.privacy)} />
-        <Row label={t.terms} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)} />
-        <Row last label={t.contact} onPress={() => void Linking.openURL(`mailto:${LINKS.supportEmail}`)} />
+        <Row leading={<IconTile name="info" color="gray" />} label={t.version} right={<Text tone="ink2">{Constants.expoConfig?.version ?? '–'}</Text>} />
+        <Row leading={<IconTile name="heart" color="gray" />} label={`${APP_NAME} ${t.notMedical}`} />
+        <Row leading={<IconTile name="doc" color="gray" />} label={t.privacyPolicy} onPress={() => void WebBrowser.openBrowserAsync(LINKS.privacy)} />
+        <Row leading={<IconTile name="doc" color="gray" />} label={t.terms} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)} />
+        <Row leading={<IconTile name="mail" color="blue" />} last label={t.contact} onPress={() => void Linking.openURL(`mailto:${LINKS.supportEmail}`)} />
       </Section>
     </Screen>
   );

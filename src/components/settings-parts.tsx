@@ -1,12 +1,12 @@
 import { useEffect, useRef, type PropsWithChildren, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Icon } from '@/components/icon';
+import { Icon, type IconName } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { haptics } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
-import { radius, space } from '@/theme/tokens';
+import { radius, space, tiles, type TileColor } from '@/theme/tokens';
 
 /**
  * iOS inset-grouped list (Settings, Reminders). Header and footer in footnote grey, rows on
@@ -82,8 +82,13 @@ export function Row({
 }
 
 /** A small rounded-square icon tile, like iOS Settings rows. */
-export function IconTile({ children, color }: PropsWithChildren<{ color: string }>) {
-  return <View style={[styles.tile, { backgroundColor: color }]}>{children}</View>;
+export function IconTile({ name, color }: { name: IconName; color: TileColor }) {
+  const { colors } = useTheme();
+  return (
+    <View style={[styles.tile, { backgroundColor: tiles[color] }]}>
+      <Icon name={name} size={16} color={colors.onPrimary} />
+    </View>
+  );
 }
 
 /** Wrapping capsule choices (sounds, tints…). Selected = tinted. */

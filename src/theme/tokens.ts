@@ -138,6 +138,21 @@ export const accents = {
   sunset: { light: ['#C93400', '#A32A00'], dark: ['#FF9F0A', '#CC7F08'], label: 'orange' },
 } as const;
 
+/** iOS Settings-style icon tiles (system colours, same in both schemes; the glyph is white). */
+export const tiles = {
+  red: '#FF3B30',
+  orange: '#FF9500',
+  yellow: '#FFCC00',
+  green: '#34C759',
+  teal: '#30B0C7',
+  blue: '#007AFF',
+  indigo: '#5856D6',
+  purple: '#AF52DE',
+  pink: '#FF2D55',
+  gray: '#8E8E93',
+} as const;
+export type TileColor = keyof typeof tiles;
+
 /** Pet body colours (illustration, not UI). */
 export const petColors = {
   pink: '#FF5C9D',
