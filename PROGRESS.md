@@ -40,7 +40,8 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 - Brain dump (rule-based chop, 5 tests), Spin picker drum, swipe actions on bites, Reminders time capsule.
 - Onboarding (hatch by feeding), pet name/colour + replay hatching in Settings, iOS icon tiles in Settings.
 - App icon from the pet (scripts/gen-icons.py): iOS 26 Icon Composer layers + Android adaptive + themed.
-- Needs a phone: swipe gestures, Liquid Glass (iOS 26), SF Symbols, haptics feel, notification prompt.
+- Drag-to-feed (hold the food, drag onto the pet), small-screen layouts (SE / 360 dp), motion audit, lint warnings 0.
+- Needs a phone: swipe + drag gestures, Liquid Glass (iOS 26), SF Symbols, haptics feel, notification prompt, new icons/splash (need a new APK).
 
 ## Next
 - Dev build on Anass's phone (he is logged in to EAS).
