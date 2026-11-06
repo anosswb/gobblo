@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -56,6 +56,8 @@ export function FocusScreen() {
   useSafeKeepAwake();
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
+  // short phones (iPhone SE, 360×640 Android): smaller ring, numerals and pet so nothing clips
+  const compact = useWindowDimensions().height < 720;
   const focus = useAppStore((s) => s.focus);
   const pet = useAppStore((s) => s.pet);
   const stage = usePetStage();
@@ -216,8 +218,8 @@ export function FocusScreen() {
           <Text variant="subhead" tone="onFocus2" numberOfLines={1} style={styles.workingOn}>
             {f.workingOn} · {focus.biteText}
           </Text>
-          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={food.emoji} />
-          <Text variant="timer" tone="onFocus" accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
+          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={food.emoji} size={compact ? 168 : 224} />
+          <Text variant="timer" tone="onFocus" style={compact ? styles.timerCompact : undefined} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
             {formatClock(left)}
           </Text>
           <Text variant="subhead" tone="onFocus2">
@@ -226,8 +228,8 @@ export function FocusScreen() {
         </View>
 
         <View style={styles.petRow}>
-          <Pet size={92} color={pet.color} mood={petMood} stage={stage} headphones working={!paused && !ended} />
-          <View style={[styles.bubble, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
+          <Pet size={compact ? 70 : 92} color={pet.color} mood={petMood} stage={stage} headphones working={!paused && !ended} />
+          <View style={[styles.bubble, compact && styles.bubbleCompact, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
             <Animated.View key={line} entering={textIn}>
               <Text variant="body" tone="onFocus">{line}</Text>
             </Animated.View>
@@ -328,6 +330,8 @@ const styles = StyleSheet.create({
   petRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.m },
   bubble: { flex: 1, borderRadius: 22, borderBottomStartRadius: 6, padding: space.l, marginBottom: space.xxl, borderWidth: StyleSheet.hairlineWidth },
   controls: { gap: space.m },
+  timerCompact: { fontSize: 58, lineHeight: 64 },
+  bubbleCompact: { marginBottom: space.m, padding: space.m },
   row: { flexDirection: 'row', gap: space.m },
   flex: { flex: 1 },
   chip: { flex: 1, minHeight: 50, borderRadius: radius.button, flexDirection: 'row', gap: space.s, alignItems: 'center', justifyContent: 'center' },

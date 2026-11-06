@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
@@ -51,6 +51,9 @@ export function HomeScreen() {
   const toggleDaily = useAppStore((s) => s.toggleDaily);
   const startFocus = useAppStore((s) => s.startFocus);
 
+  const { height: screenH } = useWindowDimensions();
+  // the stage shares the first screen with the plate: ~38 % of the height, 240–330 pt
+  const stageH = Math.round(Math.min(330, Math.max(240, screenH * 0.38)));
   const [openedAt] = useState(() => new Date());
   const [text, setText] = useState('');
   const [size, setSize] = useState<Size>(1);
@@ -158,7 +161,7 @@ export function HomeScreen() {
         </View>
       }>
       {/* hero: the pet on its stage */}
-      <View style={styles.stage}>
+      <View style={[styles.stage, { height: stageH }]}>
         <LinearGradient colors={stageColors} style={StyleSheet.absoluteFill} />
         <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none">
           <Defs>
@@ -193,7 +196,7 @@ export function HomeScreen() {
         <View style={styles.pet}>
           <Burst id={burst} />
           <Pet
-            size={128}
+            size={stageH < 290 ? 104 : 128}
             color={pet.color}
             mood={mood}
             stage={stage}
@@ -328,7 +331,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { textAlign: 'center' },
   sparks: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.m, height: 32, borderRadius: radius.chip, marginBottom: space.xs },
-  stage: { height: 330, borderRadius: radius.scene, overflow: 'hidden' },
+  stage: { borderRadius: radius.scene, overflow: 'hidden' },
   stageTop: { flexDirection: 'row', justifyContent: 'space-between', padding: space.m, gap: space.s },
   chip: { flexDirection: 'row', alignItems: 'center', gap: space.s, paddingHorizontal: space.m, height: 36 },
   chipText: { fontWeight: '600' },
