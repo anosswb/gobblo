@@ -33,13 +33,26 @@ function player(key: string, source: number): AudioPlayer {
   return p;
 }
 
-/** Respect the in-app sound toggle; iOS silent switch is respected by default (playsInSilentMode false). */
+/**
+ * Audio mode. With playsInSilentMode false, expo-audio plays NOTHING while the phone is on
+ * silent or vibrate (Android checks the ringer mode before every play). Most people keep
+ * their phone on vibrate, so "sound on silent" is a setting, on by default, picked in onboarding.
+ */
 export async function configureAudio() {
   await setAudioModeAsync({
-    playsInSilentMode: false,
+    playsInSilentMode: settings().soundOnSilent,
     interruptionMode: settings().mixWithMusic ? 'mixWithOthers' : 'duckOthers',
     shouldPlayInBackground: true, // focus loops keep going when the screen locks
   });
+}
+
+/** Create the short sound players early so the first tap already has a loaded sound. */
+export function preloadSounds() {
+  try {
+    (Object.keys(SFX) as Sfx[]).forEach((k) => player(k, SFX[k]));
+  } catch {
+    // sound is never critical
+  }
 }
 
 export function play(name: Sfx, opts: { force?: boolean } = {}) {
@@ -48,9 +61,10 @@ export function play(name: Sfx, opts: { force?: boolean } = {}) {
   try {
     const p = player(name, SFX[name]);
     p.volume = s.volume;
-    void p.seekTo(0);
+    if (p.currentTime > 0) void p.seekTo(0);
     p.play();
-  } catch {
+  } catch (e) {
+    if (__DEV__) console.warn('[sound]', name, e);
     // sound is never critical
   }
 }

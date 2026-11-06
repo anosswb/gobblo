@@ -22,15 +22,15 @@ export function inQuietHours(hour: number, quietStart: number, quietEnd: number)
 }
 
 const DAILY_LINES = [
-  'one tiny bite? 2 minutes, that’s all i ask.',
-  'i’m hungry for one small task 🍬',
-  'starting > finishing. pick one bite?',
-  'we’re doing ONE thing. one.',
-  'psst. 2 minutes. you + me.',
-  'your brain isn’t lazy. it’s hungry.',
+  'One tiny bite? 2 minutes, that’s all I ask.',
+  'I’m hungry for one small task 🍬',
+  'Starting > finishing. Pick one bite?',
+  'We’re doing ONE thing. One.',
+  'Psst. 2 minutes. You + me.',
+  'Your brain isn’t lazy. It’s hungry.',
 ];
 
-export const COMEBACK_LINE = 'i napped. zero guilt. one bite?';
+export const COMEBACK_LINE = 'I napped. Zero guilt. One bite?';
 
 export function planNudges(opts: {
   level: NudgeLevel;
@@ -47,7 +47,7 @@ export function planNudges(opts: {
   // "leaving soon" reminders are asked for by the user, so they ignore the level (still never in the past).
   for (const r of opts.reminders ?? []) {
     const at = new Date(r.at - r.leadMin * 60_000);
-    if (at > now) out.push({ at, kind: 'leaving', text: `${r.leadMin} min until “${r.text}”. wrap up the tiny thing 🧭` });
+    if (at > now) out.push({ at, kind: 'leaving', text: `${r.leadMin} min until “${r.text}”. Wrap up the tiny thing 🧭` });
   }
 
   if (level === 'off') return out.sort((a, b) => +a.at - +b.at);

@@ -50,7 +50,7 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 - **Rating prompt:** only via `expo-store-review`, only after the 3rd fed task AND at least 2 days after install, max once per app version. Never in the first session.
 - **Money per platform** (docs/06): `MONETIZATION = Platform.select({ ios: 'iap', android: 'ads' })`. Android = AdMob ads only (rewarded first, never in onboarding, Focus, Feed, Evolution or Brain dump). iOS = one-time Plus purchase via RevenueCat, no ads. Use Google's TEST ad unit IDs in development, real IDs only in the production profile via env vars.
 - **App name is a constant** (`src/config/app.ts` → `APP_NAME`). The name may change after the trademark check, so never hard-code it in copy.
-- Copy tone: lowercase, warm, short, Gen-Z but not cringe. No guilt words ("failed", "missed", "lost your streak").
+- Copy tone: sentence case (capital first letter of every sentence, "I", proper acronyms like ADHD and Face ID; Anass's call 2026-11-06, see DECISIONS.md), warm, short, Gen-Z but not cringe. No guilt words ("failed", "missed", "lost your streak").
 
 ## How to work
 - **Plan first.** For every phase or bigger feature: use plan mode, read the relevant docs, look at references (Screenrove, Expo docs), write the plan in `PROGRESS.md`, then build.

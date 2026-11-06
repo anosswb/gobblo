@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
 import { rescheduleNudges } from '@/features/nudges/schedule';
-import { configureAudio } from '@/lib/sound';
+import { configureAudio, preloadSounds } from '@/lib/sound';
 import { snapshot, useAppStore } from '@/state/app-store';
 
 /**
@@ -18,6 +18,7 @@ export function useAppLifecycle() {
       void rescheduleNudges(snapshot()).catch(() => undefined);
     };
     refresh();
+    preloadSounds();
     const sub = AppState.addEventListener('change', (s) => {
       if (s === 'active') refresh();
     });
@@ -32,7 +33,7 @@ export function useAppLifecycle() {
       ) {
         void rescheduleNudges(snapshot()).catch(() => undefined);
       }
-      if (s.settings.mixWithMusic !== prev.settings.mixWithMusic) void configureAudio().catch(() => undefined);
+      if (s.settings.mixWithMusic !== prev.settings.mixWithMusic || s.settings.soundOnSilent !== prev.settings.soundOnSilent) void configureAudio().catch(() => undefined);
     });
     return () => {
       sub.remove();

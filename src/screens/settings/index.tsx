@@ -70,10 +70,11 @@ export function SettingsScreen() {
 
       <Section title={t.soundFeel}>
         <Row label={t.sounds} right={<Toggle accessibilityLabel={t.sounds} value={s.sound} onChange={set('sound')} />} />
+        <Row label={t.soundOnSilent} hint={t.soundOnSilentHint} right={<Toggle accessibilityLabel={t.soundOnSilent} value={s.soundOnSilent} onChange={(v) => { update({ soundOnSilent: v }); if (v) setTimeout(() => play('pop'), 150); }} />} />
         <Row stacked label={t.volume} right={
           <Segmented accessibilityLabel={t.volume} value={s.volume >= 0.85 ? '1' : s.volume >= 0.55 ? '0.7' : '0.4'}
             onChange={(v) => { update({ volume: Number(v) }); setTimeout(() => play('pop'), 50); }}
-            options={[{ value: '0.4', label: 'soft' }, { value: '0.7', label: 'medium' }, { value: '1', label: 'loud' }]} />
+            options={[{ value: '0.4', label: 'Soft' }, { value: '0.7', label: 'Medium' }, { value: '1', label: 'Loud' }]} />
         } />
         <Row stacked label={t.haptics} right={
           <Segmented accessibilityLabel={t.haptics} value={s.haptics} onChange={(v) => { update({ haptics: v }); setTimeout(() => haptics.medium(), 30); }}
@@ -90,7 +91,7 @@ export function SettingsScreen() {
         <Row stacked label={t.nudgeSound} hint={t.loudHint} right={
           <Chips<NudgeSound> accessibilityLabel={t.nudgeSound} value={s.nudgeSound}
             onChange={(v) => { update({ nudgeSound: v }); previewNudgeSound(v); }}
-            options={[{ value: 'boop', label: '🫧 boop' }, { value: 'chime', label: '🔔 chime' }, { value: 'pop', label: '🍿 pop' }, { value: 'loud', label: '📣 loud' }]} />
+            options={[{ value: 'boop', label: '🫧 Boop' }, { value: 'chime', label: '🔔 Chime' }, { value: 'pop', label: '🍿 Pop' }, { value: 'loud', label: '📣 Loud' }]} />
         } />
         <Row label={`${t.quiet} · ${t.from}`} hint={t.quietHint} right={
           <Stepper label={t.from} value={s.quietStart} min={0} max={23} format={(h) => hourLabel(h, s.clock24h)} onChange={set('quietStart')} />
@@ -139,7 +140,7 @@ export function SettingsScreen() {
           <Toggle accessibilityLabel={t.lock} disabled={!bioOk} value={s.biometricLock}
             onChange={async (v) => { if (await unlock()) update({ biometricLock: v }); }} />
         } />
-        <Row label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('couldn’t export. try again?'))}
+        <Row label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('Couldn’t export. Try again?'))}
           right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
         <Row label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }}
           right={<CaretRight size={20} weight="bold" color={colors.ink3} />} />
@@ -148,7 +149,7 @@ export function SettingsScreen() {
             if (!armed) { haptics.warning(); setArmed(true); return; }
             resetAll();
             setArmed(false);
-            toast('fresh start. hi again ✦');
+            toast('Fresh start. Hi again ✦');
           }} />
       </Section>
 

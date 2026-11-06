@@ -162,7 +162,7 @@ export function HomeScreen() {
             <Animated.View key={b.id} entering={enter(i)} exiting={reduceMotion ? undefined : FadeOutLeft.duration(duration.fast)} layout={reduceMotion ? undefined : LinearTransition.springify()}>
               <PressScale
                 accessibilityRole="button"
-                accessibilityLabel={`${b.text}. ${FOOD[b.size].label}, about ${FOOD[b.size].min} minutes. tap to start`}
+                accessibilityLabel={`${b.text}. ${FOOD[b.size].label}, about ${FOOD[b.size].min} minutes. Tap to start`}
                 onPress={() => { haptics.select(); play('pop'); setSelected(b); }}
                 style={[styles.bite, { backgroundColor: colors.card, borderColor: colors.line, shadowColor: colors.shadow }]}>
                 <View style={[styles.food, { backgroundColor: colors.cardAlt }]}>

@@ -46,31 +46,31 @@ export function MeScreen() {
   const maxHour = Math.max(1, ...hours);
 
   const tiles = [
-    { label: 'bites eaten', value: stats.eaten },
-    { label: 'minutes focused', value: stats.minutes },
-    { label: 'comeback days', value: stats.comebacks },
-    { label: 'all-time sparks', value: stats.total },
+    { label: 'Bites eaten', value: stats.eaten },
+    { label: 'Minutes focused', value: stats.minutes },
+    { label: 'Comeback days', value: stats.comebacks },
+    { label: 'All-time sparks', value: stats.total },
   ];
 
   return (
     <Screen>
       <View style={styles.header}>
         <View style={styles.flex}>
-          <Text variant="caption" tone="ink2">you + {pet.name}</Text>
-          <Text variant="title">your progress</Text>
+          <Text variant="caption" tone="ink2">You + {pet.name}</Text>
+          <Text variant="title">Your progress</Text>
         </View>
-        <PressScale accessibilityRole="button" accessibilityLabel="settings" hitSlop={8} onPress={() => router.push('/settings')}
+        <PressScale accessibilityRole="button" accessibilityLabel="Settings" hitSlop={8} onPress={() => router.push('/settings')}
           style={[styles.gear, { backgroundColor: colors.card, borderColor: colors.line }]}>
           <GearSix size={24} weight="bold" color={colors.ink} />
         </PressScale>
       </View>
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
-        <Text variant="heading">lv {st.stage + 1} · {STAGES[st.stage].name}</Text>
+        <Text variant="heading">Lv {st.stage + 1} · {STAGES[st.stage].name}</Text>
         <View style={[styles.track, { backgroundColor: colors.cardAlt }]}>
           <View style={[styles.fill, { width: `${Math.max(4, st.progress * 100)}%`, backgroundColor: colors.primary }]} />
         </View>
-        <Text variant="caption" tone="ink2">{st.toNext === null ? 'max level. menace.' : `${st.toNext} ✦ to evolve`}</Text>
+        <Text variant="caption" tone="ink2">{st.toNext === null ? 'Max level. Menace.' : `${st.toNext} ✦ to evolve`}</Text>
       </View>
 
       <View style={styles.tiles}>
@@ -84,23 +84,23 @@ export function MeScreen() {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
         <View style={styles.rowBetween}>
-          <Text variant="heading">this week</Text>
+          <Text variant="heading">This week</Text>
           <Text variant="caption" tone="primary">{meter.bites}/{meter.goal} bites</Text>
         </View>
         <View style={[styles.track, { backgroundColor: colors.cardAlt }]}>
           <View style={[styles.fill, { width: `${Math.max(4, meter.progress * 100)}%`, backgroundColor: colors.reward }]} />
         </View>
         <Text variant="caption" tone="ink2">
-          {meter.daysFed === 0 ? 'a fresh week. one bite starts it.' : `you showed up on ${meter.daysFed} ${meter.daysFed === 1 ? 'day' : 'days'}. it refills every week, nothing to lose.`}
+          {meter.daysFed === 0 ? 'A fresh week. One bite starts it.' : `You showed up on ${meter.daysFed} ${meter.daysFed === 1 ? 'day' : 'days'}. It refills every week, nothing to lose.`}
         </Text>
-        <Segmented accessibilityLabel="chart shows" value={metric} onChange={setMetric}
-          options={[{ value: 'bites', label: 'bites' }, { value: 'minutes', label: 'minutes' }]} />
+        <Segmented accessibilityLabel="Chart shows" value={metric} onChange={setMetric}
+          options={[{ value: 'bites', label: 'Bites' }, { value: 'minutes', label: 'Minutes' }]} />
         <WeekChart days={days} metric={metric} />
       </View>
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
-        <Text variant="heading">your best hours</Text>
-        <View style={styles.heat} accessibilityLabel="bites finished by hour of day">
+        <Text variant="heading">Your best hours</Text>
+        <View style={styles.heat} accessibilityLabel="Bites finished by hour of day">
           {hours.map((n, hIdx) => (
             <View key={hIdx} style={[styles.cell, { backgroundColor: colors.primary, opacity: 0.08 + 0.92 * (n / maxHour) }]} />
           ))}
@@ -116,11 +116,11 @@ export function MeScreen() {
 
       {(settings.goodThingsJar || goodThings.length > 0) && (
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
-          <Text variant="heading">🫙 good things jar</Text>
-          <Text variant="caption" tone="ink2">one small good thing from today. totally optional.</Text>
+          <Text variant="heading">🫙 Good things jar</Text>
+          <Text variant="caption" tone="ink2">One small good thing from today. Totally optional.</Text>
           <View style={[styles.addRow, { backgroundColor: colors.cardAlt }]}>
-            <TextInput value={good} onChangeText={setGood} placeholder="the coffee was perfect…" placeholderTextColor={colors.ink3}
-              maxLength={120} returnKeyType="done" accessibilityLabel="add a good thing"
+            <TextInput value={good} onChangeText={setGood} placeholder="The coffee was perfect…" placeholderTextColor={colors.ink3}
+              maxLength={120} returnKeyType="done" accessibilityLabel="Add a good thing"
               onSubmitEditing={() => {
                 if (!good.trim()) return;
                 addGoodThing(good);
@@ -133,7 +133,7 @@ export function MeScreen() {
           {goodThings.slice(0, 20).map((g) => (
             <Animated.View key={g.id} entering={FadeIn.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} layout={LinearTransition} style={styles.goodRow}>
               <Text style={styles.flex}>✨ {g.text}</Text>
-              <PressScale accessibilityRole="button" accessibilityLabel={`delete ${g.text}`} hitSlop={10} onPress={() => removeGoodThing(g.id)}>
+              <PressScale accessibilityRole="button" accessibilityLabel={`Delete ${g.text}`} hitSlop={10} onPress={() => removeGoodThing(g.id)}>
                 <Trash size={18} weight="bold" color={colors.ink3} />
               </PressScale>
             </Animated.View>

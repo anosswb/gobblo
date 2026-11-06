@@ -49,30 +49,30 @@ export function RemindersScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="leaving soon" />
-      <Text tone="ink2">tell me when you have to leave. i’ll nudge you before, so you can wrap up the tiny thing.</Text>
+      <ScreenHeader title="Leaving soon" />
+      <Text tone="ink2">Tell me when you have to leave. I’ll nudge you before, so you can wrap up the tiny thing.</Text>
 
-      <Section title="new">
-        <Row stacked label="what is it?" right={
+      <Section title="New">
+        <Row stacked label="What is it?" right={
           <TextInput
             value={text}
             onChangeText={setText}
-            placeholder="dentist, class, bus…"
+            placeholder="Dentist, class, bus…"
             placeholderTextColor={colors.ink3}
             maxLength={60}
             returnKeyType="done"
-            accessibilityLabel="what is it?"
+            accessibilityLabel="What is it?"
             style={[styles.input, { color: colors.ink, backgroundColor: colors.cardAlt, fontFamily: fonts.bodyBold }]}
           />
         } />
-        <Row label="i leave at" hint={formatEndsAt(at, clock24h)} right={
+        <Row label="I leave at" hint={formatEndsAt(at, clock24h)} right={
           <View style={styles.time}>
-            <Stepper label="hour" value={hour} min={0} max={23} format={(h) => String(h).padStart(2, '0')} onChange={setHour} />
-            <Stepper label="minutes" value={minute / 5} min={0} max={11} format={(m) => String(m * 5).padStart(2, '0')} onChange={(m) => setMinute(m * 5)} />
+            <Stepper label="Hour" value={hour} min={0} max={23} format={(h) => String(h).padStart(2, '0')} onChange={setHour} />
+            <Stepper label="Minutes" value={minute / 5} min={0} max={11} format={(m) => String(m * 5).padStart(2, '0')} onChange={(m) => setMinute(m * 5)} />
           </View>
         } />
-        <Row last stacked label="nudge me before" right={
-          <Chips accessibilityLabel="nudge me before" value={lead} onChange={setLead}
+        <Row last stacked label="Nudge me before" right={
+          <Chips accessibilityLabel="Nudge me before" value={lead} onChange={setLead}
             options={[{ value: '10', label: '10 min' }, { value: '20', label: '20 min' }, { value: '30', label: '30 min' }, { value: '45', label: '45 min' }]} />
         } />
       </Section>
@@ -83,21 +83,21 @@ export function RemindersScreen() {
           if (!text.trim()) {
             haptics.warning();
             play('nope');
-            toast('type what it is first. “bus” works.');
+            toast('Type what it is first. “Bus” works.');
             return;
           }
           add({ text: text.trim(), at, leadMin: Number(lead) });
           haptics.success();
           play('spark');
           setText('');
-          toast(nudge === 'off' ? 'saved. (it still nudges, even with nudges off)' : 'saved. i’ll tap you on the shoulder ✦');
+          toast(nudge === 'off' ? 'Saved. (It still nudges, even with nudges off)' : 'Saved. I’ll tap you on the shoulder ✦');
         }}
         style={[styles.cta, { backgroundColor: colors.primary, borderBottomColor: colors.primaryDeep }]}>
-        <Text variant="bodyBold" tone="onPrimary">add reminder</Text>
+        <Text variant="bodyBold" tone="onPrimary">Add reminder</Text>
       </PressScale>
 
       {reminders.length > 0 && (
-        <Section title="coming up">
+        <Section title="Coming up">
           {reminders
             .slice()
             .sort((a, b) => a.at - b.at)
@@ -106,9 +106,9 @@ export function RemindersScreen() {
                 <Row
                   last={i === list.length - 1}
                   label={r.text}
-                  hint={`leave ${formatEndsAt(r.at, clock24h)} · nudge ${r.leadMin} min before${r.at < openedAt ? ' · done' : ''}`}
+                  hint={`Leave ${formatEndsAt(r.at, clock24h)} · Nudge ${r.leadMin} min before${r.at < openedAt ? ' · done' : ''}`}
                   right={
-                    <PressScale accessibilityRole="button" accessibilityLabel={`delete ${r.text}`} hitSlop={10} onPress={() => { haptics.light(); remove(r.id); }}>
+                    <PressScale accessibilityRole="button" accessibilityLabel={`Delete ${r.text}`} hitSlop={10} onPress={() => { haptics.light(); remove(r.id); }}>
                       <Trash size={22} weight="bold" color={colors.ink3} />
                     </PressScale>
                   }

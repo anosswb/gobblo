@@ -14,7 +14,7 @@ export function ScreenHeader({ title }: { title: string }) {
     <View style={styles.wrap}>
       <PressScale
         accessibilityRole="button"
-        accessibilityLabel="back"
+        accessibilityLabel="Back"
         hitSlop={10}
         onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         style={[styles.back, { backgroundColor: colors.card, borderColor: colors.line }]}>

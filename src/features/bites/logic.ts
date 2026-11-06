@@ -3,10 +3,10 @@ import { todayKey } from '@/state/schema';
 
 /** Food by size (docs/01). v1 ships emoji; glossy food icons come with the art round. */
 export const FOOD = [
-  { emoji: '🍬', label: 'tiny', min: 2, sparks: 1 },
-  { emoji: '🍪', label: 'small', min: 5, sparks: 2 },
-  { emoji: '🍩', label: 'medium', min: 15, sparks: 3 },
-  { emoji: '🍕', label: 'big', min: 25, sparks: 5 },
+  { emoji: '🍬', label: 'Tiny', min: 2, sparks: 1 },
+  { emoji: '🍪', label: 'Small', min: 5, sparks: 2 },
+  { emoji: '🍩', label: 'Medium', min: 15, sparks: 3 },
+  { emoji: '🍕', label: 'Big', min: 25, sparks: 5 },
 ] as const;
 
 let seq = 0;

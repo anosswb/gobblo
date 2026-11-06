@@ -2,10 +2,10 @@ import type { Session, Stats } from '@/state/schema';
 import { todayKey } from '@/state/schema';
 
 export const STAGES = [
-  { at: 0, name: 'baby blob' },
-  { at: 8, name: 'lil gremlin' },
-  { at: 20, name: 'big chonk' },
-  { at: 40, name: 'cosmic menace' },
+  { at: 0, name: 'Baby blob' },
+  { at: 8, name: 'Lil gremlin' },
+  { at: 20, name: 'Big chonk' },
+  { at: 40, name: 'Cosmic menace' },
 ] as const;
 
 export function stageOf(total: number): number {
@@ -27,7 +27,7 @@ export function stageProgress(total: number): { stage: number; progress: number;
 
 export type DayBucket = { key: string; label: string; bites: number; minutes: number; isToday: boolean };
 
-const DAY_LABELS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
+const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 /** The current week, 7 local days (week starts Monday or Sunday). Done sessions only. */
 export function weekBuckets(sessions: Session[], now = new Date(), weekStartsMonday = true): DayBucket[] {
@@ -69,11 +69,11 @@ export function hourBuckets(sessions: Session[]): number[] {
 }
 
 export function brainType(stats: Stats, petName: string): { title: string; line: string } {
-  if (!stats.eaten) return { title: 'fresh hatchling', line: `feed ${petName} your first bite to unlock your brain type.` };
+  if (!stats.eaten) return { title: 'Fresh hatchling', line: `Feed ${petName} your first bite to unlock your brain type.` };
   if (stats.starts2 >= 2 && stats.starts2 >= stats.eaten * 0.5)
-    return { title: '2-minute legend', line: 'you beat the start with the smallest possible step. elite.' };
+    return { title: '2-minute legend', line: 'You beat the start with the smallest possible step. Elite.' };
   const top = (Object.keys(stats.byPart) as (keyof Stats['byPart'])[]).sort((a, b) => stats.byPart[b] - stats.byPart[a])[0];
-  if (top === 'night') return { title: 'midnight hyperfocus goblin', line: 'your brain boots up when the sun goes down.' };
-  if (top === 'morning') return { title: 'chaotic early bird', line: 'you get it done before your brain notices.' };
-  return { title: 'side-quest hero', line: 'you turn random afternoons into wins.' };
+  if (top === 'night') return { title: 'Midnight hyperfocus goblin', line: 'Your brain boots up when the sun goes down.' };
+  if (top === 'morning') return { title: 'Chaotic early bird', line: 'You get it done before your brain notices.' };
+  return { title: 'Side-quest hero', line: 'You turn random afternoons into wins.' };
 }

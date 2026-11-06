@@ -40,7 +40,17 @@ import { radius, space } from '@/theme/tokens';
 import { TimerRing as TimerRingSlot } from './timer-ring';
 
 const f = en.focus;
-const exitFocus = () => (router.canGoBack() ? router.back() : router.replace('/'));
+/**
+ * Leave Focus exactly once. Finishing clears the session, which re-renders <NoSession />, which
+ * would leave a second time: that second router.back() was the "GO_BACK not handled" error.
+ */
+let exiting = false;
+const exitFocus = () => {
+  if (exiting) return;
+  exiting = true;
+  if (router.canGoBack()) router.back();
+  else router.replace('/');
+};
 const SOUNDS: FocusSound[] = ['none', 'brown', 'rain', 'keys'];
 const SOUND_LABEL: Record<FocusSound, string> = { none: 'silence', brown: 'brown noise', rain: 'rain', keys: 'soft keys' };
 
@@ -64,6 +74,11 @@ export function FocusScreen() {
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [line, setLine] = useState<string>(() => (focus?.mode === '2min' ? f.two : f.working(pet.name)));
   const endedChime = useRef(false);
+
+  // a fresh Focus screen may leave again
+  useEffect(() => {
+    exiting = false;
+  }, []);
 
   // clock: 4 updates a second is plenty for mm:ss (the ring animates on the UI thread)
   useEffect(() => {

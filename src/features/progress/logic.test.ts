@@ -34,8 +34,8 @@ describe('insights', () => {
   });
   it('picks a brain type', () => {
     const st = freshState(0).stats;
-    expect(brainType(st, 'Bean').title).toBe('fresh hatchling');
+    expect(brainType(st, 'Bean').title).toBe('Fresh hatchling');
     expect(brainType({ ...st, eaten: 4, starts2: 3 }, 'Bean').title).toBe('2-minute legend');
-    expect(brainType({ ...st, eaten: 4, byPart: { morning: 0, day: 1, night: 3 } }, 'Bean').title).toBe('midnight hyperfocus goblin');
+    expect(brainType({ ...st, eaten: 4, byPart: { morning: 0, day: 1, night: 3 } }, 'Bean').title).toBe('Midnight hyperfocus goblin');
   });
 });

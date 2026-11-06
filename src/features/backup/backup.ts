@@ -15,11 +15,11 @@ export function makeBackup(data: PersistedState, now = Date.now()): BackupFile {
 
 /** Validates a parsed file. Returns the data or a short lowercase reason. */
 export function readBackup(raw: unknown): { ok: true; data: PersistedState; version: number } | { ok: false; reason: string } {
-  if (typeof raw !== 'object' || raw === null) return { ok: false, reason: 'that file isn’t a backup.' };
+  if (typeof raw !== 'object' || raw === null) return { ok: false, reason: 'That file isn’t a backup.' };
   const b = raw as Partial<BackupFile>;
   if (typeof b.version !== 'number' || typeof b.data !== 'object' || b.data === null)
-    return { ok: false, reason: 'that file isn’t a backup.' };
-  if (b.version > SCHEMA_VERSION) return { ok: false, reason: 'this backup is from a newer version. update the app first.' };
+    return { ok: false, reason: 'That file isn’t a backup.' };
+  if (b.version > SCHEMA_VERSION) return { ok: false, reason: 'This backup is from a newer version. Update the app first.' };
   return { ok: true, data: b.data as PersistedState, version: b.version };
 }
 
@@ -29,7 +29,7 @@ export async function exportBackup(): Promise<void> {
   if (file.exists) file.delete();
   file.create();
   await file.write(JSON.stringify(makeBackup(snapshot())));
-  await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'save your backup', UTI: 'public.json' });
+  await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'Save your backup', UTI: 'public.json' });
 }
 
 /** Import: pick a file, validate, migrate, replace. Returns a lowercase message for a toast. */
@@ -41,8 +41,8 @@ export async function importBackup(): Promise<{ ok: boolean; message: string }> 
     const parsed = readBackup(JSON.parse(text));
     if (!parsed.ok) return { ok: false, message: parsed.reason };
     useAppStore.getState().importState(parsed.data);
-    return { ok: true, message: 'backup restored. welcome back ✦' };
+    return { ok: true, message: 'Backup restored. Welcome back ✦' };
   } catch {
-    return { ok: false, message: 'couldn’t read that file.' };
+    return { ok: false, message: 'Couldn’t read that file.' };
   }
 }

@@ -97,10 +97,10 @@ export const dark: ColorTokens = {
 
 /** App accent themes (docs/12 #14). Primary + its deep edge, per scheme. Free on both stores. */
 export const accents = {
-  cobalt: { light: ['#3D3BFF', '#2422C2'], dark: ['#6F6CFF', '#3D3BCC'], label: 'cobalt' },
-  berry: { light: ['#D6336C', '#9E1F4D'], dark: ['#FF5C8A', '#C2335F'], label: 'berry' },
-  jade: { light: ['#0E8F68', '#086B4D'], dark: ['#22C993', '#128A63'], label: 'jade' },
-  sunset: { light: ['#E2551F', '#A93A10'], dark: ['#FF8A3D', '#C4601F'], label: 'sunset' },
+  cobalt: { light: ['#3D3BFF', '#2422C2'], dark: ['#6F6CFF', '#3D3BCC'], label: 'Cobalt' },
+  berry: { light: ['#D6336C', '#9E1F4D'], dark: ['#FF5C8A', '#C2335F'], label: 'Berry' },
+  jade: { light: ['#0E8F68', '#086B4D'], dark: ['#22C993', '#128A63'], label: 'Jade' },
+  sunset: { light: ['#E2551F', '#A93A10'], dark: ['#FF8A3D', '#C4601F'], label: 'Sunset' },
 } as const;
 
 export const petColors = {
