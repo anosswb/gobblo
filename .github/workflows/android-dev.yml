@@ -1,0 +1,62 @@
+# Builds the Gobblo Android development APK on GitHub's servers (free minutes, GitHub Student).
+# Run it from GitHub: Actions → "Android dev build" → Run workflow. Download the APK from the run page.
+name: Android dev build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', 'research/**', 'replica/**', 'reference/**', '**/*.md']
+
+concurrency:
+  group: android-dev
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      APP_BUILD_ARCHS: arm64-v8a # modern phones only, faster + less memory
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space (Android NDK builds are big)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
+          df -h /
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install
+        run: npm ci
+
+      - name: Checks (types, lint, tests)
+        run: |
+          npx tsc --noEmit
+          npx expo lint
+          npx jest --ci
+
+      - name: Generate the Android project
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: Build debug APK (development client)
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gobblo-dev-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
