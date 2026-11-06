@@ -23,3 +23,8 @@
 | 2026-11-06 | **Pet rebuilt from GPT's 32-emote sheet** as one SVG rig with 18 moods (`src/pet/pet.tsx`): no outline, light does the edges, blinks, breathes, squishes on tap. Home picks the mood (hungry / happy / love / sleepy) and reacts on add or tap. Closet shows the full mood gallery | the emotes defined the character; a data-driven face keeps every screen consistent |
 | 2026-11-06 | Home stage = time-of-day gradient + glow instead of the flat Flow scene images (images kept in assets) | flat illustrated scenes fought the Apple look; one hero, less noise |
 | 2026-11-06 | Default tint is pink; schema v3 migration moves the old default (cobalt) to pink once, other picks kept | brand = the pet's colour |
+| 2026-11-06 | **Spin = iOS picker drum**, not a casino wheel | same choice-paralysis job (docs/01 §6), but native to the Apple look; ticks slow down like a real picker |
+| 2026-11-06 | **Brain dump shows bites live** while you type (no separate "chop it" step) | one less tap in the core loop (docs/01: every screen should shorten the loop) |
+| 2026-11-06 | **Onboarding built as hatch-by-feeding** (DECISIONS row 2): hook → 1 quiz → type a thought, feed the egg, it cracks and hatches → name (dice) + colour → soft nudge ask (OS prompt only after "yes") | original vs Finch, teaches the core loop, under 60 s |
+| 2026-11-06 | Evolution scene plays only on Home (after the chomp or on return), never behind Focus | the +1 start spark can cross a level while Focus is on top |
+| 2026-11-06 | Swipe on bites: right = start, full left = remove (undo toast) | iOS Mail/Reminders pattern; spec's "swipe right = already did it" left for later because it needs a feed-without-timer rule |

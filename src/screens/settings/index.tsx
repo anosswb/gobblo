@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { Linking, StyleSheet, TextInput } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
@@ -19,7 +19,7 @@ import { en } from '@/i18n/en';
 import { useAppStore } from '@/state/app-store';
 import type { Accent, FocusSound, NudgeSound, Settings } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
-import { accents } from '@/theme/tokens';
+import { accents, fonts, petColors, typeScale, type PetColor } from '@/theme/tokens';
 
 const t = en.settings;
 
@@ -30,7 +30,10 @@ export function SettingsScreen() {
   const update = useAppStore((st) => st.updateSettings);
   const resetAll = useAppStore((st) => st.resetAll);
   const reminders = useAppStore((st) => st.reminders);
-  const { scheme } = useTheme();
+  const { scheme, colors } = useTheme();
+  const pet = useAppStore((st) => st.pet);
+  const patchPet = useAppStore((st) => st.patchPet);
+  const [nameDraft, setNameDraft] = useState(pet.name);
   const [bioOk, setBioOk] = useState(false);
   const [armed, setArmed] = useState(false);
 
@@ -114,13 +117,32 @@ export function SettingsScreen() {
       </Section>
 
       <Section title={t.petYou}>
+        <Row label={t.petName} leading={<IconTile name="heart" color="pink" />} right={
+          <TextInput
+            value={nameDraft}
+            onChangeText={setNameDraft}
+            onEndEditing={() => patchPet({ name: nameDraft.trim() || pet.name })}
+            onSubmitEditing={() => patchPet({ name: nameDraft.trim() || pet.name })}
+            maxLength={16}
+            autoCapitalize="none"
+            returnKeyType="done"
+            accessibilityLabel={t.petName}
+            style={[styles.nameInput, fonts.body, { color: colors.ink2 }]}
+          />
+        } />
+        <Row stacked label={t.petColor} right={
+          <Chips<PetColor> accessibilityLabel={t.petColor} value={pet.color} onChange={(c) => patchPet({ color: c })}
+            options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: c === 'pink' ? 'bubblegum' : c === 'violet' ? 'grape' : c, swatch: petColors[c] }))} />
+        } />
         <Row stacked label={t.petTalk} right={
           <Segmented accessibilityLabel={t.petTalk} value={s.petTalk} onChange={set('petTalk')}
             options={[{ value: 'chatty', label: t.chatty }, { value: 'quiet', label: t.quietTalk }, { value: 'silent', label: t.silent }]} />
         } />
         <Row leading={<IconTile name="bed" color="teal" />} label={t.autoSleep} right={<Toggle accessibilityLabel={t.autoSleep} value={s.autoSleep} onChange={set('autoSleep')} />} />
         <Row leading={<IconTile name="leaf" color="green" />} label={t.mindful} hint={t.mindfulHint} right={<Toggle accessibilityLabel={t.mindful} value={s.mindfulNote} onChange={set('mindfulNote')} />} />
-        <Row leading={<IconTile name="heart" color="pink" />} last label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
+        <Row leading={<IconTile name="heart" color="pink" />} label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
+        <Row leading={<IconTile name="sparkle" color="purple" />} last label={t.replay} hint={t.replayHint}
+          onPress={() => { haptics.light(); update({ onboarded: false }); router.replace('/onboarding'); }} />
       </Section>
 
       <Section title={t.time}>
@@ -157,3 +179,7 @@ export function SettingsScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  nameInput: { minWidth: 110, maxWidth: 170, minHeight: 36, textAlign: 'right', fontSize: typeScale.body },
+});

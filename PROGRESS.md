@@ -35,6 +35,13 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 - Fixed: focus screen went back twice after finishing (GO_BACK warning).
 - Checks: tsc, lint, 29 tests. expo-doctor 18/20 (the 2 fails are network timeouts to exp.host).
 
+## Apple redesign, round 2+ (2026-11-06) — web preview checked
+- Feeding moment (chomp → celebrate + burst), evolution scene (rays, flash, new stage), visible stages (ears / belly + tooth / aura).
+- Brain dump (rule-based chop, 5 tests), Spin picker drum, swipe actions on bites, Reminders time capsule.
+- Onboarding (hatch by feeding), pet name/colour + replay hatching in Settings, iOS icon tiles in Settings.
+- App icon from the pet (scripts/gen-icons.py): iOS 26 Icon Composer layers + Android adaptive + themed.
+- Needs a phone: swipe gestures, Liquid Glass (iOS 26), SF Symbols, haptics feel, notification prompt.
+
 ## Next
 - Dev build on Anass's phone (he is logged in to EAS).
 - Phase 2: the pet (Skia, from R1 art).

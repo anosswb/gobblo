@@ -12,6 +12,7 @@ import {
   type ActiveFocus,
   type Bite,
   type PersistedState,
+  type Pet,
   type Reminder,
   type Session,
   type Settings,
@@ -20,6 +21,7 @@ import {
 
 type Actions = {
   updateSettings: (patch: Partial<Settings>) => void;
+  patchPet: (patch: Partial<Pet>) => void;
   resetAll: () => void;
   importState: (data: PersistedState) => void;
   onAppActive: (now?: Date) => void;
@@ -59,6 +61,7 @@ export const useAppStore = create<AppState>()(
     (set, get) => ({
       ...freshState(),
       updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
+      patchPet: (patch) => set((s) => ({ pet: { ...s.pet, ...patch } })),
       resetAll: () => set(freshState()),
       importState: (data) => set(migrate(data, 0)),
       onAppActive: (now = new Date()) => {
