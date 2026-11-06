@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import { Glass } from '@/components/glass';
@@ -28,6 +28,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, stages, typeScale } from '@/theme/tokens';
 
 import { BiteRow } from './bite-row';
+import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 
 const h = en.home;
 
@@ -59,6 +60,14 @@ export function HomeScreen() {
   const [size, setSize] = useState<Size>(1);
   const [selected, setSelected] = useState<Bite | null>(null);
   const [reaction, setReaction] = useState<Mood | null>(null);
+
+  // drag-to-feed
+  const drag = useFeedDragState();
+  const petTarget = useAnimatedRef<Animated.View>();
+  const [carrying, setCarrying] = useState(false);
+  const [overPet, setOverPet] = useState(false);
+  const [floatEmoji, setFloatEmoji] = useState('🍪');
+  const glow = useAnimatedStyle(() => ({ opacity: drag.shown.get() * (0.35 + 0.65 * drag.over.get()), transform: [{ scale: 0.9 + 0.15 * drag.over.get() }] }));
 
   useEffect(() => {
     if (!reaction) return;
@@ -125,7 +134,7 @@ export function HomeScreen() {
   const belly = Math.min(1, stats.todayEaten / 4);
   const asleep = sky === 'night' && settings.autoSleep && list.length === 0;
   const baseMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'hungry' : 'happy';
-  const mood = reaction ?? baseMood;
+  const mood: Mood = carrying ? (overPet ? 'chomp' : 'hungry') : (reaction ?? baseMood);
   const stageColors = stages[scheme][sky];
   const onStage = sky === 'night' || scheme === 'dark';
 
@@ -152,6 +161,7 @@ export function HomeScreen() {
 
   return (
     <Screen
+      overlay={<FloatingFood emoji={floatEmoji} x={drag.x} y={drag.y} shown={drag.shown} over={drag.over} />}
       eyebrow={dateLine(openedAt)}
       title={h.greeting(openedAt.getHours())}
       right={
@@ -193,8 +203,10 @@ export function HomeScreen() {
           </Animated.View>
         ) : null}
 
+        <Animated.View pointerEvents="none" style={[styles.feedGlow, { backgroundColor: colors.reward }, glow]} />
         <View style={styles.pet}>
           <Burst id={burst} />
+          <Animated.View ref={petTarget}>
           <Pet
             size={stageH < 290 ? 104 : 128}
             color={pet.color}
@@ -206,6 +218,7 @@ export function HomeScreen() {
               setReaction(asleep ? 'tired' : (['excited', 'love', 'celebrating', 'confident'] as Mood[])[Math.floor(Math.random() * 4)]);
             }}
           />
+          </Animated.View>
         </View>
       </View>
 
@@ -221,6 +234,31 @@ export function HomeScreen() {
       </View>
 
       {/* the plate */}
+      <FeedDragProvider
+        value={{
+          target: petTarget,
+          ...drag,
+          onStart: (_id, emoji) => {
+            setFloatEmoji(emoji);
+            setCarrying(true);
+            haptics.light();
+            play('pop');
+          },
+          onOver: (v) => {
+            setOverPet(v);
+            if (v) haptics.select();
+          },
+          onDrop: (id) => {
+            const b = bites.find((x) => x.id === id);
+            haptics.medium();
+            play('boop');
+            if (b) setSelected(b);
+          },
+          onEnd: () => {
+            setCarrying(false);
+            setOverPet(false);
+          },
+        }}>
       <View style={styles.section}>
         <View style={styles.sectionHead}>
           <Text variant="title2" accessibilityRole="header">{h.bites}</Text>
@@ -295,6 +333,8 @@ export function HomeScreen() {
         ) : null}
       </View>
 
+      </FeedDragProvider>
+
       <Evolution stage={evolveTo} onDone={() => setEvolveTo(null)} />
 
       <StartSheet
@@ -353,5 +393,6 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', gap: space.s, padding: space.xl, borderTopWidth: StyleSheet.hairlineWidth },
   cta: { marginTop: space.s, minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   footer: { paddingHorizontal: space.l },
+  feedGlow: { position: 'absolute', bottom: -60, alignSelf: 'center', width: 260, height: 260, borderRadius: 130 },
   noOutline: Platform.select({ web: { outlineStyle: 'none' }, default: {} }) as object,
 });

@@ -19,7 +19,7 @@ export const en = {
     greeting: (h: number) => (h < 5 ? 'night owl hours' : h < 12 ? 'good morning' : h < 18 ? 'good afternoon' : 'good evening'),
     title: 'what are we eating today?',
     bites: 'today’s bites',
-    hint: (name: string) => `tap a bite to start it. ${name} works next to you.`,
+    hint: (name: string) => `tap a bite to start it, or hold the food and drag it to ${name}.`,
     addPlaceholder: 'add a bite… (text mom, laundry)',
     add: 'add',
     emptyTitle: (name: string) => `${name}’s plate is empty`,

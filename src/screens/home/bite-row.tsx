@@ -12,6 +12,8 @@ import type { Bite } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
 
+import { DraggableFood } from './feed-drag';
+
 const h = en.home;
 const ACTION_W = 84;
 
@@ -61,9 +63,11 @@ export function BiteRow({
         onPress={onOpen}>
         {({ pressed }) => (
           <View style={[styles.bite, { backgroundColor: pressed ? colors.cardAlt : colors.card }]}>
-            <View style={[styles.food, { backgroundColor: colors.fill }]}>
-              <Text style={styles.foodEmoji}>{food.emoji}</Text>
-            </View>
+            <DraggableFood id={bite.id} emoji={food.emoji}>
+              <View style={[styles.food, { backgroundColor: colors.fill }]} accessibilityHint="hold and drag onto the pet to feed it">
+                <Text style={styles.foodEmoji}>{food.emoji}</Text>
+              </View>
+            </DraggableFood>
             <View style={[styles.body, { borderTopColor: colors.line }]}>
               <View style={styles.flex}>
                 <Text variant="body" numberOfLines={2}>{bite.text}</Text>

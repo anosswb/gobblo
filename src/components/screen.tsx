@@ -24,6 +24,7 @@ export function Screen({
   eyebrow,
   right,
   back = false,
+  overlay,
   children,
 }: PropsWithChildren<{
   title?: string;
@@ -33,6 +34,8 @@ export function Screen({
   right?: ReactNode;
   /** pushed screen: show the back button, no tab bar padding */
   back?: boolean;
+  /** drawn above the scroll view in window coordinates (drag previews) */
+  overlay?: ReactNode;
 }>) {
   const { colors, scheme } = useTheme();
   const insets = useSafeAreaInsets();
@@ -106,6 +109,11 @@ export function Screen({
           ) : null}
         </View>
       </View>
+      {overlay ? (
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+          {overlay}
+        </View>
+      ) : null}
     </View>
   );
 }
