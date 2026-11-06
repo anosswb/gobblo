@@ -68,7 +68,7 @@ export function BrainCard() {
               {APP_NAME} · Feed it by starting
             </Text>
           </View>
-          <Pet size={92} color={pet.color} mood="confident" stage={stage} />
+          <Pet size={92} color={pet.color} mood="confident" stage={stage} still />
         </LinearGradient>
       </View>
       <PressScale

@@ -1,0 +1,57 @@
+# Builds a RELEASE APK ("Gobblo Preview") that installs next to the dev client. Use it to judge speed (120 Hz):
+# dev builds run unoptimised JS and are much slower. Actions → "Android preview build" → Run workflow.
+name: Android preview build (fast release APK)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', 'research/**', 'replica/**', 'reference/**', '**/*.md']
+
+concurrency:
+  group: android-preview
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      APP_BUILD_ARCHS: arm64-v8a # modern phones only, faster + less memory
+      APP_VARIANT: preview
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space (Android NDK builds are big)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
+          df -h /
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate the Android project
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: Build release APK (debug-signed, for testing only)
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gobblo-preview-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          retention-days: 14

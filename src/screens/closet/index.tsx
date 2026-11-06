@@ -5,6 +5,7 @@ import { Segmented } from '@/components/segmented';
 import { Chips } from '@/components/settings-parts';
 import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
+import { capFirst } from '@/features/bites/logic';
 import { STAGES } from '@/features/progress/logic';
 import { usePetStage } from '@/features/progress/use-pet-stage';
 import { haptics } from '@/lib/haptics';
@@ -54,7 +55,7 @@ export function ClosetScreen() {
 
       <View style={styles.section}>
         <Text variant="title2" accessibilityRole="header" style={styles.head}>
-          moods
+          Moods
         </Text>
         <View style={styles.grid}>
           {MOODS.map((m) => {
@@ -64,7 +65,7 @@ export function ClosetScreen() {
                 key={m}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: on }}
-                accessibilityLabel={m}
+                accessibilityLabel={capFirst(m)}
                 onPress={() => {
                   haptics.select();
                   setMood(m);
@@ -73,9 +74,9 @@ export function ClosetScreen() {
                   styles.cell,
                   { backgroundColor: on ? colors.primarySoft : colors.card, opacity: pressed ? 0.7 : 1 },
                 ]}>
-                <Pet size={58} color={color} mood={m} stage={Number(stage)} />
+                <Pet size={58} color={color} mood={m} stage={Number(stage)} still />
                 <Text variant="caption" tone={on ? 'primary' : 'ink2'} numberOfLines={1}>
-                  {m}
+                  {capFirst(m)}
                 </Text>
               </Pressable>
             );

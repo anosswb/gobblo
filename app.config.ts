@@ -2,7 +2,16 @@ import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 import identity from './src/config/app-identity.json';
 
-const { name: APP_NAME, id: APP_ID, scheme: APP_SCHEME } = identity;
+const { name: BASE_NAME, id: BASE_ID, scheme: BASE_SCHEME } = identity;
+
+/**
+ * APP_VARIANT=preview builds a fast release app that installs NEXT TO the dev client
+ * (own package id + name), for testing real speed (120 Hz) on a phone.
+ */
+const preview = process.env.APP_VARIANT === 'preview';
+const APP_NAME = preview ? `${BASE_NAME} Preview` : BASE_NAME;
+const APP_ID = preview ? `${BASE_ID}.preview` : BASE_ID;
+const APP_SCHEME = preview ? `${BASE_SCHEME}-preview` : BASE_SCHEME;
 
 /**
  * Dev builds compile native code for modern phones only (arm64): building all 4 ABIs ran the
@@ -30,6 +39,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       NSFaceIDUsageDescription: 'Lock your bites with Face ID (optional, off by default).',
       ITSAppUsesNonExemptEncryption: false,
+      // let Reanimated run at 120 Hz on ProMotion iPhones (Emil's animate-expo checklist)
+      CADisableMinimumFrameDurationOnPhone: true,
     },
   },
   android: {

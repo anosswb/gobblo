@@ -1,6 +1,8 @@
+import { useIsFocused } from 'expo-router';
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Pressable } from 'react-native';
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -11,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 
+import { useAppActive } from '@/hooks/use-app-active';
 import { haptics } from '@/lib/haptics';
 import { spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
@@ -312,6 +315,7 @@ export function Pet({
   stage = 0,
   headphones = false,
   working = false,
+  still = false,
   onPress,
   accessibilityLabel,
 }: {
@@ -323,11 +327,17 @@ export function Pet({
   headphones?: boolean;
   /** quicker head-nod while a focus timer runs */
   working?: boolean;
+  /** no breathing or blinking: galleries, share cards (many pets on screen = dropped frames) */
+  still?: boolean;
   /** tap to squish (a light haptic + jelly wobble) */
   onPress?: () => void;
   accessibilityLabel?: string;
 }) {
   const { reduceMotion } = useTheme();
+  // idle loops only run while someone can see them: not on a hidden tab, not in the background
+  const focused = useIsFocused();
+  const appActive = useAppActive();
+  const idle = !reduceMotion && !still && focused && appActive;
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const ids = { body: `b${uid}`, under: `u${uid}`, orb: `o${uid}`, limb: `l${uid}`, aura: `a${uid}` };
   const c = petColors[color];
@@ -340,14 +350,15 @@ export function Pet({
   // breathing
   const bob = useSharedValue(0);
   useEffect(() => {
-    if (reduceMotion) {
-      bob.set(0);
+    if (!idle) {
+      cancelAnimation(bob);
+      bob.set(withTiming(0, { duration: 150 }));
       return;
     }
     const period = working ? 650 : 1600;
     const ease = Easing.inOut(Easing.sin);
     bob.set(withRepeat(withSequence(withTiming(1, { duration: period, easing: ease }), withTiming(0, { duration: period, easing: ease })), -1));
-  }, [working, reduceMotion, bob]);
+  }, [working, idle, bob]);
 
   // squish on tap + a soft pop when the mood changes
   const squish = useSharedValue(0);
@@ -372,7 +383,7 @@ export function Pet({
 
   // blink every 3–6 s on open-eyed moods (a rare state flip, not a per-frame render)
   const [blink, setBlink] = useState(false);
-  const canBlink = !reduceMotion && (face.eyes === 'dot' || face.eyes === 'big');
+  const canBlink = idle && (face.eyes === 'dot' || face.eyes === 'big');
   useEffect(() => {
     if (!canBlink) return;
     let t: ReturnType<typeof setTimeout>;
