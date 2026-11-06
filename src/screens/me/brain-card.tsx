@@ -51,7 +51,7 @@ export function BrainCard() {
         <LinearGradient colors={[colors.focusTop, colors.focusMid, colors.focusBottom]} style={styles.card}>
           <View style={styles.flex}>
             <Text variant="caption" tone="onFocus2">
-              my brain type
+              My brain type
             </Text>
             <Text variant="title2" tone="onFocus">
               {bt.title}
@@ -78,7 +78,7 @@ export function BrainCard() {
         style={[styles.share, { backgroundColor: colors.primarySoft }]}>
         <Icon name="share" size={18} color={colors.primary} />
         <Text variant="bodyBold" tone="primary">
-          share my brain card
+          Share my brain card
         </Text>
       </PressScale>
     </View>

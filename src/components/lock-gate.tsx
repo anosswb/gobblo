@@ -56,7 +56,7 @@ export function LockGate({ children }: PropsWithChildren) {
             onPress={() => void tryUnlock()}
             style={[styles.cta, { backgroundColor: colors.primary }]}>
             <Text variant="bodyBold" tone="onPrimary">
-              unlock
+              Unlock
             </Text>
           </PressScale>
         </Animated.View>
