@@ -38,6 +38,25 @@ export const en = {
     mindfulTitle: 'tiny reset',
     sizeLabel: 'change size',
   },
+  spin: {
+    title: 'spin',
+    eyebrow: 'can’t pick?',
+    sub: (name: string) => `${name} picks one, so you don’t have to.`,
+    spin: 'spin',
+    again: 'spin again',
+    start: 'start it · just 2 min',
+    landed: 'this one.',
+    snacksOnly: 'no bites yet, so it’s all snacks. still counts.',
+    // 5-min resets that pad the wheel (docs/01 §6)
+    snacks: [
+      { emoji: '💧', text: 'chug a glass of water' },
+      { emoji: '🎧', text: 'one song, full volume' },
+      { emoji: '🤸', text: '10 jumping jacks' },
+      { emoji: '🌤️', text: 'step outside for 2 min' },
+      { emoji: '🍎', text: 'grab a snack' },
+      { emoji: '🧺', text: 'tidy for one song' },
+    ],
+  },
   dump: {
     title: 'brain dump',
     sub: 'messy is perfect. i’ll chop it into bites.',
