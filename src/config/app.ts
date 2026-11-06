@@ -13,7 +13,8 @@ export const APP_ID: string = identity.id;
 export const APP_SCHEME: string = identity.scheme;
 
 export const LINKS = {
-  privacy: 'https://example.com/privacy', // TODO(phase 6): GitHub Pages URL
-  terms: 'https://example.com/terms', // TODO(phase 6): GitHub Pages URL
+  // published from legal/ by .github/workflows/legal-pages.yml (GitHub Pages)
+  privacy: 'https://anosswb.github.io/gobblo/privacy',
+  terms: 'https://anosswb.github.io/gobblo/terms',
   supportEmail: 'support@example.com', // TODO: Anass's support address
 } as const;
