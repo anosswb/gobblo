@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
@@ -18,6 +18,7 @@ import { STAGES, stageOf } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
+import { Burst } from '@/pet/burst';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { todayKey, type Bite, type Size } from '@/state/schema';
@@ -55,9 +56,26 @@ export function HomeScreen() {
 
   useEffect(() => {
     if (!reaction) return;
-    const t = setTimeout(() => setReaction(null), 1400);
+    const t = setTimeout(() => setReaction(null), reaction === 'chomp' ? 900 : 1400);
     return () => clearTimeout(t);
   }, [reaction]);
+
+  // a bite was eaten (focus finished): chomp, then celebrate with a sparkle burst
+  const [burst, setBurst] = useState(0);
+  const eatenBefore = useRef(stats.eaten);
+  useEffect(() => {
+    if (stats.eaten > eatenBefore.current) {
+      setReaction('chomp');
+      const t = setTimeout(() => {
+        setReaction('celebrating');
+        setBurst((b) => b + 1);
+        haptics.success();
+      }, 700);
+      eatenBefore.current = stats.eaten;
+      return () => clearTimeout(t);
+    }
+    eatenBefore.current = stats.eaten;
+  }, [stats.eaten]);
 
   const today = todayKey(openedAt);
   const list = plate(bites, today);
@@ -134,6 +152,7 @@ export function HomeScreen() {
         ) : null}
 
         <View style={styles.pet}>
+          <Burst id={burst} />
           <Pet
             size={128}
             color={pet.color}
@@ -188,7 +207,7 @@ export function HomeScreen() {
               returnKeyType="done"
               maxLength={80}
               accessibilityLabel={h.addPlaceholder}
-              style={[styles.input, fonts.body, { color: colors.ink }]}
+              style={[styles.input, fonts.body, styles.noOutline, { color: colors.ink }]}
             />
             <PressScale
               accessibilityRole="button"
@@ -315,4 +334,5 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', gap: space.s, padding: space.xl, borderTopWidth: StyleSheet.hairlineWidth },
   cta: { marginTop: space.s, minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   footer: { paddingHorizontal: space.l },
+  noOutline: Platform.select({ web: { outlineStyle: 'none' }, default: {} }) as object,
 });

@@ -40,6 +40,8 @@ import { radius, space } from '@/theme/tokens';
 import { TimerRing as TimerRingSlot } from './timer-ring';
 
 const f = en.focus;
+/** the modal's close animation; the session is saved after it */
+const CLOSE_MS = 380;
 const exitFocus = () => (router.canGoBack() ? router.back() : router.replace('/'));
 const SOUNDS: FocusSound[] = ['none', 'brown', 'rain', 'keys'];
 const SOUND_LABEL: Record<FocusSound, string> = { none: 'silence', brown: 'brown noise', rain: 'rain', keys: 'soft keys' };
@@ -149,24 +151,28 @@ export function FocusScreen() {
   const finish = () => {
     void cancelNotification(focus.notificationId);
     const mins = Math.max(1, Math.round(spent()));
-    const r = endFocus(true, mins);
     stopLoop();
     haptics.success();
     play('spark');
-    if (r) {
-      toast(
-        f.fed(r.sparks, mins),
-        settings.goodThingsJar ? { label: f.goodThing, onPress: () => router.push('/me') } : undefined,
-      );
-    }
+    // close first, save right after: the room slides away intact and Home sees the bite land
     exit();
+    setTimeout(() => {
+      const r = endFocus(true, mins);
+      if (r) {
+        toast(
+          f.fed(r.sparks, mins),
+          settings.goodThingsJar ? { label: f.goodThing, onPress: () => router.push('/me') } : undefined,
+        );
+      }
+    }, CLOSE_MS);
   };
 
   const leave = () => {
     void cancelNotification(focus.notificationId);
-    endFocus(false, spent());
+    const mins = spent();
     stopLoop();
     exit();
+    setTimeout(() => endFocus(false, mins), CLOSE_MS);
   };
 
   const cycleSound = () => {

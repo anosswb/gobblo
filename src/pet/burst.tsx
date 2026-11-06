@@ -1,0 +1,63 @@
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
+
+import { useTheme } from '@/theme/theme-provider';
+
+const N = 10;
+const SPARK = 'M0 -10 Q1.5 -1.5 10 0 Q1.5 1.5 0 10 Q-1.5 1.5 -10 0 Q-1.5 -1.5 0 -10Z';
+
+/**
+ * Sparkle burst around the pet when it eats (rare tier: the delight budget lives here).
+ * 10 sparks fly out on a strong ease-out, spin a little and fade; total < 800 ms.
+ * Plays once per `id`. Reduce Motion: nothing (the pet's face already says it).
+ */
+export function Burst({ id, size = 220 }: { id: number; size?: number }) {
+  const { colors, reduceMotion } = useTheme();
+  if (reduceMotion || id === 0) return null;
+  const tints = [colors.reward, colors.sun, colors.primary, colors.onPrimary];
+  return (
+    <View pointerEvents="none" style={[styles.wrap, { width: size, height: size, marginStart: -size / 2, marginTop: -size / 2 }]}>
+      {Array.from({ length: N }, (_, i) => (
+        <Spark key={`${id}-${i}`} index={i} radius={size * (0.36 + (i % 3) * 0.06)} color={tints[i % tints.length]} />
+      ))}
+    </View>
+  );
+}
+
+function Spark({ index, radius, color }: { index: number; radius: number; color: string }) {
+  const t = useSharedValue(0);
+  const angle = (index / N) * Math.PI * 2 + (index % 2 ? 0.2 : -0.1);
+  const s = 0.6 + (index % 3) * 0.25;
+
+  useEffect(() => {
+    t.set(withDelay((index % 4) * 25, withTiming(1, { duration: 700, easing: Easing.bezier(0.23, 1, 0.32, 1) })));
+  }, [index, t]);
+
+  const style = useAnimatedStyle(() => {
+    const p = t.get();
+    return {
+      opacity: p < 0.6 ? 1 : 1 - (p - 0.6) / 0.4,
+      transform: [
+        { translateX: Math.cos(angle) * radius * p },
+        { translateY: Math.sin(angle) * radius * p },
+        { scale: s * (0.6 + 0.4 * p) },
+        { rotate: `${p * 90}deg` },
+      ],
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.spark, style]}>
+      <Svg width={22} height={22} viewBox="-11 -11 22 22">
+        <Path d={SPARK} fill={color} />
+      </Svg>
+    </Animated.View>
+  );
+}
+
+const styles = StyleSheet.create({
+  wrap: { position: 'absolute', top: '50%', start: '50%', alignItems: 'center', justifyContent: 'center' },
+  spark: { position: 'absolute' },
+});

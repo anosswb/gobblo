@@ -73,6 +73,6 @@ const styles = StyleSheet.create({
   wrap: { gap: space.m },
   bars: { flexDirection: 'row', alignItems: 'flex-end', gap: space.s },
   col: { flex: 1, alignItems: 'center', gap: space.xs, minHeight: 44 },
-  track: { height: CHART_H, width: '100%', justifyContent: 'flex-end' },
-  bar: { width: '100%', borderRadius: radius.row - 6 },
+  track: { height: CHART_H, width: '100%', alignItems: 'center', justifyContent: 'flex-end' },
+  bar: { width: '58%', maxWidth: 22, borderRadius: radius.row - 6 },
 });
