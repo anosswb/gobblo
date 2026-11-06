@@ -43,6 +43,11 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 - Drag-to-feed (hold the food, drag onto the pet), small-screen layouts (SE / 360 dp), motion audit, lint warnings 0.
 - Needs a phone: swipe + drag gestures, Liquid Glass (iOS 26), SF Symbols, haptics feel, notification prompt, new icons/splash (need a new APK).
 
+## Merge (2026-11-06)
+- Two sessions merged into main: the Apple redesign is the base. Ported on top: "Play sounds on silent" (fixes no sound on vibrate), sentence-case copy everywhere (ADHD, I, typed bites), safe back (no GO_BACK error), saved settings deep-merged, and a "Make it yours" onboarding step (look + sound + haptics).
+- Checks: tsc, lint, all tests. Web preview: full onboarding → Home, light + dark.
+- Needs the phone: reload the app and test sound on vibrate.
+
 ## Next
 - Dev build on Anass's phone (he is logged in to EAS).
 - Phase 2: the pet (Skia, from R1 art).
