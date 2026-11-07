@@ -61,7 +61,7 @@ export function PlusScreen() {
 
   return (
     <Screen back eyebrow={t.eyebrow} title={t.title}>
-      <Text variant="body" tone="ink2">{t.intro}</Text>
+      <Text variant="body" tone="ink2">{android ? t.introAndroid : t.intro}</Text>
       {!canShowOffer(firstOpen) ? (
         <View style={[styles.note, { backgroundColor: colors.fill }]}>
           <Text variant="subhead">{t.weekOne}</Text>
@@ -145,7 +145,7 @@ export function PlusScreen() {
         </PressScale>
       ) : null}
 
-      <Text variant="caption" tone="ink2" style={styles.center}>{t.promise}</Text>
+      <Text variant="caption" tone="ink2" style={styles.center}>{android ? t.promiseAndroid : t.promise}</Text>
       <View style={[styles.row, styles.links]}>
         <PressScale accessibilityRole="link" hitSlop={8} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)}>
           <Text variant="caption" tone="primary">{t.terms}</Text>

@@ -130,7 +130,11 @@ export const en = {
     routinesSub: 'One tap adds them as daily bites. Remove any you don’t want.',
     routineNames: { morning: 'Morning', study: 'Study', sunday: 'Sunday reset' },
     routineAdded: (name: string, n: number) => `${name}: ${n} daily bites added`,
+    /** iOS: real purchases (Apple handles refunds) */
     promise: 'One-time. No subscription, no trial, ever: Plus is yours forever. Refunds go through Apple and we never fight them.',
+    /** Android: no purchases at all (Google Play can't sell from Morocco), packs are earned */
+    promiseAndroid: 'No payments, no subscription. Every pack is earned with sparks ✦: start bites to collect them. Once unlocked, it’s yours forever.',
+    introAndroid: 'Everything you need to start a task is free, forever. These extras are earned with sparks ✦, never bought.',
     restore: 'Restore purchases',
     terms: 'Terms of use',
     privacy: 'Privacy policy',
