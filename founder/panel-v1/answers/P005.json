@@ -1,0 +1,13 @@
+{
+  "id": "P005",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I'll probably stop using the app in two weeks like every other one, so paying for pets and widgets feels like wasting money I don't have. The free version already does the job.",
+  "objection": "I don't trust myself to still be opening it in a month, and $6.99 is real money on a student budget for stuff that's just cosmetic.",
+  "would_change_my_mind": "If I'd already been using the free app daily for a month and the widget felt genuinely useful, or a price of around $2.99 for just widgets and one pet.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 4.99,
+  "price_too_expensive": 8
+}

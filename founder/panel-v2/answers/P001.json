@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "trust",
+  "reason": "I hate subscriptions, but this is one payment, no trial, and the basics stay free. If I'm still using it after a week, $4.99 once for the lock-screen widget and the timer is fine.",
+  "objection": "I only trust it if it is really one payment. If anything turns into a subscription later, or the free version gets worse so I feel pushed, I'm out.",
+  "would_change_my_mind": "",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 6.99,
+  "price_too_expensive": 9.99
+}

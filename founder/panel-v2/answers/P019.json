@@ -1,0 +1,13 @@
+{
+  "id": "P019",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "The lock-screen widget that starts 2 minutes in one tap is the only thing that actually saves me time, and $4.99 once is nothing next to a subscription. Basics stay free so I don't feel tricked, and I'd probably just grab the whole Plus instead of single packs.",
+  "objection": "Half of it is cosmetics and sounds, which is fluff to me, and my phone is on vibrate anyway. I'm paying for the widget and timer, so they'd better work reliably on the lock screen.",
+  "would_change_my_mind": "If the widget or lock-screen timer were locked behind the later packs in a way that felt like basics being paywalled, or if they were flaky, I'd pass.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 6,
+  "price_too_expensive": 10
+}

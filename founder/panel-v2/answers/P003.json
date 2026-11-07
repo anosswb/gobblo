@@ -1,0 +1,13 @@
+{
+  "id": "P003",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "values",
+  "reason": "Okay, the basics stay free and it waits a week, so I'm not mad. I'd probably grab Make It Yours for $1.99 because I post my pet and Home screen anyway and I want it to look cute. Maybe the full $4.99 if I'm still using it.",
+  "objection": "I only want the cosmetic stuff and the Brain Wrapped card. Paying for the widget and sounds feels like paying for things I'd never use. And I don't want to be nagged to buy.",
+  "would_change_my_mind": "",
+  "price_too_cheap": 0.5,
+  "price_cheap": 1.99,
+  "price_expensive": 5.99,
+  "price_too_expensive": 9.99
+}

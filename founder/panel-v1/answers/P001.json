@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "The free app already does the part that helps me start tasks, and Plus is mostly cosmetic stuff like pets, a room and icons. No subscription is good, but I don't need any of it.",
+  "objection": "It's all extras I won't actually use. I'd pay for something that helps me start, not for decorating a room, and I'm wary of anything that locks things behind a paywall later.",
+  "would_change_my_mind": "If the widgets and the Dynamic Island timer were the useful part and cost about $2 to $3 on their own, or if I had been using the app daily for a few weeks and really liked it.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 5.99,
+  "price_too_expensive": 9.99
+}

@@ -57,3 +57,6 @@ build-output/
 
 # Xcode installers (multi-GB, never commit)
 *.xip
+
+# founder panel scratch (briefs/answers are regenerable)
+founder/panel-*/briefs/

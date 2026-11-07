@@ -1,0 +1,13 @@
+{
+  "id": "P002",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "The free app already does the whole loop, and most of Plus is pets, rooms and icons, which is cosmetics to me. Widgets and the Dynamic Island timer are tempting on my lock screen, but not enough on their own for $6.99.",
+  "objection": "Is this just cosmetics? The free app already works, so I would be paying for extras I do not need to start tasks.",
+  "would_change_my_mind": "Seeing App Store reviews and Reddit posts from real ADHD users saying the widgets and Dynamic Island timer actually help them start, or a cheaper widgets-only option around $3.",
+  "price_too_cheap": 1.5,
+  "price_cheap": 3,
+  "price_expensive": 5,
+  "price_too_expensive": 8
+}

@@ -1,0 +1,222 @@
+[
+ {
+  "id": "P001",
+  "name": "Omar",
+  "age": 16,
+  "segment": "Established professional",
+  "income": 89000,
+  "behaviour": "Burned by subscriptions",
+  "behaviour_how": "Forgot to cancel a free trial once; now refuses anything with a trial or a subscription.",
+  "objection": "Paywalled basics make me angry",
+  "habit": "you leave things until the last minute, then hyperfocus at night"
+ },
+ {
+  "id": "P002",
+  "name": "Raj",
+  "age": 20,
+  "segment": "Early-career worker",
+  "income": 35000,
+  "behaviour": "Reads every review",
+  "behaviour_how": "Checks App Store reviews and Reddit before paying for anything.",
+  "objection": "Is this just cosmetics? The free app already works",
+  "habit": "you have a lock screen with widgets"
+ },
+ {
+  "id": "P003",
+  "name": "Emil",
+  "age": 24,
+  "segment": "Early-career worker",
+  "income": 38000,
+  "behaviour": "Sharer",
+  "behaviour_how": "Posts aesthetic screenshots and recaps on TikTok and Instagram stories.",
+  "objection": "Paywalled basics make me angry",
+  "habit": "your phone lives on vibrate"
+ },
+ {
+  "id": "P004",
+  "name": "Owen",
+  "age": 18,
+  "segment": "Established professional",
+  "income": 101000,
+  "behaviour": "Free-forever user",
+  "behaviour_how": "Almost never pays for apps; uses the free version until it stops working.",
+  "objection": "Paywalled basics make me angry",
+  "habit": "you follow ADHD creators on TikTok"
+ },
+ {
+  "id": "P005",
+  "name": "Sana",
+  "age": 26,
+  "segment": "Student (high school / university)",
+  "income": 10000,
+  "behaviour": "Burned by subscriptions",
+  "behaviour_how": "Forgot to cancel a free trial once; now refuses anything with a trial or a subscription.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one",
+  "habit": "you have a lock screen with widgets"
+ },
+ {
+  "id": "P006",
+  "name": "Maya",
+  "age": 30,
+  "segment": "Student (high school / university)",
+  "income": 13000,
+  "behaviour": "Burned by subscriptions",
+  "behaviour_how": "Forgot to cancel a free trial once; now refuses anything with a trial or a subscription.",
+  "objection": "I don't want more things to manage, I want fewer",
+  "habit": "you follow ADHD creators on TikTok"
+ },
+ {
+  "id": "P007",
+  "name": "Selin",
+  "age": 22,
+  "segment": "Established professional",
+  "income": 84000,
+  "behaviour": "Tool optimiser",
+  "behaviour_how": "Pays happily for anything that clearly saves time; hates fluff.",
+  "objection": "Money is tight; apps should be free",
+  "habit": "you have 40 tabs open in your head and three to-do apps you don't use"
+ },
+ {
+  "id": "P008",
+  "name": "Ruby",
+  "age": 23,
+  "segment": "Student (high school / university)",
+  "income": 10000,
+  "behaviour": "Tried every ADHD app",
+  "behaviour_how": "Has downloaded Tiimo, Structured, Goblin Tools; abandons apps after two weeks.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one",
+  "habit": "you leave things until the last minute, then hyperfocus at night"
+ },
+ {
+  "id": "P009",
+  "name": "Nora",
+  "age": 17,
+  "segment": "Early-career worker",
+  "income": 59000,
+  "behaviour": "Burned by subscriptions",
+  "behaviour_how": "Forgot to cancel a free trial once; now refuses anything with a trial or a subscription.",
+  "objection": "Money is tight; apps should be free",
+  "habit": "you leave things until the last minute, then hyperfocus at night"
+ },
+ {
+  "id": "P010",
+  "name": "Fatima",
+  "age": 17,
+  "segment": "Student (high school / university)",
+  "income": 5000,
+  "behaviour": "Tried every ADHD app",
+  "behaviour_how": "Has downloaded Tiimo, Structured, Goblin Tools; abandons apps after two weeks.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one",
+  "habit": "you have 40 tabs open in your head and three to-do apps you don't use"
+ },
+ {
+  "id": "P011",
+  "name": "Tariq",
+  "age": 16,
+  "segment": "Early-career worker",
+  "income": 45000,
+  "behaviour": "Collector",
+  "behaviour_how": "Loves unlocking cute things; already has Finch and pays for cosmetics in games.",
+  "objection": "Paywalled basics make me angry",
+  "habit": "you have 40 tabs open in your head and three to-do apps you don't use"
+ },
+ {
+  "id": "P012",
+  "name": "Felix",
+  "age": 21,
+  "segment": "Student (high school / university)",
+  "income": 9000,
+  "behaviour": "Free-forever user",
+  "behaviour_how": "Almost never pays for apps; uses the free version until it stops working.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one",
+  "habit": "you leave things until the last minute, then hyperfocus at night"
+ },
+ {
+  "id": "P013",
+  "name": "Zoe",
+  "age": 25,
+  "segment": "Established professional",
+  "income": 83000,
+  "behaviour": "Reads every review",
+  "behaviour_how": "Checks App Store reviews and Reddit before paying for anything.",
+  "objection": "I don't want more things to manage, I want fewer",
+  "habit": "your phone lives on vibrate"
+ },
+ {
+  "id": "P014",
+  "name": "Dev",
+  "age": 21,
+  "segment": "Early-career worker",
+  "income": 46000,
+  "behaviour": "Free-forever user",
+  "behaviour_how": "Almost never pays for apps; uses the free version until it stops working.",
+  "objection": "Money is tight; apps should be free",
+  "habit": "you have 40 tabs open in your head and three to-do apps you don't use"
+ },
+ {
+  "id": "P015",
+  "name": "Yusuf",
+  "age": 17,
+  "segment": "Early-career worker",
+  "income": 55000,
+  "behaviour": "Sharer",
+  "behaviour_how": "Posts aesthetic screenshots and recaps on TikTok and Instagram stories.",
+  "objection": "Money is tight; apps should be free",
+  "habit": "you have a lock screen with widgets"
+ },
+ {
+  "id": "P016",
+  "name": "Theo",
+  "age": 23,
+  "segment": "Student (high school / university)",
+  "income": 5000,
+  "behaviour": "Collector",
+  "behaviour_how": "Loves unlocking cute things; already has Finch and pays for cosmetics in games.",
+  "objection": "Is this just cosmetics? The free app already works",
+  "habit": "you have 40 tabs open in your head and three to-do apps you don't use"
+ },
+ {
+  "id": "P017",
+  "name": "Alma",
+  "age": 27,
+  "segment": "Student (high school / university)",
+  "income": 5000,
+  "behaviour": "Collector",
+  "behaviour_how": "Loves unlocking cute things; already has Finch and pays for cosmetics in games.",
+  "objection": "Will they switch me to a subscription later, like Goblin Tools did?",
+  "habit": "you have a lock screen with widgets"
+ },
+ {
+  "id": "P018",
+  "name": "Freya",
+  "age": 29,
+  "segment": "Early-career worker",
+  "income": 49000,
+  "behaviour": "Tried every ADHD app",
+  "behaviour_how": "Has downloaded Tiimo, Structured, Goblin Tools; abandons apps after two weeks.",
+  "objection": "Paywalled basics make me angry",
+  "habit": "you have 40 tabs open in your head and three to-do apps you don't use"
+ },
+ {
+  "id": "P019",
+  "name": "Harper",
+  "age": 19,
+  "segment": "Student (high school / university)",
+  "income": 14000,
+  "behaviour": "Tool optimiser",
+  "behaviour_how": "Pays happily for anything that clearly saves time; hates fluff.",
+  "objection": "Paywalled basics make me angry",
+  "habit": "your phone lives on vibrate"
+ },
+ {
+  "id": "P020",
+  "name": "Emma",
+  "age": 18,
+  "segment": "Early-career worker",
+  "income": 49000,
+  "behaviour": "Collector",
+  "behaviour_how": "Loves unlocking cute things; already has Finch and pays for cosmetics in games.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one",
+  "habit": "you follow ADHD creators on TikTok"
+ }
+]

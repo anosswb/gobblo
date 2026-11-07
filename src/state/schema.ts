@@ -132,6 +132,8 @@ export interface PersistedState {
   goodThings: GoodThing[];
   reminders: Reminder[];
   focus: ActiveFocus | null;
+  /** Plus packs owned ('startKit' | 'makeItYours' | 'focus', or 'plus' for all) */
+  unlocked: string[];
 }
 
 export const todayKey = (d = new Date()) =>
@@ -156,6 +158,7 @@ export function freshState(now = Date.now()): PersistedState {
     goodThings: [],
     reminders: [],
     focus: null,
+    unlocked: [],
     settings: {
       theme: 'system',
       accent: 'berry',

@@ -1,0 +1,13 @@
+{
+  "id": "P006",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "I'm a broke student and the free app already does what I need to start tasks. Three packs and a one-time price is nicer than a subscription, but it's still more stuff to think about, and cosmetics and sounds aren't what helps me start.",
+  "objection": "I don't want more things to manage, I want fewer. The free app already works, so why pay for hats and themes? Packs feel like they'll keep nickel-and-diming me.",
+  "would_change_my_mind": "If the lock-screen widget and one-tap start were sold alone for about $2, and I'd already used the app daily for a month, I might buy that one.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 1.99,
+  "price_expensive": 3.99,
+  "price_too_expensive": 6.99
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P008",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I'd probably stop using the app in two weeks like every other one, so paying for extras on top feels like throwing money away. The free app already does the stuff I actually need.",
+  "objection": "I drop every ADHD app after two weeks. Skins, rooms and widgets are nice but I'd buy them and then never open the app again.",
+  "would_change_my_mind": "If I'd already been using the free app daily for a month and my pet was something I actually cared about, I might buy a new species for a couple of dollars.",
+  "price_too_cheap": 1,
+  "price_cheap": 2.5,
+  "price_expensive": 5,
+  "price_too_expensive": 8
+}

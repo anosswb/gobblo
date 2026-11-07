@@ -1,0 +1,13 @@
+{
+  "id": "P020",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "price",
+  "reason": "Five dollars once, no subscription, and the closet and colours are exactly what I spend money on in Finch. If I'm still opening it after a week, I'd just get the whole thing.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one, so I don't want to pay for stuff I stop seeing.",
+  "would_change_my_mind": "If I'd dropped the app before day 7 I wouldn't buy at all. Seeing a preview of the hats and colours before paying would make me more sure.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 7.99,
+  "price_too_expensive": 12.99
+}

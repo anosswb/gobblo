@@ -1,0 +1,13 @@
+{
+  "id": "P018",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "price",
+  "reason": "Basics stay free and it's a one-time $4.99, no subscription, so it's less annoying than every other ADHD app. If the pet still sticks after a week I'd grab the Start Kit for the lock-screen widget, because that's what actually helps me start.",
+  "objection": "I abandon apps after two weeks, so I might pay and then never open it again. Also the single packs add up to $5.97, so the bundle is the only sensible option.",
+  "would_change_my_mind": "If the lock-screen widget were locked behind a pack I'd feel it's a basic, not a bonus. Nothing else would stop me.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 7,
+  "price_too_expensive": 12
+}

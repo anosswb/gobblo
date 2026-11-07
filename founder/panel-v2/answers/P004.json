@@ -1,0 +1,13 @@
+{
+  "id": "P004",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I use free apps until they stop working, and the free Gobblo already does everything I need to start a task. Cosmetics and sound packs are nice but I would not pay for them in a normal week.",
+  "objection": "I can already do the real stuff for free, so paying for hats, themes and a widget feels like paying for extras I do not need. $4.99 is fine in theory, but I just never pay for apps.",
+  "would_change_my_mind": "If the lock-screen widget with one-tap start was a standalone $0.99 and it clearly helped me actually start tasks, I might try it.",
+  "price_too_cheap": 0.5,
+  "price_cheap": 1.99,
+  "price_expensive": 4.99,
+  "price_too_expensive": 7.99
+}

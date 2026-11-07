@@ -1,0 +1,13 @@
+{
+  "id": "P018",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Fair that the basics stay free, I'll give it that. But I drop apps after two weeks, and a new cat-bean or room won't change that. I'd be paying for stuff I'll stop opening.",
+  "objection": "I'm not sure I'll still be using it in a month. $7 for skins and a room feels like paying for the app I'm about to abandon.",
+  "would_change_my_mind": "Widgets and the Dynamic Island timer sold on their own for about $3, or a way to try them for a few days first.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 7,
+  "price_too_expensive": 12
+}

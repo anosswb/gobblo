@@ -1,0 +1,13 @@
+{
+  "id": "P014",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "The free app already does everything I need to start a task, and money is tight. Cosmetics and a widget are nice but not worth real money to me right now.",
+  "objection": "I already use the free version and nothing I need is locked, so why pay? I'd rather spend $5 on food than on hats for a pet.",
+  "would_change_my_mind": "If the lock-screen widget was sold alone for about a dollar, I might try it, since a one-tap start is the only thing that would really help me.",
+  "price_too_cheap": 0.5,
+  "price_cheap": 1,
+  "price_expensive": 3,
+  "price_too_expensive": 5
+}

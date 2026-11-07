@@ -1,0 +1,13 @@
+{
+  "id": "P004",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "The free app already does everything I need, and I basically never pay for apps. Pet species, a room and icons are cute extras, not something I need to start my tasks.",
+  "objection": "It's all cosmetic stuff and widgets. Nothing here fixes my actual problem, so why would I pay when free already works?",
+  "would_change_my_mind": "If the Dynamic Island timer and widgets actually helped me start tasks and a friend showed me it worked, or if it was a couple dollars.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 1.99,
+  "price_expensive": 3.99,
+  "price_too_expensive": 5.99
+}

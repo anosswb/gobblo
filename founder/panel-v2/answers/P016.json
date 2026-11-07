@@ -1,0 +1,13 @@
+{
+  "id": "P016",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "quality",
+  "reason": "I already pay for cosmetics in Finch and games, and $4.99 once with no subscription is easy to justify if I like my pet after a week. The closet and themes are the part I actually want.",
+  "objection": "Is this just cosmetics? The free app already works, so I only pay if the pet is cute enough that I want to dress it up.",
+  "would_change_my_mind": "If the hats and colours looked boring in the preview, or if the one-time price became a subscription.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 7,
+  "price_too_expensive": 12
+}

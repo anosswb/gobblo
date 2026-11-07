@@ -1,0 +1,92 @@
+{
+ "n": 20,
+ "seed": 7,
+ "customer": {
+  "business": "Gobblo Plus: the one-time upgrade inside Gobblo, a free iPhone app where a cute pet eats your to-do list (made for ADHD brains)",
+  "target": "iPhone users, 16 to 30, with ADHD or ADHD traits, who already use the free Gobblo app and struggle to start tasks",
+  "where": "US, UK, Canada and Europe, App Store",
+  "age": [
+   16,
+   30
+  ],
+  "segments": [
+   {
+    "name": "Student (high school / university)",
+    "share": 0.4,
+    "income": [
+     0,
+     15000
+    ]
+   },
+   {
+    "name": "Early-career worker",
+    "share": 0.4,
+    "income": [
+     25000,
+     60000
+    ]
+   },
+   {
+    "name": "Established professional",
+    "share": 0.2,
+    "income": [
+     60000,
+     120000
+    ]
+   }
+  ],
+  "behaviours": [
+   {
+    "name": "Collector",
+    "share": 0.18,
+    "how": "Loves unlocking cute things; already has Finch and pays for cosmetics in games."
+   },
+   {
+    "name": "Burned by subscriptions",
+    "share": 0.18,
+    "how": "Forgot to cancel a free trial once; now refuses anything with a trial or a subscription."
+   },
+   {
+    "name": "Free-forever user",
+    "share": 0.16,
+    "how": "Almost never pays for apps; uses the free version until it stops working."
+   },
+   {
+    "name": "Tried every ADHD app",
+    "share": 0.14,
+    "how": "Has downloaded Tiimo, Structured, Goblin Tools; abandons apps after two weeks."
+   },
+   {
+    "name": "Sharer",
+    "share": 0.12,
+    "how": "Posts aesthetic screenshots and recaps on TikTok and Instagram stories."
+   },
+   {
+    "name": "Tool optimiser",
+    "share": 0.12,
+    "how": "Pays happily for anything that clearly saves time; hates fluff."
+   },
+   {
+    "name": "Reads every review",
+    "share": 0.1,
+    "how": "Checks App Store reviews and Reddit before paying for anything."
+   }
+  ],
+  "objections": [
+   "I'll probably stop using the app in two weeks, like every other one",
+   "Is this just cosmetics? The free app already works",
+   "Will they switch me to a subscription later, like Goblin Tools did?",
+   "Money is tight; apps should be free",
+   "Paywalled basics make me angry",
+   "I don't want more things to manage, I want fewer"
+  ],
+  "habits": [
+   "you have 40 tabs open in your head and three to-do apps you don't use",
+   "you leave things until the last minute, then hyperfocus at night",
+   "your phone lives on vibrate",
+   "you have a lock screen with widgets",
+   "you follow ADHD creators on TikTok"
+  ]
+ },
+ "pitch": "Gobblo Plus, inside the free Gobblo app (iPhone). One-time purchase, $6.99. No subscription, no trial.\nThe free app already does everything: brain dump, bites, 2-minute focus timer, feeding and evolving your pet.\nPlus adds: 4 extra pet species (axolotl blob, sleepy cat-bean, tiny dino, ghost), a room to decorate for your pet,\nhome-screen widgets, a Dynamic Island focus timer, extra focus soundscapes, 6 alternate app icons,\nroutine packs (morning, after school, Sunday reset) and iCloud sync between iPhone and iPad.\nBuy it from the Closet or Settings. Restore purchases on any device with your Apple ID."
+}

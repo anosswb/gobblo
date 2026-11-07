@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "values",
+  "reason": "The app is free and I already use it, so I'm not paying for hats and themes. No subscription is nice, but money's tight and apps should be free.",
+  "objection": "I don't need any of it to start tasks, and the free app already does the job. Why spend money on cosmetics?",
+  "would_change_my_mind": "If the widget on the lock screen was a separate $0.99 thing, I might try just that.",
+  "price_too_cheap": 0.5,
+  "price_cheap": 1,
+  "price_expensive": 2.5,
+  "price_too_expensive": 4
+}

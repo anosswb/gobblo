@@ -1,0 +1,13 @@
+{
+  "id": "P015",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "I'm 17, money is tight and the free app already does the core stuff. The pet species and room are cute but I wouldn't pay $7 for them right now.",
+  "objection": "Apps should be free. $6.99 is a lot for cosmetic stuff when I'm not even sure I'll still use it in a month.",
+  "would_change_my_mind": "A lower price like $2.99, or a cheaper student price, or getting one extra species and the widget free to try first.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 4.99,
+  "price_too_expensive": 6.99
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P007",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "convenience",
+  "reason": "The lock-screen widget and one-tap start are the only things that actually save me time, and $4.99 once with no subscription is less than a coffee. I'd take the full bundle rather than fuss over packs.",
+  "objection": "I don't want to pay for cosmetics, hats and themes are fluff. I'm only paying for the widget and the lock-screen timer, so I'm a bit annoyed they're bundled with the rest.",
+  "would_change_my_mind": "If the widget and lock-screen timer didn't work reliably, or if the Start Kit alone cost much more than $1.99.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 2.99,
+  "price_expensive": 7.99,
+  "price_too_expensive": 14.99
+}

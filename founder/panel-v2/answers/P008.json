@@ -1,0 +1,13 @@
+{
+  "id": "P008",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I drop every app after two weeks, so paying anything feels like buying something I'll stop opening. $4.99 isn't a lot, but I'd rather use the free version and see if it sticks.",
+  "objection": "I'll probably stop using the app in two weeks, like every other one, so the money is wasted.",
+  "would_change_my_mind": "If I was still opening it daily after week 3 and the lock-screen widget made starting tasks easier, I might buy the Start Kit for $1.99.",
+  "price_too_cheap": 0.99,
+  "price_cheap": 1.99,
+  "price_expensive": 4.99,
+  "price_too_expensive": 8
+}

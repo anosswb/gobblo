@@ -1,0 +1,13 @@
+{
+  "id": "P006",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "The free app already does the part that helps me start tasks. Pets, rooms and icons are cute, but I'm a student on a tiny budget and I don't want more stuff to manage.",
+  "objection": "It's mostly decoration, not something that helps me do more. Seven dollars is a lot for extras when the free version already works, and I'd just feel like I have another thing to set up.",
+  "would_change_my_mind": "A much lower price, around $2 to $3, or one extra that actually helps me start tasks, like the routine packs, sold alone.",
+  "price_too_cheap": 1,
+  "price_cheap": 2,
+  "price_expensive": 4,
+  "price_too_expensive": 6
+}

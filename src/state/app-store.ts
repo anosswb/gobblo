@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { addBites, feed, newDayCheck, newId, removeBite, reorder, rewardStart, toggleDaily } from '@/features/bites/logic';
 import { startTimer } from '@/features/focus/timer';
+import { hasPack, spendForPack, type PackId } from '@/features/plus/catalog';
 import { mmkvStateStorage } from '@/lib/storage';
 
 import { mergeDefaults, migrate } from './migrations';
@@ -22,6 +23,10 @@ import {
 type Actions = {
   updateSettings: (patch: Partial<Settings>) => void;
   patchPet: (patch: Partial<Pet>) => void;
+  /** Plus: grant a pack (store purchase on iOS) */
+  unlock: (id: string) => void;
+  /** Android: buy a pack with sparks; false if not enough */
+  buyPackWithSparks: (id: PackId) => boolean;
   resetAll: () => void;
   importState: (data: PersistedState) => void;
   onAppActive: (now?: Date) => void;
@@ -45,7 +50,7 @@ type Actions = {
 
 export type AppState = PersistedState & Actions;
 
-const pick = ({ bites, sessions, pet, stats, settings, goodThings, reminders, focus }: PersistedState): PersistedState => ({
+const pick = ({ bites, sessions, pet, stats, settings, goodThings, reminders, focus, unlocked }: PersistedState): PersistedState => ({
   bites,
   sessions,
   pet,
@@ -54,6 +59,7 @@ const pick = ({ bites, sessions, pet, stats, settings, goodThings, reminders, fo
   goodThings,
   reminders,
   focus,
+  unlocked,
 });
 
 export const useAppStore = create<AppState>()(
@@ -62,6 +68,15 @@ export const useAppStore = create<AppState>()(
       ...freshState(),
       updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
       patchPet: (patch) => set((s) => ({ pet: { ...s.pet, ...patch } })),
+      unlock: (id) => set((s) => (s.unlocked.includes(id) ? {} : { unlocked: [...s.unlocked, id] })),
+      buyPackWithSparks: (id) => {
+        const s = get();
+        if (hasPack(s.unlocked, id)) return true;
+        const left = spendForPack(s.stats.sparks, id);
+        if (left === null) return false;
+        set({ stats: { ...s.stats, sparks: left }, unlocked: [...s.unlocked, id] });
+        return true;
+      },
       resetAll: () => set(freshState()),
       importState: (data) => set(migrate(data, 0)),
       onAppActive: (now = new Date()) => {
