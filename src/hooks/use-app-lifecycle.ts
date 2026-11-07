@@ -39,8 +39,17 @@ export function useAppLifecycle() {
       }
       // lock-screen focus timer (Start Kit) follows the session: start, pause, +5, end
       if (s.focus !== prev.focus || s.unlocked !== prev.unlocked) syncFocusLive(s);
-      // home-screen widget shows the next bite + whether one-tap start is unlocked
-      if (s.bites !== prev.bites || s.unlocked !== prev.unlocked || s.pet.name !== prev.pet.name) updateWidgets();
+      // home-screen widgets show the pet (name, colour, mood), the next bite, a running timer and Start Kit
+      if (
+        s.bites !== prev.bites ||
+        s.unlocked !== prev.unlocked ||
+        s.focus !== prev.focus ||
+        s.pet.name !== prev.pet.name ||
+        s.pet.color !== prev.pet.color ||
+        s.stats.todayEaten !== prev.stats.todayEaten
+      ) {
+        updateWidgets();
+      }
       if (s.settings.mixWithMusic !== prev.settings.mixWithMusic || s.settings.soundOnSilent !== prev.settings.soundOnSilent) void configureAudio().catch(() => undefined);
     });
     return () => {

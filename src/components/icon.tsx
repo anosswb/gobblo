@@ -63,6 +63,7 @@ import Scissors from 'lucide-react-native/icons/scissors';
 import Settings from 'lucide-react-native/icons/settings';
 import Share from 'lucide-react-native/icons/share';
 import Shirt from 'lucide-react-native/icons/shirt';
+import SkipForward from 'lucide-react-native/icons/skip-forward';
 import ShoppingBag from 'lucide-react-native/icons/shopping-bag';
 import ShowerHead from 'lucide-react-native/icons/shower-head';
 import Smile from 'lucide-react-native/icons/smile';
@@ -109,6 +110,7 @@ const MAP = {
   sparkle: ['sparkle', Sparkle],
   sparkles: ['sparkles', Sparkles],
   play: ['play.fill', Play],
+  skip: ['forward.end.fill', SkipForward],
   pause: ['pause.fill', Pause],
   sound: ['speaker.wave.2.fill', Volume2],
   mute: ['speaker.slash.fill', VolumeX],

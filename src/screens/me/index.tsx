@@ -85,7 +85,7 @@ export function MeScreen() {
           <Text variant="heading">Road to 20</Text>
           <Text variant="bodyBold" tone="primary">{lp.level}/20</Text>
         </View>
-        <RoadTo20 level={lp.level} total={stats.total} />
+        <RoadTo20 level={lp.level} total={stats.total} color={look.color} />
       </View>
 
       <View style={styles.tiles}>

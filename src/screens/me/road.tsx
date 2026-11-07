@@ -1,50 +1,96 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { Icon } from '@/components/icon';
 import { Text } from '@/components/text';
-import { Icon, type IconName } from '@/components/icon';
-import { HATS, FACES, COLORS, ROOMS, SLOT_ICON } from '@/features/closet/items';
-import { LEVELS, MAX_LEVEL, STAGES } from '@/features/progress/logic';
+import { rewardsFor, type Item, type RoomId } from '@/features/closet/items';
+import { LEVELS, MAX_LEVEL, STAGES, stageOfLevel } from '@/features/progress/logic';
+import { Pet } from '@/pet/pet';
+import type { FaceId, HatId } from '@/pet/wardrobe';
 import { useTheme } from '@/theme/theme-provider';
-import { radius, space } from '@/theme/tokens';
+import { roomGradients, type PetColor } from '@/theme/tokens';
 
-const ALL = [...HATS, ...FACES, ...COLORS, ...ROOMS];
 const STAGE_AT: Record<number, string> = Object.fromEntries(STAGES.map((s) => [s.level, s.name]));
+const TILE = 60;
+const STEP = TILE + 10;
 
-/** The icon that stands for a level's reward (an evolution beats an item). */
-function badge(level: number): IconName {
-  if (STAGE_AT[level] && level > 1) return 'star';
-  const it = ALL.find((i) => i.unlock.type === 'level' && i.unlock.level === level);
-  return it ? SLOT_ICON[it.slot] : 'sparkle';
+/** The one item a level shows on its tile (wearables first, then colour, then room). */
+function featured(level: number): Item | undefined {
+  const { items } = rewardsFor(level, STAGE_AT);
+  return items.find((i) => i.slot === 'hat') ?? items.find((i) => i.slot === 'face') ?? items.find((i) => i.slot === 'color') ?? items.find((i) => i.slot === 'room');
+}
+
+/** What a level gives, read out by screen readers. */
+function rewardLabel(level: number): string {
+  const r = rewardsFor(level, STAGE_AT);
+  return [r.stageName && level > 1 ? `evolves into ${r.stageName}` : '', ...r.items.map((i) => i.name)].filter(Boolean).join(', ');
 }
 
 /**
- * "Road to 20": every level as a stop, what it gives, and how far you are. Level 20 stays a
- * wrapped gift until you get there (the surprise is revealed by the level-up card).
+ * "Road to 20" (Anass 2026-11-07: "change levels icons"): each stop now previews the real reward
+ * on your own pet: the hat or glasses it wears, the new colour, the room behind it, the new
+ * evolution form. Level 20 stays a wrapped gift until you get there (the level-up card reveals it).
+ * All pets are `still` (20 animated pets in a row would drop frames).
  */
-export function RoadTo20({ level, total }: { level: number; total: number }) {
+export function RoadTo20({ level, total, color }: { level: number; total: number; color: PetColor }) {
   const { colors } = useTheme();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}
-      contentOffset={{ x: Math.max(0, (level - 2) * 64), y: 0 }} accessibilityLabel={`Level ${level} of ${MAX_LEVEL}`}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.row}
+      contentOffset={{ x: Math.max(0, (level - 2) * STEP), y: 0 }}
+      accessibilityLabel={`Level ${level} of ${MAX_LEVEL}`}>
       {LEVELS.map((need, i) => {
         const lv = i + 1;
         const done = lv <= level;
         const now = lv === level;
+        const next = lv === level + 1;
         const mystery = lv === MAX_LEVEL && !done;
+        const evolves = Boolean(STAGE_AT[lv]) && lv > 1;
+        const item = featured(lv);
+        const stage = stageOfLevel(lv);
+        const room = item?.slot === 'room' ? (item.id as Exclude<RoomId, 'auto'>) : null;
         return (
-          <View key={lv} style={styles.stop}>
+          <View key={lv} style={styles.stop} accessible accessibilityLabel={`Level ${lv}${mystery ? ', a surprise' : `: ${rewardLabel(lv) || 'your pet'}`}${done ? ', unlocked' : ''}`}>
             <View
               style={[
-                styles.dot,
+                styles.tile,
                 {
-                  backgroundColor: now ? colors.primary : done ? colors.primarySoft : colors.fill,
-                  borderColor: now ? colors.primary : colors.cardBorder,
+                  backgroundColor: done ? colors.cardSolid : colors.fill,
+                  borderColor: now ? colors.ink : next ? colors.ink3 : colors.cardBorder,
+                  borderWidth: now ? 2 : StyleSheet.hairlineWidth,
                 },
               ]}>
-              <Icon name={mystery ? 'gift' : badge(lv)} size={20} color={now ? colors.onPrimary : done ? colors.primary : colors.ink3} />
+              {room ? <LinearGradient colors={roomGradients[room]} style={StyleSheet.absoluteFill} /> : null}
+              {mystery ? (
+                <Icon name="gift" size={24} color={colors.ink2} />
+              ) : (
+                <View style={!done && !next ? styles.dim : undefined}>
+                  <Pet
+                    size={room ? 34 : 40}
+                    still
+                    mood={evolves ? 'proud' : 'happy'}
+                    stage={stage}
+                    color={item?.slot === 'color' ? (item.id as PetColor) : color}
+                    hat={item?.slot === 'hat' ? (item.id as HatId) : 'none'}
+                    face={item?.slot === 'face' ? (item.id as FaceId) : 'none'}
+                  />
+                </View>
+              )}
+              {evolves && !mystery ? (
+                <View style={[styles.badge, { backgroundColor: colors.ink }]}>
+                  <Icon name="star" size={9} color={colors.bg} weight="bold" />
+                </View>
+              ) : null}
+              {done && !now ? (
+                <View style={[styles.check, { backgroundColor: colors.ink }]}>
+                  <Icon name="check" size={9} color={colors.bg} weight="bold" />
+                </View>
+              ) : null}
             </View>
-            <Text variant="caption" tone={now ? 'primary' : done ? 'ink' : 'ink3'}>Lv {lv}</Text>
-            <Text variant="caption" tone="ink3" style={styles.need}>{done ? '✓' : `${need - total} ✦`}</Text>
+            <Text variant="caption" tone={now ? 'ink' : done ? 'ink2' : 'ink3'} style={now ? styles.bold : undefined}>Lv {lv}</Text>
+            <Text variant="caption" tone="ink3" style={styles.need}>{done ? (now ? 'Now' : ' ') : `${need - total} ✦`}</Text>
           </View>
         );
       })}
@@ -53,8 +99,12 @@ export function RoadTo20({ level, total }: { level: number; total: number }) {
 }
 
 const styles = StyleSheet.create({
-  row: { gap: space.s, paddingVertical: space.xs, paddingEnd: space.l },
-  stop: { width: 56, alignItems: 'center', gap: 2 },
-  dot: { width: 48, height: 48, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
+  row: { gap: 10, paddingVertical: 4, paddingEnd: 16 },
+  stop: { width: TILE, alignItems: 'center', gap: 2 },
+  tile: { width: TILE, height: TILE, borderRadius: 18, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  dim: { opacity: 0.4 },
+  badge: { position: 'absolute', top: 5, start: 5, width: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  check: { position: 'absolute', top: 5, end: 5, width: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  bold: { fontWeight: '700' },
   need: { fontSize: 10, lineHeight: 13 },
 });
