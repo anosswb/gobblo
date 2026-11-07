@@ -1,3 +1,4 @@
+import * as Linking from 'expo-linking';
 import { FlexWidget, ImageWidget, TextWidget } from 'react-native-android-widget';
 
 import type { WidgetData } from './widget-data';
@@ -13,7 +14,8 @@ const PALETTE = {
 
 export const WIDGET_NAME = 'NextBite';
 
-export const startUri = (biteId: string) => `gobblo://start?bite=${encodeURIComponent(biteId)}`;
+/** Uses the running app's own scheme (gobblo:// or gobblo-preview:// for the preview build). */
+export const startUri = (biteId: string) => Linking.createURL('/start', { queryParams: { bite: biteId } });
 
 export function NextBiteWidget({ data, scheme }: { data: WidgetData; scheme: 'light' | 'dark' }) {
   const c = PALETTE[scheme];

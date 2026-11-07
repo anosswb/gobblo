@@ -7,6 +7,7 @@ import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { LINKS } from '@/config/app';
 import { MONETIZATION } from '@/config/monetization';
+import { askNotificationPermission } from '@/features/nudges/schedule';
 import { canShowOffer, DISPLAY_PRICE, hasPack, PACK_IDS, PACKS, type PackId } from '@/features/plus/catalog';
 import { ROUTINE_IDS, ROUTINES, type RoutineId } from '@/features/plus/routines';
 import { haptics } from '@/lib/haptics';
@@ -32,10 +33,13 @@ export function PlusScreen() {
   const buyWithSparks = useAppStore((s) => s.buyPackWithSparks);
   const addBites = useAppStore((s) => s.addBites);
   const toggleDaily = useAppStore((s) => s.toggleDaily);
+  const unlock = useAppStore((s) => s.unlock);
   const android = MONETIZATION === 'ads';
 
   const unlockPack = (id: PackId) => {
     if (buyWithSparks(id)) {
+      // the lock-screen timer is a notification: ask once, right when it becomes useful
+      if (id === 'startKit') void askNotificationPermission().catch(() => false);
       haptics.success();
       play('spark');
       toast(t.unlocked(t.packs[id].name));
@@ -125,6 +129,14 @@ export function PlusScreen() {
           <Text variant="heading">✦ {t.bundle(DISPLAY_PRICE.plus)}</Text>
           <Text variant="caption" tone="ink2">{t.soonNote}</Text>
         </View>
+      ) : null}
+
+      {__DEV__ && !unlocked.includes('plus') ? (
+        // dev builds only (stripped from release): lets Anass test Start Kit before store purchases exist
+        <PressScale accessibilityRole="button" onPress={() => { unlock('plus'); void askNotificationPermission().catch(() => false); toast('Dev: all packs unlocked'); }}
+          style={[styles.btn, { backgroundColor: colors.fill }]}>
+          <Text variant="caption" tone="ink2">Test: unlock all packs (dev app only)</Text>
+        </PressScale>
       ) : null}
 
       <Text variant="caption" tone="ink2" style={styles.center}>{t.promise}</Text>

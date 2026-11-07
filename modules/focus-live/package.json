@@ -1,0 +1,7 @@
+{
+  "name": "focus-live",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Gobblo: lock-screen focus timer (Android ongoing countdown notification)",
+  "main": "index.ts"
+}

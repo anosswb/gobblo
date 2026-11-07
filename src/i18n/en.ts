@@ -110,7 +110,7 @@ export const en = {
     intro: 'Everything you need to start a task is free, forever. Plus adds a few extras if you want them.',
     weekOne: 'Take your time: try the app for a week first. Nothing here is needed to start a task.',
     packs: {
-      startKit: { name: 'Start Kit', lines: ['Lock-screen widget: your next bite, start 2 min in one tap', 'Focus timer on your lock screen', 'One-tap routine packs'] },
+      startKit: { name: 'Start Kit', lines: ['Home-screen widget: your next bite, start 2 min in one tap', 'Focus timer on your lock screen', 'One-tap routine packs'] },
       makeItYours: { name: 'Make It Yours', lines: ['The full closet: hats, accessories, colours', 'Home backgrounds', 'App themes'] },
       focus: { name: 'Focus', lines: ['Sound mixer: layer two soundscapes', 'Your weekly Brain Wrapped card'] },
     },

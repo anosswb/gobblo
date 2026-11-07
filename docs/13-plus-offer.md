@@ -102,3 +102,19 @@ in RevenueCat) before launch.
    Activity (needs Xcode 26 / EAS iOS build).
 3. **Make It Yours:** hats on the pet, Home backgrounds, themes.
 4. **Focus:** sound mixer, Brain Wrapped.
+
+## 7. Feature panel (2026-11-07): which extras to build first
+Same 20 simulated buyers, 100 points each across 11 extras (founder/features/results.md).
+
+| rank | extra | avg points | #1 pick |
+|---|---|---:|---:|
+| 1 | Widget: next bite + one-tap 2-minute start | 34.7 | 17 |
+| 2 | Focus timer on the lock screen | 13.7 | 0 |
+| 3 | Routine packs (already built) | 12.1 | 0 |
+| 4 | Sound mixer | 8.6 | 0 |
+| 5 | Brain Wrapped | 7.8 | 1 |
+| 6 | Closet hats | 7.5 | 2 |
+| last | App icons (7 "least wanted"), pet room (5) | 1–2 | 0 |
+
+Built: #1 and #2 (Android first: home-screen widget + ongoing countdown notification; iOS widget and
+Live Activity need the EAS iOS build). Cut from the plan: alternate app icons, the pet room.
