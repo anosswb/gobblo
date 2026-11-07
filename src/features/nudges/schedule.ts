@@ -89,7 +89,7 @@ export async function scheduleFocusEnd(endsAt: number, petName: string): Promise
   if (!(await notificationsAllowed())) return null;
   await ensureChannels();
   return Notifications.scheduleNotificationAsync({
-    content: { title: `${petName} is done 🍩`, body: 'Time’s up! Come feed me.', sound: SOUND_FILE.chime, data: { kind: 'focus', url: '/focus' } },
+    content: { title: `${petName} is done`, body: 'Time’s up! Come feed me.', sound: SOUND_FILE.chime, data: { kind: 'focus', url: '/focus' } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(endsAt), channelId: 'focus' },
   });
 }

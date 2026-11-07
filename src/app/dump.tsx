@@ -20,6 +20,7 @@ import { duration } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 import { backOrHome } from '@/lib/nav';
+import { FoodIcon } from '@/components/food-icon';
 
 const d = en.dump;
 type Edit = { size?: Size; removed?: boolean };
@@ -125,7 +126,7 @@ export default function DumpScreen() {
                         play('tick');
                       }}
                       style={[styles.food, { backgroundColor: colors.card }]}>
-                      <Text style={styles.foodEmoji}>{FOOD[b.size].emoji}</Text>
+                      <FoodIcon size={b.size} />
                     </PressScale>
                     <View style={styles.flex}>
                       <Text variant="body" numberOfLines={2}>{b.text}</Text>

@@ -30,6 +30,8 @@ import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
 import { BiteRow } from './bite-row';
 import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
+import { FoodIcon } from '@/components/food-icon';
+import type { IconName } from '@/components/icon';
 
 const h = en.home;
 
@@ -66,7 +68,7 @@ export function HomeScreen() {
   const petTarget = useAnimatedRef<Animated.View>();
   const [carrying, setCarrying] = useState(false);
   const [overPet, setOverPet] = useState(false);
-  const [floatEmoji, setFloatEmoji] = useState('🍪');
+  const [floatEmoji, setFloatEmoji] = useState<IconName>('foodSmall');
   const glow = useAnimatedStyle(() => ({ opacity: drag.shown.get() * (0.35 + 0.65 * drag.over.get()), transform: [{ scale: 0.9 + 0.15 * drag.over.get() }] }));
 
   useEffect(() => {
@@ -279,7 +281,7 @@ export function HomeScreen() {
                 play('tick');
               }}
               style={[styles.food, { backgroundColor: colors.fill }]}>
-              <Text style={styles.foodEmoji}>{FOOD[size].emoji}</Text>
+              <FoodIcon size={size} />
             </PressScale>
             <TextInput
               value={text}

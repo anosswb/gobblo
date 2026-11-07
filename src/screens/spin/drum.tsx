@@ -14,8 +14,9 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { Text } from '@/components/text';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
+import { Icon, type IconName } from '@/components/icon';
 
-export type DrumItem = { key: string; emoji: string; text: string };
+export type DrumItem = { key: string; emoji: IconName; text: string };
 export type DrumHandle = { spin: (to: number) => void; snap: (to: number) => void };
 
 const ROW = 52;
@@ -103,6 +104,7 @@ export function Drum({
 }
 
 function DrumRow({ index, item, offset }: { index: number; item: DrumItem; offset: SharedValue<number> }) {
+  const { colors } = useTheme();
   const style = useAnimatedStyle(() => {
     const d = (index * ROW - offset.get()) / ROW; // rows from the centre band
     const a = Math.min(Math.abs(d), 3);
@@ -118,7 +120,7 @@ function DrumRow({ index, item, offset }: { index: number; item: DrumItem; offse
   });
   return (
     <Animated.View style={[styles.row, style]}>
-      <Text style={styles.emoji}>{item.emoji}</Text>
+      <Icon name={item.emoji} size={22} color={colors.ink} />
       <Text variant="bodyBold" numberOfLines={1} style={styles.text}>
         {item.text}
       </Text>

@@ -76,7 +76,7 @@ export function MeScreen() {
           <Text variant="caption" tone="primary" style={styles.kicker}>Level {lp.level} of 20</Text>
           <Text variant="title2">{STAGES[look.stage].name}</Text>
           <Text variant="subhead" tone="ink2">{lp.toNext === null ? 'Legend. You did it.' : `${lp.toNext} ✦ to level ${lp.level + 1}`}</Text>
-          {nextReward ? <Text variant="caption" tone="ink2">Next: {nextReward.emoji} {nextReward.name}</Text> : null}
+          {nextReward ? <Text variant="caption" tone="ink2">Next: {nextReward.name}</Text> : null}
         </View>
       </View>
 

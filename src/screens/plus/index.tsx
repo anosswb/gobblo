@@ -17,6 +17,7 @@ import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
 import { addWidgetToHomeScreen, widgetsSupported } from '@/widgets/update';
 import { radius, space } from '@/theme/tokens';
+import { Icon } from '@/components/icon';
 
 const t = en.plus;
 
@@ -62,7 +63,7 @@ export function PlusScreen() {
     <Screen back eyebrow={t.eyebrow} title={t.title}>
       <Text variant="body" tone="ink2">{t.intro}</Text>
       {!canShowOffer(firstOpen) ? (
-        <View style={[styles.note, { backgroundColor: colors.primarySoft }]}>
+        <View style={[styles.note, { backgroundColor: colors.fill }]}>
           <Text variant="subhead">{t.weekOne}</Text>
         </View>
       ) : null}
@@ -73,7 +74,9 @@ export function PlusScreen() {
         return (
           <View key={id} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
             <View style={styles.head}>
-              <Text style={styles.emoji}>{PACKS[id].emoji}</Text>
+              <View style={[styles.packIcon, { backgroundColor: colors.primarySoft }]}>
+                <Icon name={PACKS[id].icon} size={20} color={colors.primary} />
+              </View>
               <Text variant="heading" style={styles.flex}>{p.name}</Text>
               {owned ? <Text variant="bodyBold" tone="primary">{t.owned}</Text> : null}
             </View>
@@ -89,7 +92,7 @@ export function PlusScreen() {
                   toast(ok ? t.widgetAdded : t.widgetManual);
                 }}
                 style={[styles.btn, { backgroundColor: colors.fill }]}>
-                <Text variant="bodyBold">📱 {t.addWidget}</Text>
+                <Text variant="bodyBold">{t.addWidget}</Text>
               </PressScale>
             ) : null}
 
@@ -101,7 +104,10 @@ export function PlusScreen() {
                   {ROUTINE_IDS.map((r) => (
                     <PressScale key={r} accessibilityRole="button" onPress={() => addRoutine(r)}
                       style={[styles.chip, { backgroundColor: colors.fill }]}>
-                      <Text variant="bodyBold">{ROUTINES[r].emoji} {t.routineNames[r]}</Text>
+                      <View style={styles.chipRow}>
+                        <Icon name={ROUTINES[r].icon} size={16} color={colors.ink} />
+                        <Text variant="bodyBold">{t.routineNames[r]}</Text>
+                      </View>
                     </PressScale>
                   ))}
                 </View>
@@ -126,7 +132,7 @@ export function PlusScreen() {
 
       {!android ? (
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
-          <Text variant="heading">✦ {t.bundle(DISPLAY_PRICE.plus)}</Text>
+          <Text variant="heading">{t.bundle(DISPLAY_PRICE.plus)}</Text>
           <Text variant="caption" tone="ink2">{t.soonNote}</Text>
         </View>
       ) : null}
@@ -158,7 +164,8 @@ const styles = StyleSheet.create({
   note: { borderRadius: radius.card, padding: space.l },
   card: { borderRadius: radius.card, padding: space.l, gap: space.s },
   head: { flexDirection: 'row', alignItems: 'center', gap: space.m },
-  emoji: { fontSize: 28, lineHeight: 34 },
+  packIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  chipRow: { flexDirection: 'row', alignItems: 'center', gap: space.s },
   routines: { gap: space.xs, marginTop: space.s },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s },
   chip: { minHeight: 44, paddingHorizontal: space.l, borderRadius: radius.button, justifyContent: 'center' },

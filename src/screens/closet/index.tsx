@@ -162,7 +162,11 @@ export function ClosetScreen() {
                     face={tab === 'face' && it ? (it.id as FaceId) : look.face}
                   />
                 )}
-                {tile.mood === 'auto' ? <Text style={styles.autoBadge}>✨</Text> : null}
+                {tile.mood === 'auto' ? (
+                  <View style={styles.autoBadge}>
+                    <Icon name="sparkle" size={14} color={colors.primary} />
+                  </View>
+                ) : null}
               </View>
               <Text variant="caption" tone={on ? 'primary' : 'ink2'} numberOfLines={1}>{tile.label}</Text>
               {lockLabel && it ? (
@@ -192,7 +196,7 @@ const styles = StyleSheet.create({
   thumb: { height: 74, alignItems: 'center', justifyContent: 'center' },
   dim: { opacity: 0.42 },
   roomSwatch: { width: 64, height: 64, borderRadius: 18, overflow: 'hidden', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 4, borderWidth: StyleSheet.hairlineWidth },
-  autoBadge: { position: 'absolute', top: 0, end: 4, fontSize: 16 },
+  autoBadge: { position: 'absolute', top: 2, end: 2 },
   lock: { position: 'absolute', top: 6, end: 6, flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, borderWidth: StyleSheet.hairlineWidth },
   lockText: { fontSize: 10, lineHeight: 13 },
   dot: { position: 'absolute', top: 8, start: 8, width: 10, height: 10, borderRadius: 5 },

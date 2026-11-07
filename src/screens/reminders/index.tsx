@@ -85,7 +85,7 @@ export function RemindersScreen() {
           haptics.success();
           play('spark');
           setText('');
-          toast(nudge === 'off' ? 'Saved. (It still nudges, even with nudges off)' : 'Saved. I’ll tap you on the shoulder ✦');
+          toast(nudge === 'off' ? 'Saved. (It still nudges, even with nudges off)' : 'Saved. I’ll tap you on the shoulder.');
         }}
         style={[styles.cta, { backgroundColor: colors.primary }]}>
         <Text variant="bodyBold" tone="onPrimary">Add reminder</Text>

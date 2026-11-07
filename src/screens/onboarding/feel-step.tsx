@@ -53,7 +53,7 @@ export function FeelStep() {
         <Row stacked label={t.focusSound} right={
           <Chips<FocusSound> accessibilityLabel={t.focusSound} value={s.focusSound}
             onChange={(v) => { update({ focusSound: v }); startLoop(v); setTimeout(() => stopLoop(), 2500); }}
-            options={[{ value: 'none', label: t.soundNone }, { value: 'brown', label: `🟤 ${t.brown}` }, { value: 'rain', label: `🌧 ${t.rain}` }, { value: 'keys', label: `⌨️ ${t.keys}` }]} />
+            options={[{ value: 'none', label: t.soundNone }, { value: 'brown', label: t.brown }, { value: 'rain', label: t.rain }, { value: 'keys', label: t.keys }]} />
         } />
         <Row last stacked label={t.haptics} right={
           <Segmented accessibilityLabel={t.haptics} value={s.haptics} onChange={(v) => { update({ haptics: v }); setTimeout(() => haptics.medium(), 30); }}

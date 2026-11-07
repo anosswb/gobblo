@@ -13,6 +13,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
 
 import { DraggableFood } from './feed-drag';
+import { FoodIcon } from '@/components/food-icon';
 
 const h = en.home;
 const ACTION_W = 84;
@@ -63,9 +64,9 @@ export function BiteRow({
         onPress={onOpen}>
         {({ pressed }) => (
           <View style={[styles.bite, { backgroundColor: pressed ? colors.cardAlt : colors.card }]}>
-            <DraggableFood id={bite.id} emoji={food.emoji}>
+            <DraggableFood id={bite.id} emoji={food.icon}>
               <View style={[styles.food, { backgroundColor: colors.fill }]} accessibilityHint="hold and drag onto the pet to feed it">
-                <Text style={styles.foodEmoji}>{food.emoji}</Text>
+                <FoodIcon size={bite.size} />
               </View>
             </DraggableFood>
             <View style={[styles.body, { borderTopColor: colors.line }]}>

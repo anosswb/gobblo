@@ -34,7 +34,7 @@ export function BrainCard() {
   const share = async () => {
     haptics.light();
     if (Platform.OS === 'web' || !(await Sharing.isAvailableAsync())) {
-      toast('Sharing works on your phone ✦');
+      toast('Sharing works on your phone.');
       return;
     }
     try {
@@ -62,7 +62,7 @@ export function BrainCard() {
             </Text>
             <View style={styles.stats}>
               <Text variant="caption" tone="onFocus">
-                🍪 {stats.eaten} {stats.eaten === 1 ? 'bite' : 'bites'} · ⏱ {stats.minutes} min · ↩︎ {stats.comebacks} {stats.comebacks === 1 ? 'comeback' : 'comebacks'}
+                {stats.eaten} {stats.eaten === 1 ? 'bite' : 'bites'} · {stats.minutes} min · {stats.comebacks} {stats.comebacks === 1 ? 'comeback' : 'comebacks'}
               </Text>
             </View>
             <Text variant="caption" tone="onFocus2" style={styles.mark}>

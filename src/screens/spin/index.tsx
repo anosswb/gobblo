@@ -21,6 +21,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
 
 import { Drum, type DrumHandle, type DrumItem } from './drum';
+import type { IconName } from '@/components/icon';
 
 const sp = en.spin;
 type Choice = DrumItem & { biteId: string | null; size: Size };
@@ -43,8 +44,8 @@ export function SpinScreen() {
 
   const mine: Choice[] = plate(bites, undefined)
     .slice(0, 8)
-    .map((b) => ({ key: b.id, emoji: FOOD[b.size].emoji, text: b.text, biteId: b.id, size: b.size }));
-  const snacks: Choice[] = sp.snacks.map((s, i) => ({ key: `snack-${i}`, emoji: s.emoji, text: s.text, biteId: null, size: 0 as Size }));
+    .map((b) => ({ key: b.id, emoji: FOOD[b.size].icon, text: b.text, biteId: b.id, size: b.size }));
+  const snacks: Choice[] = sp.snacks.map((s, i) => ({ key: `snack-${i}`, emoji: s.icon as IconName, text: s.text, biteId: null, size: 0 as Size }));
   const items: Choice[] = mine.length >= 6 ? mine : [...mine, ...snacks.slice(0, Math.max(6 - mine.length, mine.length ? 2 : 6))];
   const pick = landed !== null ? items[landed] : null;
   const mood: Mood = spinning ? 'excited' : pick ? 'proud' : 'curious';

@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
-import { Text } from '@/components/text';
 import { useTheme } from '@/theme/theme-provider';
+import { Icon, type IconName } from '@/components/icon';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -26,7 +26,7 @@ export function TimerRing({
   running: boolean;
   /** changes on start / pause / resume / +5: the only moments the ring re-syncs to the clock */
   runKey: string;
-  emoji: string;
+  emoji: IconName;
   size?: number;
 }) {
   const { colors, reduceMotion } = useTheme();
@@ -67,7 +67,7 @@ export function TimerRing({
       </Svg>
       <View style={styles.center}>
         <Animated.View style={food}>
-          <Text style={styles.emoji}>{emoji}</Text>
+          <Icon name={emoji} size={54} color={colors.onFocus} />
         </Animated.View>
       </View>
     </View>

@@ -5,7 +5,8 @@ import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
-import { rewardsFor, type Item } from '@/features/closet/items';
+import { Icon } from '@/components/icon';
+import { rewardsFor, SLOT_ICON, type Item } from '@/features/closet/items';
 import { useLook } from '@/features/closet/use-look';
 import { MAX_LEVEL, STAGES } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
@@ -99,7 +100,12 @@ function Card({ level, onDone }: { level: number; onDone: () => void }) {
                 <View style={styles.list}>
                   <Text variant="caption" tone="ink2" style={styles.center}>{t.unlocked}</Text>
                   {reward.items.map((i: Item) => (
-                    <Text key={i.id} variant="heading" style={styles.center}>{i.emoji} {i.name}</Text>
+                    <View key={i.id} style={styles.rewardRow}>
+                      <View style={[styles.rewardIcon, { backgroundColor: colors.primarySoft }]}>
+                        <Icon name={SLOT_ICON[i.slot]} size={16} color={colors.primary} />
+                      </View>
+                      <Text variant="heading">{i.name}</Text>
+                    </View>
                   ))}
                 </View>
               ) : (
@@ -132,6 +138,8 @@ const styles = StyleSheet.create({
   center: { textAlign: 'center' },
   kicker: { textAlign: 'center', letterSpacing: 2, fontWeight: '700' },
   list: { gap: space.xs, marginTop: space.s },
+  rewardRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s },
+  rewardIcon: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   actions: { gap: space.s, marginTop: space.l },
   btn: { minHeight: 52, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
 });

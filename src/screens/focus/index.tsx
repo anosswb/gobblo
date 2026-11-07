@@ -220,7 +220,7 @@ export function FocusScreen() {
           <Text variant="subhead" tone="onFocus2" numberOfLines={1} style={styles.workingOn}>
             {f.workingOn} · {focus.biteText}
           </Text>
-          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={food.emoji} size={compact ? 168 : 224} />
+          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={food.icon} size={compact ? 168 : 224} />
           <Text variant="timer" tone="onFocus" style={compact ? styles.timerCompact : undefined} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
             {formatClock(left)}
           </Text>
@@ -292,7 +292,7 @@ export function FocusScreen() {
               </PressScale>
             </View>
             <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.reward }]}>
-              <Text variant="bodyBold" tone="onReward">{f.done(pet.name)} {food.emoji}</Text>
+              <Text variant="bodyBold" tone="onReward">{f.done(pet.name)}</Text>
             </PressScale>
             <PressScale accessibilityRole="button" hitSlop={8} onPress={() => {
               patch({ drifts: focus.drifts + 1 });

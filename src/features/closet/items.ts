@@ -1,6 +1,7 @@
 import type { Mood } from '@/pet/pet';
 import type { FaceId, HatId } from '@/pet/wardrobe';
 import type { PetColor } from '@/theme/tokens';
+import type { IconName } from '@/components/icon';
 
 /**
  * Everything the pet can wear or become, and how it unlocks (DECISIONS 2026-11-07):
@@ -12,6 +13,9 @@ import type { PetColor } from '@/theme/tokens';
 export type Unlock = { type: 'free' } | { type: 'level'; level: number } | { type: 'pack' };
 
 export type Slot = 'hat' | 'face' | 'color' | 'room';
+
+/** The icon that stands for each kind of item (no emoji in the UI). */
+export const SLOT_ICON: Record<Slot, IconName> = { hat: 'crown', face: 'glasses', color: 'palette', room: 'sun' };
 
 export interface Item<Id extends string = string> {
   id: Id;

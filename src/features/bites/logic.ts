@@ -1,12 +1,12 @@
 import type { Bite, PersistedState, Session, Size } from '@/state/schema';
 import { todayKey } from '@/state/schema';
 
-/** Food by size (docs/01). v1 ships emoji; glossy food icons come with the art round. */
+/** Food by size (docs/01). `icon` is what the UI shows (SF Symbols / Phosphor); `emoji` stays for native widgets. */
 export const FOOD = [
-  { emoji: '🍬', label: 'Tiny', min: 2, sparks: 1 },
-  { emoji: '🍪', label: 'Small', min: 5, sparks: 2 },
-  { emoji: '🍩', label: 'Medium', min: 15, sparks: 3 },
-  { emoji: '🍕', label: 'Big', min: 25, sparks: 5 },
+  { emoji: '🥕', icon: 'foodTiny', label: 'Tiny', min: 2, sparks: 1 },
+  { emoji: '☕️', icon: 'foodSmall', label: 'Small', min: 5, sparks: 2 },
+  { emoji: '🍰', icon: 'foodMedium', label: 'Medium', min: 15, sparks: 3 },
+  { emoji: '🍽️', icon: 'foodBig', label: 'Big', min: 25, sparks: 5 },
 ] as const;
 
 let seq = 0;

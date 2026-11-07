@@ -12,8 +12,8 @@ export const skyOf = (hour: number): Sky => (hour < 6 || hour >= 19 ? 'night' : 
 
 /** True when the stage is dark enough that text and glass on it should be light. */
 export function stageIsDark(room: RoomId, sky: Sky, scheme: 'light' | 'dark') {
-  if (room === 'auto') return sky === 'night' || scheme === 'dark';
-  return room === 'garden' || room === 'galaxy' || room === 'aurora' || scheme === 'dark';
+  if (room === 'auto') return scheme === 'dark';
+  return room === 'galaxy';
 }
 
 /** The pet's stage background: time of day, or the room chosen in the Closet, + a floor glow. */

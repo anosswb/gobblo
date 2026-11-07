@@ -99,7 +99,7 @@ export function SettingsScreen() {
         <Row stacked label={t.nudgeSound} hint={t.loudHint} right={
           <Chips<NudgeSound> accessibilityLabel={t.nudgeSound} value={s.nudgeSound}
             onChange={(v) => { update({ nudgeSound: v }); previewNudgeSound(v); }}
-            options={[{ value: 'boop', label: '🫧 Boop' }, { value: 'chime', label: '🔔 Chime' }, { value: 'pop', label: '🍿 Pop' }, { value: 'loud', label: '📣 Loud' }]} />
+            options={[{ value: 'boop', label: 'Boop' }, { value: 'chime', label: 'Chime' }, { value: 'pop', label: 'Pop' }, { value: 'loud', label: 'Loud' }]} />
         } />
         <Row leading={<IconTile name="moon" color="indigo" />} label={`${t.quiet} · ${t.from}`} hint={t.quietHint} right={
           <Stepper label={t.from} value={s.quietStart} min={0} max={23} format={(h) => hourLabel(h, s.clock24h)} onChange={set('quietStart')} />
@@ -120,7 +120,7 @@ export function SettingsScreen() {
         <Row stacked label={t.focusSound} right={
           <Chips<FocusSound> accessibilityLabel={t.focusSound} value={s.focusSound}
             onChange={(v) => { update({ focusSound: v }); startLoop(v); setTimeout(() => stopLoop(), 2500); }}
-            options={[{ value: 'none', label: t.soundNone }, { value: 'brown', label: `🟤 ${t.brown}` }, { value: 'rain', label: `🌧 ${t.rain}` }, { value: 'keys', label: `⌨️ ${t.keys}` }]} />
+            options={[{ value: 'none', label: t.soundNone }, { value: 'brown', label: t.brown }, { value: 'rain', label: t.rain }, { value: 'keys', label: t.keys }]} />
         } />
         <Row leading={<IconTile name="target" color="red" />} last label={t.oneThing} hint={t.oneThingHint} right={<Toggle accessibilityLabel={t.oneThing} value={s.oneThingMode} onChange={set('oneThingMode')} />} />
       </Section>
@@ -174,7 +174,7 @@ export function SettingsScreen() {
             if (!armed) { haptics.warning(); setArmed(true); return; }
             resetAll();
             setArmed(false);
-            toast('Fresh start. Hi again ✦');
+            toast('Fresh start. Hi again.');
           }} />
       </Section>
 

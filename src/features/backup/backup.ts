@@ -41,7 +41,7 @@ export async function importBackup(): Promise<{ ok: boolean; message: string }> 
     const parsed = readBackup(JSON.parse(text));
     if (!parsed.ok) return { ok: false, message: parsed.reason };
     useAppStore.getState().importState(parsed.data);
-    return { ok: true, message: 'Backup restored. Welcome back ✦' };
+    return { ok: true, message: 'Backup restored. Welcome back.' };
   } catch {
     return { ok: false, message: 'Couldn’t read that file.' };
   }

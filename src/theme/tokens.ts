@@ -72,84 +72,90 @@ export type ColorTokens = {
 };
 
 const shared = {
-  reward: '#C3F53C',
-  rewardDeep: '#8DB50E',
-  onReward: '#14200A',
   sun: '#FFCC00',
-  focusTop: '#2A1E5C',
-  focusMid: '#120E2E',
-  focusBottom: '#05040D',
+  // Focus room: neutral night (premium, no purple)
+  focusTop: '#1C1C1F',
+  focusMid: '#111113',
+  focusBottom: '#050506',
   onFocus: '#FFFFFF',
-  onFocus2: 'rgba(235,235,245,0.62)',
-  focusGlass: 'rgba(255,255,255,0.10)',
-  focusScrim: 'rgba(5,4,13,0.55)',
+  onFocus2: 'rgba(235,235,245,0.6)',
+  focusGlass: 'rgba(255,255,255,0.08)',
+  focusScrim: 'rgba(5,5,6,0.55)',
   sceneDim: 'rgba(0,0,0,0.18)',
   onPrimary: '#FFFFFF',
 } as const;
 
 export const light: ColorTokens = {
   ...shared,
-  bg: '#F5F2FC',
-  bgTop: '#FDF6FF',
-  bgBottom: '#EEF0FF',
-  glowA: 'rgba(255,92,157,0.20)',
-  glowB: 'rgba(123,97,255,0.16)',
-  card: 'rgba(255,255,255,0.80)',
+  // Apple neutral light: soft grey canvas, solid white cards, hairline edges, no colour glows
+  bg: '#F5F5F7',
+  bgTop: '#FBFBFC',
+  bgBottom: '#EFEFF2',
+  glowA: 'rgba(255,255,255,0.9)',
+  glowB: 'rgba(255,255,255,0)',
+  card: '#FFFFFF',
   cardSolid: '#FFFFFF',
-  cardBorder: 'rgba(255,255,255,0.95)',
-  cardAlt: 'rgba(118,104,170,0.08)',
-  fill: 'rgba(118,118,128,0.12)',
-  fill2: 'rgba(120,120,128,0.16)',
+  cardBorder: 'rgba(0,0,0,0.06)',
+  cardAlt: '#F2F2F5',
+  fill: 'rgba(118,118,128,0.10)',
+  fill2: 'rgba(118,118,128,0.18)',
   thumb: '#FFFFFF',
-  glass: 'rgba(255,255,255,0.70)',
-  glassBorder: 'rgba(255,255,255,0.95)',
-  glassEdge: 'rgba(60,40,120,0.08)',
-  scrim: 'rgba(0,0,0,0.32)',
-  ink: '#000000',
-  ink2: 'rgba(60,60,67,0.6)',
-  ink3: 'rgba(60,60,67,0.3)',
-  line: 'rgba(60,60,67,0.2)',
+  glass: 'rgba(255,255,255,0.78)',
+  glassBorder: 'rgba(255,255,255,0.92)',
+  glassEdge: 'rgba(0,0,0,0.08)',
+  scrim: 'rgba(0,0,0,0.28)',
+  ink: '#0B0B0D',
+  ink2: 'rgba(60,60,67,0.64)',
+  ink3: 'rgba(60,60,67,0.32)',
+  line: 'rgba(0,0,0,0.08)',
   primary: '#E5307D',
   primaryDeep: '#B81E5E',
-  primarySoft: 'rgba(229,48,125,0.12)',
+  primarySoft: 'rgba(229,48,125,0.10)',
+  // the main "do it" button: ink on light, like Apple's primary black buttons
+  reward: '#0B0B0D',
+  rewardDeep: '#000000',
+  onReward: '#FFFFFF',
   success: '#34C759',
   pink: '#FF4F96',
   danger: '#FF3B30',
-  shadow: 'rgba(76,52,160,0.12)',
-  tabBar: 'rgba(255,255,255,0.82)',
+  shadow: 'rgba(0,0,0,0.06)',
+  tabBar: 'rgba(255,255,255,0.86)',
 };
 
 export const dark: ColorTokens = {
   ...shared,
-  // designed night, not inverted: deep violet-navy with pink + violet glows, glass cards
-  bg: '#0A0815',
-  bgTop: '#16112E',
-  bgBottom: '#06050D',
-  glowA: 'rgba(255,79,150,0.22)',
-  glowB: 'rgba(104,84,255,0.26)',
-  card: 'rgba(44,38,78,0.55)',
-  cardSolid: '#1B1733',
-  cardBorder: 'rgba(255,255,255,0.10)',
-  cardAlt: 'rgba(255,255,255,0.07)',
-  fill: 'rgba(160,150,220,0.16)',
-  fill2: 'rgba(160,150,220,0.26)',
-  thumb: '#6E6890',
-  glass: 'rgba(48,40,88,0.58)',
-  glassBorder: 'rgba(255,255,255,0.18)',
-  glassEdge: 'rgba(0,0,0,0.45)',
-  scrim: 'rgba(0,0,0,0.5)',
-  ink: '#FFFFFF',
+  // Apple neutral dark: near-black, graphite cards, white hairlines, one soft top light. No pink/purple.
+  bg: '#0A0A0B',
+  bgTop: '#151517',
+  bgBottom: '#050506',
+  glowA: 'rgba(255,255,255,0.05)',
+  glowB: 'rgba(255,255,255,0)',
+  card: 'rgba(255,255,255,0.055)',
+  cardSolid: '#161618',
+  cardBorder: 'rgba(255,255,255,0.08)',
+  cardAlt: 'rgba(255,255,255,0.06)',
+  fill: 'rgba(255,255,255,0.08)',
+  fill2: 'rgba(255,255,255,0.14)',
+  thumb: '#636366',
+  glass: 'rgba(30,30,32,0.72)',
+  glassBorder: 'rgba(255,255,255,0.14)',
+  glassEdge: 'rgba(0,0,0,0.5)',
+  scrim: 'rgba(0,0,0,0.55)',
+  ink: '#F5F5F7',
   ink2: 'rgba(235,235,245,0.6)',
   ink3: 'rgba(235,235,245,0.3)',
-  line: 'rgba(255,255,255,0.10)',
+  line: 'rgba(255,255,255,0.08)',
   primary: '#FF4F96',
   primaryDeep: '#D02D70',
-  primarySoft: 'rgba(255,79,150,0.18)',
+  primarySoft: 'rgba(255,79,150,0.16)',
+  reward: '#F5F5F7',
+  rewardDeep: '#D1D1D6',
+  onReward: '#0B0B0D',
   success: '#30D158',
   pink: '#FF6FA8',
   danger: '#FF453A',
-  shadow: 'rgba(0,0,0,0.55)',
-  tabBar: 'rgba(24,20,46,0.84)',
+  shadow: 'rgba(0,0,0,0.6)',
+  tabBar: 'rgba(22,22,24,0.86)',
 };
 
 /** Tint choices (docs/12 #14), all iOS system colours. Free on both stores. */
@@ -191,26 +197,29 @@ export type PetColor = keyof typeof petColors;
 
 /** Home stage gradient per time of day, per scheme (top → bottom). */
 export const stages = {
+  // light mode: the pet's box stays light at every hour (soft warm / cool / dusk whites)
   light: {
-    morning: ['#FFE3D3', '#FFD0E4', '#F7E8FF'],
-    day: ['#CFE8FF', '#E6E0FF', '#FFE6F1'],
-    night: ['#2B2160', '#1A1440', '#120E2E'],
+    morning: ['#FFFFFF', '#FBF8F5', '#F3EEE9'],
+    day: ['#FFFFFF', '#F7F8FA', '#EDEFF3'],
+    night: ['#FBFBFD', '#F2F2F6', '#E8E8EE'],
   },
+  // dark mode: graphite, a touch warmer in the morning
   dark: {
-    morning: ['#4A2140', '#2A1630', '#120C1A'],
-    day: ['#173055', '#1F1A45', '#100C20'],
-    night: ['#2A1F66', '#160F3A', '#08061A'],
+    morning: ['#1E1C1B', '#151413', '#0B0B0B'],
+    day: ['#1B1C1F', '#131416', '#0A0A0B'],
+    night: ['#19191C', '#111113', '#08080A'],
   },
 } as const;
 
 /** Closet "rooms": fixed scene gradients for the Home stage (top → bottom), same in both themes. */
 export const roomGradients = {
-  sunset: ['#FFB199', '#FF7EB3', '#7E5BFF'],
-  ocean: ['#7FF0E6', '#4FA8FF', '#2A3492'],
-  garden: ['#2E6B55', '#183F33', '#09170F'],
-  golden: ['#FFE6A3', '#FFB38A', '#FF7AA2'],
-  aurora: ['#4BE8B4', '#4C8DFF', '#2A1B5E'],
-  galaxy: ['#3A1C71', '#251052', '#0D0626'],
+  // muted, photographic tones (premium, not candy)
+  sunset: ['#FCE8DE', '#F3D0C7', '#E2D0E2'],
+  ocean: ['#E4F1F5', '#CCE2EC', '#B1CCDD'],
+  garden: ['#E7EFE2', '#D1E0CC', '#B8CEB4'],
+  golden: ['#FFF4DC', '#F5E2BB', '#E6CB95'],
+  aurora: ['#E3F4EF', '#D6E3F5', '#E2D9F1'],
+  galaxy: ['#2C2E3B', '#1B1C25', '#0D0D12'],
 } as const;
 
 /** 8-pt grid. Gutter 16 = iOS inset-grouped margin on phones. */
@@ -220,7 +229,7 @@ export const radius = { chip: 999, button: 999, field: 14, row: 12, card: 26, sc
 
 /**
  * Type. iOS: the system font (SF Pro, with Apple's own optical sizes and tracking) and
- * SF Pro Rounded for display. Android / web: Inter + Nunito, the closest open faces, with the
+ * SF Pro for everything (Display optical size at large sizes). Android / web: Inter, the closest open face, with the
  * size-specific tracking SF does for free.
  */
 type Weight = '400' | '500' | '600' | '700' | '800';
@@ -231,18 +240,19 @@ const ANDROID_BODY: Record<Weight, string> = {
   '700': 'Inter_700Bold',
   '800': 'Inter_700Bold',
 };
+// display = Inter too (Linear, Apple-like); the rounded Nunito read as childish
 const ANDROID_DISPLAY: Record<Weight, string> = {
-  '400': 'Nunito_600SemiBold',
-  '500': 'Nunito_600SemiBold',
-  '600': 'Nunito_700Bold',
-  '700': 'Nunito_800ExtraBold',
-  '800': 'Nunito_800ExtraBold',
+  '400': 'Inter_500Medium',
+  '500': 'Inter_600SemiBold',
+  '600': 'Inter_600SemiBold',
+  '700': 'Inter_700Bold',
+  '800': 'Inter_700Bold',
 };
 
 export const isIOS = Platform.OS === 'ios';
 
 export function font(kind: 'body' | 'display', weight: Weight): TextStyle {
-  if (isIOS) return { fontFamily: kind === 'display' ? 'ui-rounded' : undefined, fontWeight: weight };
+  if (isIOS) return { fontFamily: undefined, fontWeight: weight }; // SF Pro (Display at large sizes, automatically)
   return { fontFamily: (kind === 'display' ? ANDROID_DISPLAY : ANDROID_BODY)[weight] };
 }
 

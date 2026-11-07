@@ -1,11 +1,12 @@
 import type { Size } from '@/state/schema';
+import type { IconName } from '@/components/icon';
 
 /** Start Kit routine packs: one tap adds a set of daily bites (DECISIONS: repeat itself stays free). */
 export type RoutineId = 'morning' | 'study' | 'sunday';
 
-export const ROUTINES: Record<RoutineId, { emoji: string; bites: { text: string; size: Size }[] }> = {
+export const ROUTINES: Record<RoutineId, { icon: IconName; bites: { text: string; size: Size }[] }> = {
   morning: {
-    emoji: '🌅',
+    icon: 'sun',
     bites: [
       { text: 'Drink a glass of water', size: 0 },
       { text: 'Make the bed', size: 0 },
@@ -15,7 +16,7 @@ export const ROUTINES: Record<RoutineId, { emoji: string; bites: { text: string;
     ],
   },
   study: {
-    emoji: '📚',
+    icon: 'doc',
     bites: [
       { text: 'Open the notes. That’s it.', size: 0 },
       { text: 'Read one page', size: 1 },
@@ -25,7 +26,7 @@ export const ROUTINES: Record<RoutineId, { emoji: string; bites: { text: string;
     ],
   },
   sunday: {
-    emoji: '🧺',
+    icon: 'sparkle',
     bites: [
       { text: 'Start a laundry load', size: 1 },
       { text: 'Clear one surface', size: 1 },

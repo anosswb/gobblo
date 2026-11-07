@@ -1,3 +1,5 @@
+import type { IconName } from '@/components/icon';
+
 /**
  * Gobblo Plus (docs/13-plus-offer.md). Three packs, or all three as Plus.
  * - iOS: one-time App Store purchases (RevenueCat in Phase 6). Prices are display defaults; the
@@ -9,15 +11,15 @@ export type PackId = 'startKit' | 'makeItYours' | 'focus';
 
 export interface Pack {
   id: PackId;
-  emoji: string;
+  icon: IconName;
   /** spark price on Android (~2–3 weeks of normal use, faster with optional rewarded ads) */
   sparks: number;
 }
 
 export const PACKS: Record<PackId, Pack> = {
-  startKit: { id: 'startKit', emoji: '🚀', sparks: 120 },
-  makeItYours: { id: 'makeItYours', emoji: '🎩', sparks: 150 },
-  focus: { id: 'focus', emoji: '🎧', sparks: 120 },
+  startKit: { id: 'startKit', icon: 'bolt', sparks: 120 },
+  makeItYours: { id: 'makeItYours', icon: 'palette', sparks: 150 },
+  focus: { id: 'focus', icon: 'headphones', sparks: 120 },
 };
 
 export const PACK_IDS = Object.keys(PACKS) as PackId[];

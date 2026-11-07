@@ -24,7 +24,7 @@ import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { guessSize } from '@/features/bites/chop';
 import { COLORS } from '@/features/closet/items';
-import { capFirst, FOOD } from '@/features/bites/logic';
+import { capFirst } from '@/features/bites/logic';
 import { askNotificationPermission } from '@/features/nudges/schedule';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -38,18 +38,19 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, petColors, radius, space, stages, typeScale, type PetColor } from '@/theme/tokens';
 
 import { FeelStep } from './feel-step';
+import { FoodIcon } from '@/components/food-icon';
 
 const o = en.onboarding;
 type Step = 'hook' | 'quiz' | 'feel' | 'feed' | 'hatch' | 'name' | 'nudge';
 const DOTS: Step[] = ['hook', 'quiz', 'feel', 'feed', 'name', 'nudge'];
 /** the free colours (the rest are unlocked by levels or Make It Yours, src/features/closet/items.ts) */
 const START_COLORS = COLORS.filter((c) => c.unlock.type === 'free');
-const ORBIT = ['🍬', '🍪', '🍩', '🍕'];
+const ORBIT = [0, 1, 2, 3] as const;
 
 /**
  * Onboarding (docs/01 §0 + DECISIONS "hatch by feeding"), under 60 s, no paywall, no account:
  * hook → one quiz screen → make it yours (look + sound, Anass) → feed the egg your first thought (it hatches *because it ate*) →
- * name it (🎲) + colour → soft nudge ask (the OS prompt only after "yes") → Home.
+ * name it (dice) + colour → soft nudge ask (the OS prompt only after "yes") → Home.
  */
 export function OnboardingScreen() {
   const { colors, scheme, reduceMotion } = useTheme();
@@ -223,13 +224,13 @@ export function OnboardingScreen() {
                   <Egg size={160} cracks={cracks} wobble />
                 )}
                 <Animated.View pointerEvents="none" style={[styles.flying, flyStyle]}>
-                  <Text style={styles.flyEmoji}>{FOOD[guessSize(thought || 'x')].emoji}</Text>
+                  <FoodIcon size={guessSize(thought || 'x')} px={40} />
                 </Animated.View>
               </View>
               {step === 'feed' ? (
                 <View style={[styles.feedRow, { backgroundColor: colors.card }]}>
                   <View style={[styles.food, { backgroundColor: colors.fill }]}>
-                    <Text style={styles.foodEmoji}>{FOOD[guessSize(thought || 'x')].emoji}</Text>
+                    <FoodIcon size={guessSize(thought || 'x')} />
                   </View>
                   <TextInput
                     value={thought}
@@ -285,7 +286,7 @@ export function OnboardingScreen() {
                       play('tick');
                     }}
                     style={[styles.dice, { backgroundColor: colors.primarySoft }]}>
-                    <Text style={styles.diceEmoji}>🎲</Text>
+                    <Icon name="spin" size={22} color={colors.primary} />
                   </PressScale>
                 </View>
                 <Chips<PetColor>
@@ -348,20 +349,20 @@ function Orbit() {
   return (
     <>
       {ORBIT.map((e, i) => (
-        <OrbitItem key={e} emoji={e} index={i} t={t} />
+        <OrbitItem key={e} size={e} index={i} t={t} />
       ))}
     </>
   );
 }
 
-function OrbitItem({ emoji, index, t }: { emoji: string; index: number; t: SharedValue<number> }) {
+function OrbitItem({ size, index, t }: { size: 0 | 1 | 2 | 3; index: number; t: SharedValue<number> }) {
   const style = useAnimatedStyle(() => {
     const a = (t.get() + index / ORBIT.length) * Math.PI * 2;
     return { transform: [{ translateX: Math.cos(a) * 130 }, { translateY: Math.sin(a) * 46 + 10 }, { scale: 0.85 + Math.sin(a) * 0.2 }], zIndex: Math.sin(a) > 0 ? 2 : 0 };
   });
   return (
     <Animated.View pointerEvents="none" style={[styles.orbit, style]}>
-      <Text style={styles.orbitEmoji}>{emoji}</Text>
+      <FoodIcon size={size} px={26} />
     </Animated.View>
   );
 }

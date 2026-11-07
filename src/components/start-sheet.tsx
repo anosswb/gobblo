@@ -6,12 +6,12 @@ import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { Toggle } from '@/components/toggle';
-import { FOOD } from '@/features/bites/logic';
 import { en } from '@/i18n/en';
 import type { Bite } from '@/state/schema';
 import { duration, easing } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
+import { FoodIcon } from './food-icon';
 
 const s = en.start;
 type Choice = { minutes: number; mode: '2min' | '15' | '25' | 'custom'; label: string };
@@ -63,7 +63,7 @@ export function StartSheet({
 
             <View style={styles.head}>
               <View style={[styles.food, { backgroundColor: colors.fill }]}>
-                <Text style={styles.emoji}>{FOOD[bite.size].emoji}</Text>
+                <FoodIcon size={bite.size} px={30} />
               </View>
               <View style={styles.flex}>
                 <Text variant="caption" tone="ink2">{s.title}</Text>
