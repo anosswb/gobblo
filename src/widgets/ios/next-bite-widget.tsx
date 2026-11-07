@@ -1,6 +1,6 @@
 'use no memo'; // runs in the isolated widget runtime: no React Compiler, no hooks
 
-import { HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
 import {
   background,
   containerBackground,
@@ -17,7 +17,8 @@ import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 export type NextBiteProps = {
   petName: string;
   biteText: string | null;
-  emoji: string;
+  /** SF Symbol for the bite (src/features/bites/bite-icon.ts) */
+  symbol: string;
   minutes: number;
   left: number;
   canStart: boolean;
@@ -43,7 +44,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
   if (family === 'accessoryCircular') {
     return (
       <VStack modifiers={[containerBackground('clear', 'widget'), widgetURL(url)]}>
-        <Text modifiers={[font({ size: 22 })]}>{p.biteText ? p.emoji : '🍽️'}</Text>
+        <Image systemName={(p.biteText ? p.symbol : 'fork.knife') as never} size={20} />
         <Text modifiers={[font({ size: 11, weight: 'semibold' })]}>{p.left > 0 ? String(p.left) : '0'}</Text>
       </VStack>
     );
@@ -54,7 +55,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
       <VStack alignment="leading" modifiers={[containerBackground('clear', 'widget'), widgetURL(url)]}>
         <Text modifiers={[font({ size: 12, weight: 'semibold' })]}>{p.petName} is hungry</Text>
         <Text modifiers={[font({ size: 15, weight: 'bold' }), lineLimit(1)]}>
-          {p.biteText ? `${p.emoji} ${p.biteText}` : 'Plate is empty'}
+          {p.biteText ?? 'Plate is empty'}
         </Text>
         <Text modifiers={[font({ size: 12 })]}>{p.biteText && p.canStart ? 'Tap: start 2 min' : `${p.left} on your plate`}</Text>
       </VStack>
@@ -67,7 +68,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
         {p.biteText ? `${p.petName} is hungry for` : `${p.petName}’s plate is empty`}
       </Text>
       <Text modifiers={[font({ size: 17, weight: 'bold', design: 'rounded' }), foregroundStyle(ink), lineLimit(2)]}>
-        {p.biteText ? `${p.emoji} ${p.biteText}` : 'Tap to dump your brain'}
+        {p.biteText ?? 'Tap to dump your brain'}
       </Text>
     </VStack>
   );
@@ -87,7 +88,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
   if (family === 'systemMedium') {
     return (
       <HStack spacing={14} modifiers={[containerBackground(bg, 'widget'), widgetURL(url)]}>
-        <Text modifiers={[font({ size: 54 })]}>{p.biteText ? p.emoji : '🍽️'}</Text>
+        <Image systemName={(p.biteText ? p.symbol : 'fork.knife') as never} size={40} color={tint} />
         <VStack alignment="leading" spacing={10}>
           {title}
           {pill}
@@ -100,7 +101,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
   // systemSmall (default)
   return (
     <VStack alignment="leading" spacing={8} modifiers={[containerBackground(bg, 'widget'), widgetURL(url), frame({ maxWidth: 400, maxHeight: 400, alignment: 'topLeading' })]}>
-      <Text modifiers={[font({ size: 30 })]}>{p.biteText ? p.emoji : '🍽️'}</Text>
+      <Image systemName={(p.biteText ? p.symbol : 'fork.knife') as never} size={26} color={tint} />
       {title}
       <Spacer />
       {pill}
@@ -111,7 +112,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
 export const NextBiteIOS = createWidget<NextBiteProps>('NextBite', NextBite, {
   petName: 'Bean',
   biteText: null,
-  emoji: '🍬',
+  symbol: 'fork.knife',
   minutes: 2,
   left: 0,
   canStart: false,

@@ -38,6 +38,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, petColors, radius, space, stages, typeScale, type PetColor } from '@/theme/tokens';
 
 import { FeelStep } from './feel-step';
+import { BiteIcon } from '@/components/bite-icon';
 import { FoodIcon } from '@/components/food-icon';
 
 const o = en.onboarding;
@@ -224,13 +225,13 @@ export function OnboardingScreen() {
                   <Egg size={160} cracks={cracks} wobble />
                 )}
                 <Animated.View pointerEvents="none" style={[styles.flying, flyStyle]}>
-                  <FoodIcon size={guessSize(thought || 'x')} px={40} />
+                  <BiteIcon text={thought} size={guessSize(thought || 'x')} px={40} />
                 </Animated.View>
               </View>
               {step === 'feed' ? (
                 <View style={[styles.feedRow, { backgroundColor: colors.card }]}>
                   <View style={[styles.food, { backgroundColor: colors.fill }]}>
-                    <FoodIcon size={guessSize(thought || 'x')} />
+                    <BiteIcon text={thought} size={guessSize(thought || 'x')} />
                   </View>
                   <TextInput
                     value={thought}

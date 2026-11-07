@@ -10,7 +10,6 @@ import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
-import { FOOD } from '@/features/bites/logic';
 import {
   addMinutes,
   formatClock,
@@ -40,6 +39,7 @@ import { radius, space } from '@/theme/tokens';
 
 import { TimerRing as TimerRingSlot } from './timer-ring';
 import { backOrHome } from '@/lib/nav';
+import { biteIcon } from '@/features/bites/bite-icon';
 
 const f = en.focus;
 /** the modal's close animation; the session is saved after it */
@@ -151,7 +151,6 @@ export function FocusScreen() {
     return <NoSession color={colors.focusBottom} onExit={exit} />;
   }
 
-  const food = FOOD[focus.size];
   const spent = () => spentMinutes(t, Date.now()) + (focus.rodeWave ? 2 : 0);
 
   const finish = () => {
@@ -220,7 +219,7 @@ export function FocusScreen() {
           <Text variant="subhead" tone="onFocus2" numberOfLines={1} style={styles.workingOn}>
             {f.workingOn} · {focus.biteText}
           </Text>
-          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={food.icon} size={compact ? 168 : 224} />
+          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={biteIcon(focus.biteText, focus.size)} size={compact ? 168 : 224} />
           <Text variant="timer" tone="onFocus" style={compact ? styles.timerCompact : undefined} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
             {formatClock(left)}
           </Text>

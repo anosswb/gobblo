@@ -21,7 +21,7 @@ export function updateWidgets() {
     widget.updateSnapshot({
       petName: d.petName,
       biteText: d.bite?.text ?? null,
-      emoji: d.bite?.emoji ?? '🍬',
+      symbol: d.bite?.symbol ?? 'fork.knife',
       minutes: d.bite?.min ?? 2,
       left: d.left,
       canStart: d.canStart,

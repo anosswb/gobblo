@@ -1,13 +1,14 @@
 'use no memo'; // runs in the isolated widget runtime: no React Compiler, no hooks
 
-import { HStack, ProgressView, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { HStack, Image, ProgressView, Spacer, Text, VStack } from '@expo/ui/swift-ui';
 import { activityBackgroundTint, font, foregroundStyle, frame, lineLimit, monospacedDigit, padding, tint } from '@expo/ui/swift-ui/modifiers';
 import { createLiveActivity, type LiveActivityEnvironment } from 'expo-widgets';
 
 export type FocusActivityProps = {
   petName: string;
   biteText: string;
-  emoji: string;
+  /** SF Symbol for the bite */
+  symbol: string;
   /** ms since epoch (props travel as JSON, so no Date objects) */
   startedAt: number;
   endsAt: number;
@@ -42,7 +43,7 @@ const FocusActivity = (p: FocusActivityProps, env: LiveActivityEnvironment) => {
     banner: (
       <VStack spacing={10} modifiers={[padding({ all: 16 }), activityBackgroundTint('#0B0A1A')]}>
         <HStack spacing={12}>
-          <Text modifiers={[font({ size: 34 })]}>{p.emoji}</Text>
+          <Image systemName={p.symbol as never} size={28} color={pink} />
           <VStack alignment="leading" spacing={2}>
             <Text modifiers={[font({ size: 13, weight: 'semibold' }), foregroundStyle('#AEAEB2')]}>
               {paused ? `${p.petName} is waiting` : `${p.petName} is working with you`}
@@ -55,12 +56,12 @@ const FocusActivity = (p: FocusActivityProps, env: LiveActivityEnvironment) => {
         {paused ? null : <ProgressView timerInterval={range} countsDown modifiers={[tint(lime)]} />}
       </VStack>
     ),
-    compactLeading: <Text>{p.emoji}</Text>,
+    compactLeading: <Image systemName={p.symbol as never} color={pink} />,
     compactTrailing: clock(14),
-    minimal: <Text>{p.emoji}</Text>,
+    minimal: <Image systemName={p.symbol as never} color={pink} />,
     expandedLeading: (
       <VStack alignment="leading" modifiers={[padding({ leading: 4 })]}>
-        <Text modifiers={[font({ size: 28 })]}>{p.emoji}</Text>
+        <Image systemName={p.symbol as never} size={24} color={pink} />
       </VStack>
     ),
     expandedTrailing: clock(26),

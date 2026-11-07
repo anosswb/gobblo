@@ -1,6 +1,7 @@
 import * as Linking from 'expo-linking';
 
-import { FOOD } from '@/features/bites/logic';
+import { sfSymbol } from '@/components/icon';
+import { biteIcon } from '@/features/bites/bite-icon';
 import { hasPack } from '@/features/plus/catalog';
 import type { PersistedState } from '@/state/schema';
 import { iosWidgetsEnabled } from '@/widgets/ios/enabled';
@@ -32,7 +33,7 @@ export function syncFocusLive(s: Pick<PersistedState, 'focus' | 'unlocked' | 'pe
   const props: FocusActivityProps = {
     petName: s.pet.name,
     biteText: f.biteText,
-    emoji: FOOD[f.size].emoji,
+    symbol: sfSymbol(biteIcon(f.biteText, f.size)),
     startedAt: f.startedAt,
     endsAt: f.endsAt,
     pausedLeft: f.pausedRemaining,

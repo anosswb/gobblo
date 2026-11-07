@@ -11,7 +11,7 @@ import type { Bite } from '@/state/schema';
 import { duration, easing } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
-import { FoodIcon } from './food-icon';
+import { BiteIcon } from './bite-icon';
 
 const s = en.start;
 type Choice = { minutes: number; mode: '2min' | '15' | '25' | 'custom'; label: string };
@@ -63,7 +63,7 @@ export function StartSheet({
 
             <View style={styles.head}>
               <View style={[styles.food, { backgroundColor: colors.fill }]}>
-                <FoodIcon size={bite.size} px={30} />
+                <BiteIcon text={bite.text} size={bite.size} px={30} />
               </View>
               <View style={styles.flex}>
                 <Text variant="caption" tone="ink2">{s.title}</Text>

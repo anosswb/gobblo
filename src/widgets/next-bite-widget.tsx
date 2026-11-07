@@ -31,7 +31,7 @@ export function NextBiteWidget({ data, scheme }: { data: WidgetData; scheme: 'li
       <FlexWidget style={{ flex: 1, flexDirection: 'column', flexGap: 4 }}>
         <TextWidget text={bite ? `${data.petName} is hungry for` : `${data.petName}’s plate is empty`} style={{ fontSize: 12, color: c.ink2 }} />
         <TextWidget
-          text={bite ? `${bite.emoji} ${bite.text}` : 'Tap to dump your brain'}
+          text={bite ? bite.text : 'Tap to dump your brain'}
           maxLines={2}
           truncate="END"
           style={{ fontSize: 16, fontWeight: '700', color: c.ink }}
