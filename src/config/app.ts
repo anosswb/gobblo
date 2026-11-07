@@ -16,5 +16,5 @@ export const LINKS = {
   // published from legal/ by .github/workflows/legal-pages.yml (GitHub Pages)
   privacy: 'https://anosswb.github.io/gobblo/privacy',
   terms: 'https://anosswb.github.io/gobblo/terms',
-  supportEmail: 'support@example.com', // TODO: Anass's support address
+  supportEmail: 'anasskraifa79@gmail.com',
 } as const;

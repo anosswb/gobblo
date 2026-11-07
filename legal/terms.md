@@ -7,8 +7,8 @@ permalink: /terms
 
 _Last updated: 6 November 2026_
 
-These terms apply to the Gobblo app, made by **[FULL NAME]**, Morocco. By using the app you agree to
-them. Contact: **[SUPPORT EMAIL]**
+These terms apply to the Gobblo app, made by **Anass Kraifa**, Morocco. By using the app you agree to
+them. Contact: **[anasskraifa79@gmail.com](mailto:anasskraifa79@gmail.com)**
 
 1. **What Gobblo is.** A productivity and habit app with a virtual pet, made for ADHD brains. It is
    provided "as is", without warranties of any kind. It is **not a medical device** and not a substitute
@@ -36,4 +36,4 @@ them. Contact: **[SUPPORT EMAIL]**
    country.
 9. **Law.** These terms are governed by the laws of Morocco, without affecting the mandatory consumer
    protections of the country you live in.
-10. **Contact.** **[SUPPORT EMAIL]**
+10. **Contact.** **[anasskraifa79@gmail.com](mailto:anasskraifa79@gmail.com)**

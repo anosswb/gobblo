@@ -7,8 +7,8 @@ permalink: /privacy
 
 _Last updated: 6 November 2026_
 
-Gobblo ("the app", "we") is made by **[FULL NAME]**, an independent developer in **[CITY]**, Morocco.
-Contact: **[SUPPORT EMAIL]**
+Gobblo ("the app", "we") is made by **Anass Kraifa**, an independent developer in Morocco.
+Contact: **[anasskraifa79@gmail.com](mailto:anasskraifa79@gmail.com)**
 
 **The short version:** your tasks, your pet and your stats stay on your phone. We have no accounts
 and no servers that receive them. We can't see them, sell them or lose them in a data breach.
@@ -90,4 +90,4 @@ If this policy changes, we'll update the date above. Big changes will also be sh
 
 ## 10. Contact
 
-**[SUPPORT EMAIL]**
+**[anasskraifa79@gmail.com](mailto:anasskraifa79@gmail.com)**
