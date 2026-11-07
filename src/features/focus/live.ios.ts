@@ -3,14 +3,22 @@ import * as Linking from 'expo-linking';
 import { FOOD } from '@/features/bites/logic';
 import { hasPack } from '@/features/plus/catalog';
 import type { PersistedState } from '@/state/schema';
-import { FocusActivityIOS, type FocusActivityProps } from '@/widgets/ios/focus-activity';
+import { iosWidgetsEnabled } from '@/widgets/ios/enabled';
+import type { FocusActivityIOS as Factory, FocusActivityProps } from '@/widgets/ios/focus-activity';
+
+// loaded only when the widget extension exists (not in free-Apple-ID builds)
+const FocusActivityIOS: typeof Factory | null = iosWidgetsEnabled
+  ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('@/widgets/ios/focus-activity').FocusActivityIOS
+  : null;
 
 /**
  * iOS: Start Kit's lock-screen timer is a Live Activity (Lock Screen + Dynamic Island).
  * Started, updated (pause / +5) and ended from the store, like the Android notification.
  */
 export function syncFocusLive(s: Pick<PersistedState, 'focus' | 'unlocked' | 'pet'>, now = Date.now()) {
-  let running = [] as ReturnType<typeof FocusActivityIOS.getInstances>;
+  if (!FocusActivityIOS) return;
+  let running = [] as ReturnType<typeof Factory.getInstances>;
   try {
     running = FocusActivityIOS.getInstances();
   } catch {

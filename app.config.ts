@@ -9,6 +9,12 @@ const { name: BASE_NAME, id: BASE_ID, scheme: BASE_SCHEME } = identity;
  * (own package id + name), for testing real speed (120 Hz) on a phone.
  */
 const preview = process.env.APP_VARIANT === 'preview';
+/**
+ * APP_FREE_SIGNING=1: install on an iPhone with a FREE Apple ID (Xcode "Personal Team", 7-day
+ * apps). Free teams can't sign App Groups, so the widget + Live Activity extension is left out
+ * and the bundle id is personal (APP_IOS_BUNDLE_ID, default app.gobblo.free).
+ */
+const freeSigning = process.env.APP_FREE_SIGNING === '1';
 const APP_NAME = preview ? `${BASE_NAME} Preview` : BASE_NAME;
 const APP_ID = preview ? `${BASE_ID}.preview` : BASE_ID;
 const APP_SCHEME = preview ? `${BASE_SCHEME}-preview` : BASE_SCHEME;
@@ -33,7 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: APP_SCHEME,
   userInterfaceStyle: 'automatic',
   ios: {
-    bundleIdentifier: APP_ID,
+    bundleIdentifier: freeSigning ? (process.env.APP_IOS_BUNDLE_ID ?? `${BASE_ID}.free`) : APP_ID,
     supportsTablet: true,
     icon: './assets/expo.icon',
     infoPlist: {
@@ -62,24 +68,29 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-splash-screen', { backgroundColor: '#F2F2F7', image: './assets/images/splash-icon.png', imageWidth: 120, dark: { backgroundColor: '#000000' } }],
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
     './plugins/with-gradle-memory',
-    [
-      'expo-widgets',
-      {
-        // iOS widget + Live Activity (Start Kit). Android keeps react-native-android-widget.
-        widgets: [
-          {
-            name: 'NextBite', // src/widgets/ios/next-bite-widget.tsx
-            displayName: `${APP_NAME}: next bite`,
-            description: 'Your next bite. With Start Kit, start 2 minutes in one tap.',
-            ios: {
-              supportedFamilies: ['systemSmall', 'systemMedium', 'accessoryRectangular', 'accessoryCircular'],
-              initialLayout: './src/widgets/ios/next-bite-widget.tsx',
+    // iOS widget + Live Activity (Start Kit). Left out for free-Apple-ID installs (no App Groups).
+    // Android keeps react-native-android-widget.
+    ...(freeSigning
+      ? []
+      : [
+          [
+            'expo-widgets',
+            {
+              widgets: [
+                {
+                  name: 'NextBite', // src/widgets/ios/next-bite-widget.tsx
+                  displayName: `${APP_NAME}: next bite`,
+                  description: 'Your next bite. With Start Kit, start 2 minutes in one tap.',
+                  ios: {
+                    supportedFamilies: ['systemSmall', 'systemMedium', 'accessoryRectangular', 'accessoryCircular'],
+                    initialLayout: './src/widgets/ios/next-bite-widget.tsx',
+                  },
+                  android: null,
+                },
+              ],
             },
-            android: null,
-          },
-        ],
-      },
-    ],
+          ] as [string, object],
+        ]),
     'expo-audio',
     [
       'react-native-android-widget',
@@ -112,5 +123,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   experiments: { typedRoutes: true, reactCompiler: true },
   owner: 'anasswb',
-  extra: { eas: { projectId: 'e33febe6-ba5a-4fb3-8373-657a861b19fc' } },
+  extra: { widgetsEnabled: !freeSigning, eas: { projectId: 'e33febe6-ba5a-4fb3-8373-657a861b19fc' } },
 });
