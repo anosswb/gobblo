@@ -62,6 +62,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-splash-screen', { backgroundColor: '#F2F2F7', image: './assets/images/splash-icon.png', imageWidth: 120, dark: { backgroundColor: '#000000' } }],
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
     './plugins/with-gradle-memory',
+    [
+      'expo-widgets',
+      {
+        // iOS widget + Live Activity (Start Kit). Android keeps react-native-android-widget.
+        widgets: [
+          {
+            name: 'NextBite', // src/widgets/ios/next-bite-widget.tsx
+            displayName: `${APP_NAME}: next bite`,
+            description: 'Your next bite. With Start Kit, start 2 minutes in one tap.',
+            ios: {
+              supportedFamilies: ['systemSmall', 'systemMedium', 'accessoryRectangular', 'accessoryCircular'],
+              initialLayout: './src/widgets/ios/next-bite-widget.tsx',
+            },
+            android: null,
+          },
+        ],
+      },
+    ],
     'expo-audio',
     [
       'react-native-android-widget',

@@ -125,7 +125,7 @@ export const en = {
     addWidget: 'Add the widget to your home screen',
     addWidgetHint: 'Free: shows your next bite. With Start Kit: one tap starts 2 minutes.',
     widgetAdded: 'Widget added. Say hi to your pet on the home screen ✦',
-    widgetManual: 'Long-press your home screen › Widgets › Gobblo',
+    widgetManual: 'Long-press your home screen, tap + (or Widgets), then find Gobblo',
     routinesTitle: 'Routine packs',
     routinesSub: 'One tap adds them as daily bites. Remove any you don’t want.',
     routineNames: { morning: 'Morning', study: 'Study', sunday: 'Sunday reset' },

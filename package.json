@@ -39,6 +39,7 @@
     "expo-symbols": "~58.0.4",
     "expo-system-ui": "~58.0.7",
     "expo-web-browser": "~58.0.7",
+    "expo-widgets": "~58.0.27",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.14",
     "phosphor-react-native": "^3.0.6",

@@ -1,0 +1,50 @@
+# Compiles the iOS app (with the widget + Live Activity extension) on GitHub's macOS servers,
+# because Anass's Intel Mac can't run the Xcode that Expo SDK 58 needs. Simulator build, no
+# signing: it proves the native code compiles. Installing on a real iPhone needs an Apple
+# Developer account + EAS (docs/08).
+name: iOS compile check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/**', 'modules/**', 'app.config.ts', 'package.json', 'package-lock.json', '.github/workflows/ios-check.yml']
+
+concurrency:
+  group: ios-check
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use the newest Xcode on the runner
+        run: |
+          ls -d /Applications/Xcode*.app
+          XC=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XC/Contents/Developer"
+          xcodebuild -version
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate the iOS project
+        run: npx expo prebuild --platform ios --clean
+
+      - name: Build for the iOS Simulator (no signing)
+        working-directory: ios
+        run: |
+          WS=$(ls -d *.xcworkspace | head -1)
+          SCHEME=$(basename "$WS" .xcworkspace)
+          set -o pipefail
+          xcodebuild -workspace "$WS" -scheme "$SCHEME" -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -80
