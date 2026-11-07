@@ -60,3 +60,6 @@ build-output/
 
 # founder panel scratch (briefs/answers are regenerable)
 founder/panel-*/briefs/
+
+# Anass only: business plan, numbers (never public)
+private/
