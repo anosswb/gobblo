@@ -57,6 +57,7 @@ function RootStack() {
         <Stack.Screen name="settings" options={{ animation: 'default' }} />
         <Stack.Screen name="reminders" options={{ animation: 'default' }} />
         <Stack.Screen name="plus" options={{ animation: 'default' }} />
+        <Stack.Screen name="start" options={{ animation: 'none' }} />
       </Stack>
       <ToastHost />
     </LockGate>

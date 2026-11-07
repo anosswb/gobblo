@@ -1,7 +1,7 @@
 {
   "name": "gobblo",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "index",
   "dependencies": {
     "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
     "@expo-google-fonts/figtree": "^0.4.1",
@@ -45,6 +45,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
+    "react-native-android-widget": "^0.26.0",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-mmkv": "^4.3.2",
     "react-native-nitro-modules": "^0.37.2",

@@ -63,6 +63,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
     './plugins/with-gradle-memory',
     'expo-audio',
+    [
+      'react-native-android-widget',
+      {
+        widgets: [
+          {
+            name: 'NextBite', // src/widgets/next-bite-widget.tsx WIDGET_NAME
+            label: `${APP_NAME}: next bite`,
+            description: 'Your next bite. With Start Kit, start 2 minutes in one tap.',
+            minWidth: '250dp',
+            minHeight: '110dp',
+            targetCellWidth: 4,
+            targetCellHeight: 2,
+            previewImage: './assets/images/icon.png',
+            updatePeriodMillis: 1800000,
+          },
+        ],
+      },
+    ],
     'expo-sharing',
     ['expo-local-authentication', { faceIDPermission: 'Lock your bites with Face ID (optional, off by default).' }],
     [

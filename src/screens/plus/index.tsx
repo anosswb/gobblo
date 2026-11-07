@@ -14,6 +14,7 @@ import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
+import { addWidgetToHomeScreen, widgetsSupported } from '@/widgets/update';
 import { radius, space } from '@/theme/tokens';
 
 const t = en.plus;
@@ -75,6 +76,18 @@ export function PlusScreen() {
             {p.lines.map((line) => (
               <Text key={line} variant="body" tone="ink2">• {line}</Text>
             ))}
+
+            {id === 'startKit' && widgetsSupported ? (
+              <PressScale accessibilityRole="button" accessibilityHint={t.addWidgetHint}
+                onPress={async () => {
+                  haptics.light();
+                  const ok = await addWidgetToHomeScreen();
+                  toast(ok ? t.widgetAdded : t.widgetManual);
+                }}
+                style={[styles.btn, { backgroundColor: colors.fill }]}>
+                <Text variant="bodyBold">📱 {t.addWidget}</Text>
+              </PressScale>
+            ) : null}
 
             {id === 'startKit' && owned ? (
               <View style={styles.routines}>

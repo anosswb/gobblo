@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 
 import { rescheduleNudges } from '@/features/nudges/schedule';
 import { configureAudio, preloadSounds } from '@/lib/sound';
+import { updateWidgets } from '@/widgets/update';
 import { snapshot, useAppStore } from '@/state/app-store';
 
 /**
@@ -19,6 +20,7 @@ export function useAppLifecycle() {
     };
     refresh();
     preloadSounds();
+    updateWidgets();
     const sub = AppState.addEventListener('change', (s) => {
       if (s === 'active') refresh();
     });
@@ -33,6 +35,8 @@ export function useAppLifecycle() {
       ) {
         void rescheduleNudges(snapshot()).catch(() => undefined);
       }
+      // home-screen widget shows the next bite + whether one-tap start is unlocked
+      if (s.bites !== prev.bites || s.unlocked !== prev.unlocked || s.pet.name !== prev.pet.name) updateWidgets();
       if (s.settings.mixWithMusic !== prev.settings.mixWithMusic || s.settings.soundOnSilent !== prev.settings.soundOnSilent) void configureAudio().catch(() => undefined);
     });
     return () => {
