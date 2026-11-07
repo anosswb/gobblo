@@ -56,6 +56,7 @@ function RootStack() {
         <Stack.Screen name="focus" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
         <Stack.Screen name="settings" options={{ animation: 'default' }} />
         <Stack.Screen name="reminders" options={{ animation: 'default' }} />
+        <Stack.Screen name="plus" options={{ animation: 'default' }} />
       </Stack>
       <ToastHost />
     </LockGate>

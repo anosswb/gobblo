@@ -53,6 +53,11 @@ export function SettingsScreen() {
   return (
     <Screen back title={t.title}>
 
+      <Section>
+        <Row leading={<IconTile name="sparkle" color="pink" />} last label={en.plus.settingsRow} hint={en.plus.settingsHint}
+          onPress={() => router.push('/plus')} />
+      </Section>
+
       <Section title={t.look}>
         <Row stacked label={t.theme} right={
           <Segmented accessibilityLabel={t.theme} value={s.theme} onChange={set('theme')}
