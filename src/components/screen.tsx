@@ -26,6 +26,7 @@ export function Screen({
   right,
   back = false,
   overlay,
+  glow = true,
   children,
 }: PropsWithChildren<{
   title?: string;
@@ -37,6 +38,8 @@ export function Screen({
   back?: boolean;
   /** drawn above the scroll view in window coordinates (drag previews) */
   overlay?: ReactNode;
+  /** the soft background glow (off on Plus: Anass, text was hard to read over it) */
+  glow?: boolean;
 }>) {
   const { colors, scheme } = useTheme();
   const insets = useSafeAreaInsets();
@@ -55,7 +58,7 @@ export function Screen({
 
   return (
     <View style={[styles.fill, { backgroundColor: colors.bg }]}>
-      <Backdrop />
+      <Backdrop glow={glow} />
       <Animated.ScrollView
         onScroll={onScroll}
         scrollEventThrottle={16}

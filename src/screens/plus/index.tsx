@@ -60,7 +60,7 @@ export function PlusScreen() {
   };
 
   return (
-    <Screen back eyebrow={t.eyebrow} title={t.title}>
+    <Screen back glow={false} eyebrow={t.eyebrow} title={t.title}>
       <Text variant="body" tone="ink2">{android ? t.introAndroid : t.intro}</Text>
       {!canShowOffer(firstOpen) ? (
         <View style={[styles.note, { backgroundColor: colors.fill }]}>
