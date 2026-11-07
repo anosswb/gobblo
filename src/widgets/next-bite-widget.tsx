@@ -1,3 +1,5 @@
+'use no memo'; // react-native-android-widget needs plain functions: no React Compiler here
+
 import * as Linking from 'expo-linking';
 import { FlexWidget, ImageWidget, TextWidget } from 'react-native-android-widget';
 
@@ -18,6 +20,7 @@ export const WIDGET_NAME = 'NextBite';
 export const startUri = (biteId: string) => Linking.createURL('/start', { queryParams: { bite: biteId } });
 
 export function NextBiteWidget({ data, scheme }: { data: WidgetData; scheme: 'light' | 'dark' }) {
+  'use no memo';
   const c = PALETTE[scheme];
   const { bite } = data;
   return (

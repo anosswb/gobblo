@@ -1,3 +1,5 @@
+'use no memo'; // react-native-android-widget needs plain functions: no React Compiler here
+
 import type { WidgetTaskHandlerProps } from 'react-native-android-widget';
 
 import { NextBiteWidget, WIDGET_NAME } from './next-bite-widget';
