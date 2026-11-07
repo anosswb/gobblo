@@ -23,6 +23,7 @@ import { Chips } from '@/components/settings-parts';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { guessSize } from '@/features/bites/chop';
+import { COLORS } from '@/features/closet/items';
 import { capFirst, FOOD } from '@/features/bites/logic';
 import { askNotificationPermission } from '@/features/nudges/schedule';
 import { haptics } from '@/lib/haptics';
@@ -41,7 +42,8 @@ import { FeelStep } from './feel-step';
 const o = en.onboarding;
 type Step = 'hook' | 'quiz' | 'feel' | 'feed' | 'hatch' | 'name' | 'nudge';
 const DOTS: Step[] = ['hook', 'quiz', 'feel', 'feed', 'name', 'nudge'];
-const COLOR_LABEL: Record<PetColor, string> = { pink: 'Bubblegum', tangerine: 'Tangerine', mint: 'Mint', violet: 'Grape' };
+/** the free colours (the rest are unlocked by levels or Make It Yours, src/features/closet/items.ts) */
+const START_COLORS = COLORS.filter((c) => c.unlock.type === 'free');
 const ORBIT = ['🍬', '🍪', '🍩', '🍕'];
 
 /**
@@ -290,7 +292,7 @@ export function OnboardingScreen() {
                   accessibilityLabel="Colour"
                   value={color}
                   onChange={setColor}
-                  options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: COLOR_LABEL[c], swatch: petColors[c] }))}
+                  options={START_COLORS.map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))}
                 />
               </View>
               <Primary

@@ -21,7 +21,7 @@ export function Section({ title, footer, children }: PropsWithChildren<{ title?:
           {title}
         </Text>
       ) : null}
-      <View style={[styles.card, { backgroundColor: colors.card }]}>{children}</View>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>{children}</View>
       {footer ? (
         <Text variant="caption" tone="ink2" style={styles.pad}>
           {footer}

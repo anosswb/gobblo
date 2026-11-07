@@ -65,7 +65,7 @@ export function MeScreen() {
           </Glass>
         </PressScale>
       }>
-      <View style={[styles.card, styles.levelCard, { backgroundColor: colors.card }]}>
+      <View style={[styles.card, styles.levelCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <LevelRing progress={st.toNext === null ? 1 : st.progress} color={pet.color} stage={st.stage} mood={st.toNext === null ? 'confident' : 'proud'} />
         <View style={styles.flex}>
           <Text variant="caption" tone="primary" style={styles.kicker}>level {st.stage + 1}</Text>
@@ -76,7 +76,7 @@ export function MeScreen() {
 
       <View style={styles.tiles}>
         {tiles.map((t) => (
-          <View key={t.label} style={[styles.tile, { backgroundColor: colors.card }]} accessibilityLabel={`${t.label}: ${t.value}`}>
+          <View key={t.label} style={[styles.tile, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]} accessibilityLabel={`${t.label}: ${t.value}`}>
             <View style={styles.tileHead}>
               <Icon name={t.icon} size={14} weight="bold" color={colors.primary} />
               <Text variant="caption" tone="ink2">{t.label}</Text>
@@ -86,7 +86,7 @@ export function MeScreen() {
         ))}
       </View>
 
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.rowBetween}>
           <Text variant="heading">This week</Text>
           <Text variant="bodyBold" tone="primary">{meter.bites}/{meter.goal}</Text>
@@ -102,7 +102,7 @@ export function MeScreen() {
         <WeekChart days={days} metric={metric} />
       </View>
 
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <Text variant="heading">Your best hours</Text>
         <View style={styles.heat} accessibilityLabel="Bites finished by hour of day">
           {hours.map((n, hIdx) => (
@@ -119,7 +119,7 @@ export function MeScreen() {
       <BrainCard />
 
       {(settings.goodThingsJar || goodThings.length > 0) && (
-        <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <Text variant="heading">Good things jar</Text>
           <Text variant="caption" tone="ink2">One small good thing from today. Totally optional.</Text>
           <View style={[styles.addRow, { backgroundColor: colors.fill }]}>

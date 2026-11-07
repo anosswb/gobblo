@@ -23,6 +23,8 @@ import {
 type Actions = {
   updateSettings: (patch: Partial<Settings>) => void;
   patchPet: (patch: Partial<Pet>) => void;
+  /** the level-up card for this level was shown */
+  markLevelSeen: (level: number) => void;
   /** Plus: grant a pack (store purchase on iOS) */
   unlock: (id: string) => void;
   /** Android: buy a pack with sparks; false if not enough */
@@ -68,6 +70,7 @@ export const useAppStore = create<AppState>()(
       ...freshState(),
       updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
       patchPet: (patch) => set((s) => ({ pet: { ...s.pet, ...patch } })),
+      markLevelSeen: (level) => set((s) => ({ stats: { ...s.stats, seenLevel: Math.max(s.stats.seenLevel ?? 1, level) } })),
       unlock: (id) => set((s) => (s.unlocked.includes(id) ? {} : { unlocked: [...s.unlocked, id] })),
       buyPackWithSparks: (id) => {
         const s = get();

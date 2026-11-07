@@ -1,22 +1,59 @@
 import type { Session, Stats } from '@/state/schema';
 import { todayKey } from '@/state/schema';
 
+/**
+ * 20 levels from all-time sparks (Anass, 2026-11-07): the first two come almost at once (first
+ * bite, first day) so the pet visibly grows right away; after that each level costs a bit more,
+ * so level 20 lands after ~3–4 months of normal use (~8 sparks a day) and stays exciting.
+ * LEVELS[i] = sparks needed to reach level i + 1.
+ */
+export const LEVELS = [
+  0, 3, 10, 20, 34, 52, 74, 100, 130, 165, 205, 250, 300, 360, 430, 510, 600, 700, 810, 940,
+] as const;
+export const MAX_LEVEL = LEVELS.length;
+
+/** Level 1..20 for a spark total. */
+export function levelOf(total: number): number {
+  let lv = 1;
+  LEVELS.forEach((need, i) => {
+    if (total >= need) lv = i + 1;
+  });
+  return lv;
+}
+
+/** Progress inside the current level (0..1, 1 at level 20) and sparks still needed. */
+export function levelProgress(total: number): { level: number; progress: number; toNext: number | null } {
+  const level = levelOf(total);
+  if (level >= MAX_LEVEL) return { level, progress: 1, toNext: null };
+  const from = LEVELS[level - 1];
+  const to = LEVELS[level];
+  return { level, progress: (total - from) / (to - from), toNext: to - total };
+}
+
+/**
+ * Evolution forms (what the pet looks like). Level → form:
+ * 1–2 baby blob · 3–6 lil gremlin (ears) · 7–12 big chonk (belly, tooth) ·
+ * 13–19 cosmic menace (aura) · 20 legend (golden, the final surprise).
+ */
 export const STAGES = [
-  { at: 0, name: 'Baby blob' },
-  { at: 8, name: 'Lil gremlin' },
-  { at: 20, name: 'Big chonk' },
-  { at: 40, name: 'Cosmic menace' },
+  { level: 1, at: LEVELS[0], name: 'Baby blob' },
+  { level: 3, at: LEVELS[2], name: 'Lil gremlin' },
+  { level: 7, at: LEVELS[6], name: 'Big chonk' },
+  { level: 13, at: LEVELS[12], name: 'Cosmic menace' },
+  { level: 20, at: LEVELS[19], name: 'Legend' },
 ] as const;
 
-export function stageOf(total: number): number {
+export function stageOfLevel(level: number): number {
   let i = 0;
   STAGES.forEach((s, k) => {
-    if (total >= s.at) i = k;
+    if (level >= s.level) i = k;
   });
   return i;
 }
 
-/** 0..1 progress to the next stage, 1 at max level. */
+export const stageOf = (total: number) => stageOfLevel(levelOf(total));
+
+/** 0..1 progress to the next evolution form, 1 at the last one. */
 export function stageProgress(total: number): { stage: number; progress: number; toNext: number | null } {
   const stage = stageOf(total);
   const next = STAGES[stage + 1];

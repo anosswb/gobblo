@@ -96,8 +96,8 @@ export function Drum({
       <View style={[styles.band, { top: ROW * 2, backgroundColor: colors.fill }]} />
       {items.length > 0 &&
         rows.map(({ i, item }) => <DrumRow key={`${item.key}-${i}`} index={i} item={item} offset={offset} />)}
-      <LinearGradient pointerEvents="none" colors={[colors.card, `${colors.card}00`]} style={[styles.fade, styles.fadeTop]} />
-      <LinearGradient pointerEvents="none" colors={[`${colors.card}00`, colors.card]} style={[styles.fade, styles.fadeBottom]} />
+      <LinearGradient pointerEvents="none" colors={[colors.cardSolid, `${colors.cardSolid}00`]} style={[styles.fade, styles.fadeTop]} />
+      <LinearGradient pointerEvents="none" colors={[`${colors.cardSolid}00`, colors.cardSolid]} style={[styles.fade, styles.fadeBottom]} />
     </View>
   );
 }

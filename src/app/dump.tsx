@@ -62,7 +62,7 @@ export default function DumpScreen() {
   const enter = (i: number) => (reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast).delay(Math.min(i, 8) * 30));
 
   return (
-    <View style={[styles.wrap, { backgroundColor: colors.card }]}>
+    <View style={[styles.wrap, { backgroundColor: colors.cardSolid }]}>
       <View style={styles.top}>
         <View style={styles.flex}>
           <Text variant="title2" accessibilityRole="header">{d.title}</Text>

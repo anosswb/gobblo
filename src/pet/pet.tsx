@@ -19,6 +19,8 @@ import { spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { petColors, type PetColor } from '@/theme/tokens';
 
+import { FaceArt, HatArt, HIDES_ANTENNA, type FaceId, type HatId } from './wardrobe';
+
 /**
  * The pet, redrawn from the 32-emote sheet (Nov 2026) as one clean vector rig:
  * glossy jelly bean, no outline (light does the edges: radial body, bottom subsurface shade,
@@ -316,6 +318,8 @@ export function Pet({
   headphones = false,
   working = false,
   still = false,
+  hat = 'none',
+  face: faceItem = 'none',
   onPress,
   accessibilityLabel,
 }: {
@@ -329,6 +333,9 @@ export function Pet({
   working?: boolean;
   /** no breathing or blinking: galleries, share cards (many pets on screen = dropped frames) */
   still?: boolean;
+  /** Closet: what the pet wears (src/pet/wardrobe.tsx) */
+  hat?: HatId;
+  face?: FaceId;
   /** tap to squish (a light haptic + jelly wobble) */
   onPress?: () => void;
   accessibilityLabel?: string;
@@ -339,7 +346,7 @@ export function Pet({
   const appActive = useAppActive();
   const idle = !reduceMotion && !still && focused && appActive;
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
-  const ids = { body: `b${uid}`, under: `u${uid}`, orb: `o${uid}`, limb: `l${uid}`, aura: `a${uid}` };
+  const ids = { body: `b${uid}`, under: `u${uid}`, orb: `o${uid}`, limb: `l${uid}`, aura: `a${uid}`, gold: `g${uid}` };
   const c = petColors[color];
   const lit = shade(c, 0.22);
   const deep = shade(c, -0.14);
@@ -418,6 +425,11 @@ export function Pet({
             <Stop offset="0" stopColor={ART.orbLight} />
             <Stop offset="1" stopColor={ART.orb} />
           </RadialGradient>
+          <RadialGradient id={ids.gold} cx="50%" cy="56%" r="50%">
+            <Stop offset="0.3" stopColor={ART.star} stopOpacity={0.55} />
+            <Stop offset="0.7" stopColor={ART.star} stopOpacity={0.16} />
+            <Stop offset="1" stopColor={ART.star} stopOpacity={0} />
+          </RadialGradient>
           <RadialGradient id={ids.aura} cx="50%" cy="56%" r="50%">
             <Stop offset="0.35" stopColor={ART.mark} stopOpacity={0.45} />
             <Stop offset="0.7" stopColor={ART.orb} stopOpacity={0.14} />
@@ -429,8 +441,20 @@ export function Pet({
           </RadialGradient>
         </Defs>
 
+        {/* level 20 legend: golden glow + gold sparkles (the final surprise) */}
+        {stage >= 4 && (
+          <G>
+            <Circle cx={100} cy={134} r={104} fill={`url(#${ids.gold})`} />
+            <Spark x={18} y={96} s={0.9} fill={ART.star} />
+            <Spark x={186} y={78} s={0.75} fill={ART.white} />
+            <Spark x={178} y={206} s={0.7} fill={ART.star} />
+            <Spark x={24} y={204} s={0.55} fill={ART.white} />
+            <Spark x={100} y={6} s={0.6} fill={ART.star} />
+          </G>
+        )}
+
         {/* stage 4: cosmic aura */}
-        {stage >= 3 && (
+        {stage === 3 && (
           <G>
             <Circle cx={100} cy={134} r={100} fill={`url(#${ids.aura})`} />
             <Spark x={22} y={70} s={0.7} fill={ART.orb} />
@@ -444,7 +468,7 @@ export function Pet({
         <Ellipse cx={100} cy={229} rx={58} ry={7} fill={ART.shade} opacity={0.14} />
 
         {/* antenna */}
-        {!headphones && (
+        {!headphones && !HIDES_ANTENNA.has(hat) && (
           <G>
             <Path d="M100 58 Q96 36 111 22" stroke={deeper} strokeWidth={5} fill="none" strokeLinecap="round" />
             <Circle cx={112} cy={20} r={19} fill={ART.orb} opacity={0.22} />
@@ -486,6 +510,12 @@ export function Pet({
         <MouthArt kind={face.mouth} />
         {stage >= 2 && face.mouth === 'smile' && <Path d="M101 155.5 h6 v4 q0 3 -3 3 q-3 0 -3 -3Z" fill={ART.white} />}
         <ExtraArt kind={face.extra ?? 'none'} />
+        <FaceArt id={faceItem} />
+        {!headphones && (
+          <G transform="translate(100 72) scale(1.16) translate(-100 -72)">
+            <HatArt id={hat} />
+          </G>
+        )}
 
         {/* headphones (focus room) */}
         {headphones && (

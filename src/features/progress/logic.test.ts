@@ -1,6 +1,6 @@
 import { freshState, type Session } from '@/state/schema';
 
-import { brainType, hourBuckets, stageOf, stageProgress, weekBuckets, weekMeter } from './logic';
+import { brainType, hourBuckets, LEVELS, levelOf, levelProgress, stageOf, stageProgress, weekBuckets, weekMeter } from './logic';
 
 const s = (end: Date, min = 5, done = true): Session => ({
   id: String(+end), biteText: 'x', plannedMin: 5, spentMin: min, mode: '15', startedAt: +end - min * 60000, endedAt: +end, done, drifts: 0,
@@ -8,9 +8,17 @@ const s = (end: Date, min = 5, done = true): Session => ({
 
 describe('stages', () => {
   it('maps sparks to stages', () => {
-    expect([0, 7, 8, 20, 39, 40, 999].map(stageOf)).toEqual([0, 0, 1, 2, 2, 3, 3]);
-    expect(stageProgress(14)).toEqual({ stage: 1, progress: 0.5, toNext: 6 });
-    expect(stageProgress(50).toNext).toBeNull();
+    // level 3 (10 ✦) = lil gremlin, level 7 (74) = big chonk, 13 (300) = cosmic, 20 (940) = legend
+    expect([0, 9, 10, 73, 74, 299, 300, 939, 940, 5000].map(stageOf)).toEqual([0, 0, 1, 1, 2, 2, 3, 3, 4, 4]);
+    expect(stageProgress(5000).toNext).toBeNull();
+  });
+  it('levels: fast at first, slower later, 20 max', () => {
+    expect([0, 2, 3, 10, 20, 939, 940, 99999].map(levelOf)).toEqual([1, 1, 2, 3, 4, 19, 20, 20]);
+    expect(levelProgress(15)).toEqual({ level: 3, progress: 0.5, toNext: 5 });
+    expect(levelProgress(940).toNext).toBeNull();
+    // each step costs at least as much as the one before (slows down)
+    const steps = LEVELS.slice(1).map((v, i) => v - LEVELS[i]);
+    steps.slice(1).forEach((d, i) => expect(d).toBeGreaterThanOrEqual(steps[i]));
   });
 });
 

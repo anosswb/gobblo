@@ -71,7 +71,7 @@ export function PlusScreen() {
         const owned = hasPack(unlocked, id);
         const p = t.packs[id];
         return (
-          <View key={id} style={[styles.card, { backgroundColor: colors.card }]}>
+          <View key={id} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
             <View style={styles.head}>
               <Text style={styles.emoji}>{PACKS[id].emoji}</Text>
               <Text variant="heading" style={styles.flex}>{p.name}</Text>
@@ -125,7 +125,7 @@ export function PlusScreen() {
       })}
 
       {!android ? (
-        <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <Text variant="heading">✦ {t.bundle(DISPLAY_PRICE.plus)}</Text>
           <Text variant="caption" tone="ink2">{t.soonNote}</Text>
         </View>

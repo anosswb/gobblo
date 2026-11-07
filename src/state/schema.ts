@@ -44,7 +44,13 @@ export interface Session {
 export interface Pet {
   name: string;
   color: PetColor;
+  /** Closet: what the pet wears (src/pet/wardrobe.tsx ids) */
   hat: string;
+  face: string;
+  /** the face shown on Home: a Mood, or 'auto' (reacts to your day) */
+  mood: string;
+  /** Home stage background (src/features/closet/items.ts ROOMS) */
+  room: string;
   owned: string[];
 }
 
@@ -58,6 +64,8 @@ export interface Stats {
   todayEaten: number;
   starts2: number;
   byPart: { morning: number; day: number; night: number };
+  /** highest level already celebrated (the level-up card shows once per level) */
+  seenLevel: number;
 }
 
 export interface GoodThing {
@@ -143,7 +151,7 @@ export function freshState(now = Date.now()): PersistedState {
   return {
     bites: [],
     sessions: [],
-    pet: { name: 'Bean', color: 'pink', hat: 'none', owned: ['none'] },
+    pet: { name: 'Bean', color: 'pink', hat: 'none', face: 'none', mood: 'auto', room: 'auto', owned: ['none'] },
     stats: {
       sparks: 0,
       total: 0,
@@ -154,6 +162,7 @@ export function freshState(now = Date.now()): PersistedState {
       todayEaten: 0,
       starts2: 0,
       byPart: { morning: 0, day: 0, night: 0 },
+      seenLevel: 1,
     },
     goodThings: [],
     reminders: [],

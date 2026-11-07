@@ -44,7 +44,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       colors: {
         ...base.colors,
         background: value.colors.bg,
-        card: value.colors.card,
+        card: value.colors.cardSolid,
         text: value.colors.ink,
         primary: value.colors.primary,
         border: value.colors.line,

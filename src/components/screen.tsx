@@ -4,6 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Backdrop } from '@/components/backdrop';
 import { Glass } from '@/components/glass';
 import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
@@ -54,6 +55,7 @@ export function Screen({
 
   return (
     <View style={[styles.fill, { backgroundColor: colors.bg }]}>
+      <Backdrop />
       <Animated.ScrollView
         onScroll={onScroll}
         scrollEventThrottle={16}

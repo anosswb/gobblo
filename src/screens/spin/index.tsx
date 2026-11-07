@@ -68,7 +68,7 @@ export function SpinScreen() {
 
   return (
     <Screen eyebrow={sp.eyebrow} title={sp.title}>
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
+      <View style={[styles.card, { backgroundColor: colors.cardSolid, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.head}>
           <Pet size={72} color={pet.color} mood={mood} stage={stage} />
           <Text variant="subhead" tone="ink2" style={styles.flex}>

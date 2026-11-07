@@ -1,9 +1,7 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import { Glass } from '@/components/glass';
 import { Icon } from '@/components/icon';
@@ -14,7 +12,10 @@ import { StartSheet } from '@/components/start-sheet';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { daysAway, FOOD, plate } from '@/features/bites/logic';
-import { STAGES, stageOf } from '@/features/progress/logic';
+import { useLook } from '@/features/closet/use-look';
+import { levelOf, STAGES, stageOfLevel } from '@/features/progress/logic';
+import { skyOf, StageBackdrop } from '@/components/stage-backdrop';
+import { LevelUp } from '@/pet/level-up';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
@@ -25,14 +26,13 @@ import { useAppStore } from '@/state/app-store';
 import { todayKey, type Bite, type Size } from '@/state/schema';
 import { duration, staggerDelay } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
-import { fonts, radius, space, stages, typeScale } from '@/theme/tokens';
+import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
 import { BiteRow } from './bite-row';
 import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 
 const h = en.home;
 
-const skyOf = (hour: number) => (hour < 6 || hour >= 19 ? 'night' : hour < 11 ? 'morning' : 'day');
 const dayIndex = (d: Date) => Math.floor((d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000);
 const dateLine = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
@@ -41,7 +41,7 @@ const dateLine = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'long', m
  * plate as an iOS inset-grouped list, Reminders-style: the add field is the first row.
  */
 export function HomeScreen() {
-  const { colors, scheme, reduceMotion } = useTheme();
+  const { colors, reduceMotion } = useTheme();
   const bites = useAppStore((s) => s.bites);
   const pet = useAppStore((s) => s.pet);
   const stats = useAppStore((s) => s.stats);
@@ -78,7 +78,8 @@ export function HomeScreen() {
   const today = todayKey(openedAt);
   const list = plate(bites, today);
   const shown = settings.oneThingMode ? list.slice(0, 1) : list;
-  const stage = stageOf(stats.total);
+  const look = useLook();
+  const stage = look.stage;
 
   // new food arrived (typed here or served from the brain dump): the pet gets excited
   const plateBefore = useRef(list.length);
@@ -89,13 +90,22 @@ export function HomeScreen() {
 
   // crossing a stage threshold: the evolution scene plays on Home only (never behind Focus),
   // right after the chomp, or when you come back to Home after it happened elsewhere
+  // a new level: the level-up card (once per level). A new evolution form plays the big
+  // evolution scene first, then the card.
   const [evolveTo, setEvolveTo] = useState<number | null>(null);
-  const seenStage = useRef(stage);
+  const [levelUp, setLevelUp] = useState<number | null>(null);
+  const pendingLevel = useRef<number | null>(null);
   const evolveIfNew = () => {
-    const now = stageOf(useAppStore.getState().stats.total);
-    if (now > seenStage.current) {
-      seenStage.current = now;
-      setEvolveTo(now);
+    const st = useAppStore.getState();
+    const lv = levelOf(st.stats.total);
+    const seen = st.stats.seenLevel ?? 1;
+    if (lv <= seen) return;
+    st.markLevelSeen(lv);
+    if (stageOfLevel(lv) > stageOfLevel(seen)) {
+      pendingLevel.current = lv;
+      setEvolveTo(stageOfLevel(lv));
+    } else {
+      setLevelUp(lv);
     }
   };
   useFocusEffect(
@@ -132,10 +142,10 @@ export function HomeScreen() {
   const mindful = en.mindful[dayIndex(openedAt) % en.mindful.length];
   const belly = Math.min(1, stats.todayEaten / 4);
   const asleep = sky === 'night' && settings.autoSleep && list.length === 0;
-  const baseMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'hungry' : 'happy';
+  const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'hungry' : 'happy';
+  // the face chosen in the Closet wins; 'auto' reacts to the day
+  const baseMood: Mood = look.homeMood === 'auto' ? autoMood : look.homeMood;
   const mood: Mood = carrying ? (overPet ? 'chomp' : 'hungry') : (reaction ?? baseMood);
-  const stageColors = stages[scheme][sky];
-  const onStage = sky === 'night' || scheme === 'dark';
 
   const add = () => {
     if (!text.trim()) {
@@ -171,20 +181,11 @@ export function HomeScreen() {
       }>
       {/* hero: the pet on its stage */}
       <View style={[styles.stage, { height: stageH }]}>
-        <LinearGradient colors={stageColors} style={StyleSheet.absoluteFill} />
-        <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none">
-          <Defs>
-            <RadialGradient id="glow" cx="50%" cy="72%" r="50%">
-              <Stop offset="0" stopColor={colors.onFocus} stopOpacity={onStage ? 0.16 : 0.7} />
-              <Stop offset="1" stopColor={colors.onFocus} stopOpacity={0} />
-            </RadialGradient>
-          </Defs>
-          <Circle cx="50" cy="72" r="50" fill="url(#glow)" />
-        </Svg>
+        <StageBackdrop room={look.room} sky={sky} />
 
         <View style={styles.stageTop}>
           <Glass radius={18} shadow={false} style={styles.chip}>
-            <Text variant="caption" style={styles.chipText}>{h.level(stage + 1, STAGES[stage].name)}</Text>
+            <Text variant="caption" style={styles.chipText}>{h.level(look.level, STAGES[stage].name)}</Text>
           </Glass>
           <Glass radius={18} shadow={false} style={styles.chip}>
             <Text variant="caption" style={styles.chipText}>{h.belly(stats.todayEaten)}</Text>
@@ -208,7 +209,9 @@ export function HomeScreen() {
           <Animated.View ref={petTarget}>
           <Pet
             size={stageH < 290 ? 104 : 128}
-            color={pet.color}
+            color={look.color}
+            hat={look.hat}
+            face={look.face}
             mood={mood}
             stage={stage}
             accessibilityLabel={`${pet.name}, ${h.belly(stats.todayEaten)}`}
@@ -222,7 +225,7 @@ export function HomeScreen() {
       </View>
 
       {/* one line of pet wisdom */}
-      <View style={[styles.note, { backgroundColor: colors.card }]}>
+      <View style={[styles.note, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={[styles.noteIcon, { backgroundColor: colors.primarySoft }]}>
           <Icon name="sparkle" size={16} color={colors.primary} />
         </View>
@@ -264,7 +267,7 @@ export function HomeScreen() {
           <Text variant="caption" tone="ink2">{h.hint(pet.name)}</Text>
         </View>
 
-        <View style={[styles.list, { backgroundColor: colors.card }]}>
+        <View style={[styles.list, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <View style={styles.addRow}>
             <PressScale
               accessibilityRole="button"
@@ -334,7 +337,15 @@ export function HomeScreen() {
 
       </FeedDragProvider>
 
-      <Evolution stage={evolveTo} onDone={() => setEvolveTo(null)} />
+      <Evolution
+        stage={evolveTo}
+        onDone={() => {
+          setEvolveTo(null);
+          if (pendingLevel.current) setLevelUp(pendingLevel.current);
+          pendingLevel.current = null;
+        }}
+      />
+      <LevelUp level={levelUp} onDone={() => setLevelUp(null)} />
 
       <StartSheet
         bite={selected}

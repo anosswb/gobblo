@@ -58,7 +58,7 @@ export function StartSheet({
           <Animated.View
             entering={enterSheet}
             exiting={exitSheet}
-            style={[styles.sheet, { backgroundColor: colors.card, bottom: Math.max(insets.bottom, space.s), shadowColor: colors.shadow }]}>
+            style={[styles.sheet, { backgroundColor: colors.cardSolid, bottom: Math.max(insets.bottom, space.s), shadowColor: colors.shadow }]}>
             <View style={[styles.grabber, { backgroundColor: colors.fill2 }]} />
 
             <View style={styles.head}>

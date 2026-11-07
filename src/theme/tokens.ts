@@ -8,8 +8,17 @@ import { Platform, type TextStyle } from 'react-native';
  * Components must only use these tokens. No hex values in components.
  */
 export type ColorTokens = {
-  /** systemGroupedBackground */
+  /** base background (behind the backdrop gradient) */
   bg: string;
+  /** backdrop gradient, top → bottom, and two soft glows (src/components/backdrop.tsx) */
+  bgTop: string;
+  bgBottom: string;
+  glowA: string;
+  glowB: string;
+  /** opaque card for sheets and anything that must not show through */
+  cardSolid: string;
+  /** hairline edge on glass cards (light catching the edge) */
+  cardBorder: string;
   /** secondarySystemGroupedBackground (cards, rows) */
   card: string;
   /** tertiary surface: wells inside cards, pressed rows */
@@ -80,15 +89,21 @@ const shared = {
 
 export const light: ColorTokens = {
   ...shared,
-  bg: '#F2F2F7',
-  card: '#FFFFFF',
-  cardAlt: '#F2F2F7',
+  bg: '#F5F2FC',
+  bgTop: '#FDF6FF',
+  bgBottom: '#EEF0FF',
+  glowA: 'rgba(255,92,157,0.20)',
+  glowB: 'rgba(123,97,255,0.16)',
+  card: 'rgba(255,255,255,0.80)',
+  cardSolid: '#FFFFFF',
+  cardBorder: 'rgba(255,255,255,0.95)',
+  cardAlt: 'rgba(118,104,170,0.08)',
   fill: 'rgba(118,118,128,0.12)',
   fill2: 'rgba(120,120,128,0.16)',
   thumb: '#FFFFFF',
-  glass: 'rgba(255,255,255,0.72)',
-  glassBorder: 'rgba(255,255,255,0.85)',
-  glassEdge: 'rgba(0,0,0,0.06)',
+  glass: 'rgba(255,255,255,0.70)',
+  glassBorder: 'rgba(255,255,255,0.95)',
+  glassEdge: 'rgba(60,40,120,0.08)',
   scrim: 'rgba(0,0,0,0.32)',
   ink: '#000000',
   ink2: 'rgba(60,60,67,0.6)',
@@ -100,34 +115,41 @@ export const light: ColorTokens = {
   success: '#34C759',
   pink: '#FF4F96',
   danger: '#FF3B30',
-  shadow: 'rgba(0,0,0,0.08)',
-  tabBar: 'rgba(255,255,255,0.8)',
+  shadow: 'rgba(76,52,160,0.12)',
+  tabBar: 'rgba(255,255,255,0.82)',
 };
 
 export const dark: ColorTokens = {
   ...shared,
-  bg: '#000000',
-  card: '#1C1C1E',
-  cardAlt: '#2C2C2E',
-  fill: 'rgba(118,118,128,0.24)',
-  fill2: 'rgba(120,120,128,0.32)',
-  thumb: '#636366',
-  glass: 'rgba(37,37,40,0.72)',
-  glassBorder: 'rgba(255,255,255,0.16)',
-  glassEdge: 'rgba(0,0,0,0.4)',
+  // designed night, not inverted: deep violet-navy with pink + violet glows, glass cards
+  bg: '#0A0815',
+  bgTop: '#16112E',
+  bgBottom: '#06050D',
+  glowA: 'rgba(255,79,150,0.22)',
+  glowB: 'rgba(104,84,255,0.26)',
+  card: 'rgba(44,38,78,0.55)',
+  cardSolid: '#1B1733',
+  cardBorder: 'rgba(255,255,255,0.10)',
+  cardAlt: 'rgba(255,255,255,0.07)',
+  fill: 'rgba(160,150,220,0.16)',
+  fill2: 'rgba(160,150,220,0.26)',
+  thumb: '#6E6890',
+  glass: 'rgba(48,40,88,0.58)',
+  glassBorder: 'rgba(255,255,255,0.18)',
+  glassEdge: 'rgba(0,0,0,0.45)',
   scrim: 'rgba(0,0,0,0.5)',
   ink: '#FFFFFF',
   ink2: 'rgba(235,235,245,0.6)',
   ink3: 'rgba(235,235,245,0.3)',
-  line: 'rgba(84,84,88,0.6)',
+  line: 'rgba(255,255,255,0.10)',
   primary: '#FF4F96',
   primaryDeep: '#D02D70',
   primarySoft: 'rgba(255,79,150,0.18)',
   success: '#30D158',
   pink: '#FF6FA8',
   danger: '#FF453A',
-  shadow: 'rgba(0,0,0,0.5)',
-  tabBar: 'rgba(28,28,30,0.8)',
+  shadow: 'rgba(0,0,0,0.55)',
+  tabBar: 'rgba(24,20,46,0.84)',
 };
 
 /** Tint choices (docs/12 #14), all iOS system colours. Free on both stores. */
@@ -159,6 +181,11 @@ export const petColors = {
   tangerine: '#FF8A3D',
   mint: '#2FD39A',
   violet: '#8C6BFF',
+  sky: '#4FB8FF',
+  midnight: '#3B3F8F',
+  gold: '#FFC93C',
+  lilac: '#C39BFF',
+  mango: '#FFB23D',
 } as const;
 export type PetColor = keyof typeof petColors;
 
@@ -174,6 +201,16 @@ export const stages = {
     day: ['#173055', '#1F1A45', '#100C20'],
     night: ['#2A1F66', '#160F3A', '#08061A'],
   },
+} as const;
+
+/** Closet "rooms": fixed scene gradients for the Home stage (top → bottom), same in both themes. */
+export const roomGradients = {
+  sunset: ['#FFB199', '#FF7EB3', '#7E5BFF'],
+  ocean: ['#7FF0E6', '#4FA8FF', '#2A3492'],
+  garden: ['#2E6B55', '#183F33', '#09170F'],
+  golden: ['#FFE6A3', '#FFB38A', '#FF7AA2'],
+  aurora: ['#4BE8B4', '#4C8DFF', '#2A1B5E'],
+  galaxy: ['#3A1C71', '#251052', '#0D0626'],
 } as const;
 
 /** 8-pt grid. Gutter 16 = iOS inset-grouped margin on phones. */
