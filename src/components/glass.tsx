@@ -1,4 +1,5 @@
 import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import type { PropsWithChildren } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
@@ -62,6 +63,13 @@ export function Glass({
           />
         ) : null}
         <View style={[StyleSheet.absoluteFill, { backgroundColor: tint ?? colors.glass }]} />
+        {/* specular sheen: light catching the top of the material (reads as glass without live blur) */}
+        <LinearGradient
+          colors={[colors.glassBorder, 'rgba(255,255,255,0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 0.6 }}
+          style={[StyleSheet.absoluteFill, { opacity: tint ? 0.35 : 0.28 }]}
+        />
         <View
           style={[
             StyleSheet.absoluteFill,

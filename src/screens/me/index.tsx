@@ -10,7 +10,9 @@ import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { SlidingNumber } from '@/components/sliding-number';
 import { Text } from '@/components/text';
-import { STAGES, hourBuckets, stageProgress, weekBuckets, weekMeter } from '@/features/progress/logic';
+import { useLook } from '@/features/closet/use-look';
+import { COLORS, FACES, HATS, ROOMS } from '@/features/closet/items';
+import { STAGES, hourBuckets, levelProgress, weekBuckets, weekMeter } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { useAppStore } from '@/state/app-store';
@@ -20,6 +22,7 @@ import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
 import { BrainCard } from './brain-card';
 import { LevelRing } from './level-ring';
+import { RoadTo20 } from './road';
 import { WeekChart } from './week-chart';
 
 /**
@@ -41,7 +44,9 @@ export function MeScreen() {
   const [metric, setMetric] = useState<'bites' | 'minutes'>('bites');
   const [good, setGood] = useState('');
 
-  const st = stageProgress(stats.total);
+  const look = useLook();
+  const lp = levelProgress(stats.total);
+  const nextReward = lp.toNext === null ? null : [...HATS, ...FACES, ...COLORS, ...ROOMS].find((i) => i.unlock.type === 'level' && i.unlock.level === lp.level + 1);
   const days = weekBuckets(sessions, openedAt, settings.weekStartsMonday);
   const meter = weekMeter(days);
   const hours = hourBuckets(sessions);
@@ -66,12 +71,21 @@ export function MeScreen() {
         </PressScale>
       }>
       <View style={[styles.card, styles.levelCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
-        <LevelRing progress={st.toNext === null ? 1 : st.progress} color={pet.color} stage={st.stage} mood={st.toNext === null ? 'confident' : 'proud'} />
+        <LevelRing progress={lp.progress} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={lp.toNext === null ? 'confident' : 'proud'} />
         <View style={styles.flex}>
-          <Text variant="caption" tone="primary" style={styles.kicker}>level {st.stage + 1}</Text>
-          <Text variant="title2">{STAGES[st.stage].name}</Text>
-          <Text variant="subhead" tone="ink2">{st.toNext === null ? 'Max level. Menace.' : `${st.toNext} ✦ to evolve`}</Text>
+          <Text variant="caption" tone="primary" style={styles.kicker}>Level {lp.level} of 20</Text>
+          <Text variant="title2">{STAGES[look.stage].name}</Text>
+          <Text variant="subhead" tone="ink2">{lp.toNext === null ? 'Legend. You did it.' : `${lp.toNext} ✦ to level ${lp.level + 1}`}</Text>
+          {nextReward ? <Text variant="caption" tone="ink2">Next: {nextReward.emoji} {nextReward.name}</Text> : null}
         </View>
+      </View>
+
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
+        <View style={styles.rowBetween}>
+          <Text variant="heading">Road to 20</Text>
+          <Text variant="bodyBold" tone="primary">{lp.level}/20</Text>
+        </View>
+        <RoadTo20 level={lp.level} total={stats.total} />
       </View>
 
       <View style={styles.tiles}>

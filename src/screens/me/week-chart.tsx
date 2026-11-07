@@ -25,7 +25,7 @@ export function WeekChart({ days, metric }: { days: DayBucket[]; metric: 'bites'
   return (
     <View style={styles.wrap}>
       <Text variant="subhead" tone="ink2" accessibilityLiveRegion="polite">
-        {sel.isToday ? 'today' : sel.label}: {sel.bites} {sel.bites === 1 ? 'bite' : 'bites'} · {sel.minutes} min
+        {sel.isToday ? 'Today' : sel.label}: {sel.bites} {sel.bites === 1 ? 'bite' : 'bites'} · {sel.minutes} min
       </Text>
       <View style={styles.bars} accessibilityRole="adjustable" accessibilityLabel={`This week, ${metric}`}>
         {days.map((d, i) => (

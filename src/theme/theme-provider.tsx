@@ -31,7 +31,8 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     const base = scheme === 'dark' ? dark : light;
     return {
       scheme,
-      colors: { ...base, primary, primaryDeep },
+      // the soft tint (selected rows, chips) follows the accent too
+      colors: { ...base, primary, primaryDeep, primarySoft: `${primary}${scheme === 'dark' ? '2E' : '1F'}` },
       preference,
       reduceMotion: systemReduceMotion || appReduceMotion,
     };

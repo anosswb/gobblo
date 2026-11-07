@@ -30,7 +30,7 @@ import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { haptics } from '@/lib/haptics';
 import { play, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
-import { usePetStage } from '@/features/progress/use-pet-stage';
+import { useLook } from '@/features/closet/use-look';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import type { FocusSound } from '@/state/schema';
@@ -61,7 +61,8 @@ export function FocusScreen() {
   const compact = useWindowDimensions().height < 720;
   const focus = useAppStore((s) => s.focus);
   const pet = useAppStore((s) => s.pet);
-  const stage = usePetStage();
+  const look = useLook();
+  const stage = look.stage;
   const settings = useAppStore((s) => s.settings);
   const patch = useAppStore((s) => s.patchFocus);
   const endFocus = useAppStore((s) => s.endFocus);
@@ -229,7 +230,7 @@ export function FocusScreen() {
         </View>
 
         <View style={styles.petRow}>
-          <Pet size={compact ? 70 : 92} color={pet.color} mood={petMood} stage={stage} headphones working={!paused && !ended} />
+          <Pet size={compact ? 70 : 92} color={look.color} hat={look.hat} face={look.face} mood={petMood} stage={stage} headphones working={!paused && !ended} />
           <View style={[styles.bubble, compact && styles.bubbleCompact, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
             <Animated.View key={line} entering={textIn}>
               <Text variant="body" tone="onFocus">{line}</Text>
