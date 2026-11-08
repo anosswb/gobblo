@@ -3,7 +3,7 @@
 import type { WidgetTaskHandlerProps } from 'react-native-android-widget';
 
 import { renderWidgetFor, SKIP_ACTION, WIDGET_NAMES } from './next-bite-widget';
-import { updateWidgets } from './update';
+import { redrawWidgetsNow } from './update';
 import { readWidgetData, skipWidgetBite } from './widget-data';
 
 /** Runs headless when Android asks a widget to draw (added, every 30 min, resized) or a button is tapped. */
@@ -15,7 +15,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
       if (props.clickAction === SKIP_ACTION) {
         skipWidgetBite();
         // redraw every placed widget so they all agree on the next bite
-        updateWidgets();
+        redrawWidgetsNow();
         props.renderWidget(renderWidgetFor(name, readWidgetData()));
       }
       break;

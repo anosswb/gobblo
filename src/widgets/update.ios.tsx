@@ -13,8 +13,8 @@ const widget: { updateSnapshot: (p: NextBiteProps) => void } | null = iosWidgets
 /** iOS has no "pin widget" API: the Plus screen shows how to add it by hand. */
 export const widgetsSupported = iosWidgetsEnabled;
 
-/** Redraw the iOS widget (home + lock screen) after bites, the pet or Plus change. */
-export function updateWidgets() {
+/** Redraw the iOS widget (home + lock screen) now, from what is saved in MMKV. */
+export function redrawWidgetsNow() {
   if (!widget) return;
   try {
     const d = readWidgetData();
@@ -31,6 +31,17 @@ export function updateWidgets() {
   } catch {
     // widget extension missing (Expo Go / old build): nothing to update
   }
+}
+
+let pending: ReturnType<typeof setTimeout> | null = null;
+
+/** After a change: wait for zustand persist to write MMKV first (it runs listeners before saving). */
+export function updateWidgets() {
+  if (pending) clearTimeout(pending);
+  pending = setTimeout(() => {
+    pending = null;
+    redrawWidgetsNow();
+  }, 120);
 }
 
 export async function addWidgetToHomeScreen(): Promise<boolean> {

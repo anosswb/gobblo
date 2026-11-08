@@ -4,7 +4,7 @@ import { AppState } from 'react-native';
 import { rescheduleNudges } from '@/features/nudges/schedule';
 import { configureAudio, preloadSounds } from '@/lib/sound';
 import { syncFocusLive } from '@/features/focus/live';
-import { updateWidgets } from '@/widgets/update';
+import { redrawWidgetsNow, updateWidgets } from '@/widgets/update';
 import { snapshot, useAppStore } from '@/state/app-store';
 
 /**
@@ -25,6 +25,8 @@ export function useAppLifecycle() {
     syncFocusLive(useAppStore.getState());
     const sub = AppState.addEventListener('change', (s) => {
       if (s === 'active') refresh();
+      // leaving the app: everything is saved by now, so the home-screen widgets match the app
+      if (s === 'background') redrawWidgetsNow();
     });
     // nudge settings or reminders changed → rebuild the plan
     const unsub = useAppStore.subscribe((s, prev) => {

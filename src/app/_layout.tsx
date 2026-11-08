@@ -14,6 +14,12 @@ import { ThemeProvider, useTheme } from '@/theme/theme-provider';
 
 void SplashScreen.preventAutoHideAsync();
 
+/**
+ * Deep links from the widgets (gobblo://dump, /focus, /start) open with Home underneath, so
+ * closing the sheet lands on Home instead of an empty screen (Anass: widget "Add" did nothing).
+ */
+export const unstable_settings = { initialRouteName: '(tabs)' };
+
 export default function RootLayout() {
   // iOS uses SF Pro / SF Pro Rounded (system). These are the Android + web stand-ins.
   const [loaded, error] = useFonts({
