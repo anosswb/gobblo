@@ -97,7 +97,7 @@ export function ClosetScreen() {
         <StageBackdrop room={show.room} sky={sky} glowY={64} />
         <Pet size={150} color={show.color} mood={show.mood} stage={look.stage} hat={show.hat} face={show.face} onPress={() => play('boop')} accessibilityLabel={pet.name} />
         <Animated.View key={status} entering={FadeIn.duration(duration.quick)} style={styles.status}>
-          <Text variant="subhead" tone={onDarkStage ? 'onFocus' : 'ink'} style={styles.center}>{status}</Text>
+          <Text variant="subhead" tone={onDarkStage ? 'onFocus' : 'onLightScene'} style={styles.center}>{status}</Text>
           {lockedPlus ? (
             <PressScale accessibilityRole="button" onPress={() => router.push('/plus')} style={[styles.plusBtn, { backgroundColor: colors.primary }]}>
               <Text variant="caption" tone="onPrimary">{t.getPlus}</Text>

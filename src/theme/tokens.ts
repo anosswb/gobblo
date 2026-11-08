@@ -67,6 +67,8 @@ export type ColorTokens = {
   onFocus2: string;
   focusGlass: string;
   focusScrim: string;
+  /** text on a light Closet room (sunset, ocean…): those scenes stay light in dark mode too */
+  onLightScene: string;
   /** the focus timer room: follows the theme (Anass 2026-11-08: dark timer in light mode looked broken) */
   roomTop: string;
   roomMid: string;
@@ -88,6 +90,7 @@ const shared = {
   onFocus2: 'rgba(235,235,245,0.6)',
   focusGlass: 'rgba(255,255,255,0.08)',
   focusScrim: 'rgba(5,5,6,0.55)',
+  onLightScene: '#0B0B0D',
   sceneDim: 'rgba(0,0,0,0.18)',
   onPrimary: '#FFFFFF',
 } as const;

@@ -48,7 +48,7 @@ export function Evolution({ stage, onDone }: { stage: number | null; onDone: () 
 }
 
 function Scene({ stage, onDone }: { stage: number; onDone: () => void }) {
-  const { colors, reduceMotion } = useTheme();
+  const { colors, scheme, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
   const pet = useAppStore((s) => s.pet);
   const [shown, setShown] = useState(Math.max(0, stage - 1));
@@ -87,14 +87,15 @@ function Scene({ stage, onDone }: { stage: number; onDone: () => void }) {
 
   return (
     <View style={styles.fill}>
-      <LinearGradient colors={[colors.focusTop, colors.focusMid, colors.focusBottom]} style={StyleSheet.absoluteFill} />
+      {/* follows the theme like the focus room (Anass 2026-11-08: the night scene made the black button vanish in light mode) */}
+      <LinearGradient colors={[colors.roomTop, colors.roomMid, colors.roomBottom]} style={StyleSheet.absoluteFill} />
       <View style={styles.raysWrap} pointerEvents="none">
         <Animated.View style={[styles.rays, rays]}>
           <Svg width={720} height={720} viewBox="-360 -360 720 720">
             <Defs>
               <RadialGradient id="evoRay" cx="50%" cy="50%" r="50%">
-                <Stop offset="0" stopColor={colors.onFocus} stopOpacity={0.26} />
-                <Stop offset="1" stopColor={colors.onFocus} stopOpacity={0} />
+                <Stop offset="0" stopColor={scheme === 'dark' ? colors.roomInk : colors.primary} stopOpacity={scheme === 'dark' ? 0.26 : 0.16} />
+                <Stop offset="1" stopColor={scheme === 'dark' ? colors.roomInk : colors.primary} stopOpacity={0} />
               </RadialGradient>
               <RadialGradient id="evoCore" cx="50%" cy="50%" r="50%">
                 <Stop offset="0" stopColor={colors.primary} stopOpacity={0.55} />
@@ -115,8 +116,8 @@ function Scene({ stage, onDone }: { stage: number; onDone: () => void }) {
         <View style={styles.top}>
           {evolved ? (
             <Animated.View entering={FadeInDown.duration(300)} style={styles.titles}>
-              <Text variant="caption" tone="onFocus2" style={styles.kicker}>{ev.kicker(pet.name)}</Text>
-              <Text variant="title" tone="onFocus" style={styles.center}>{STAGES[stage].name}</Text>
+              <Text variant="caption" tone="roomInk2" style={styles.kicker}>{ev.kicker(pet.name)}</Text>
+              <Text variant="title" tone="roomInk" style={styles.center}>{STAGES[stage].name}</Text>
               <Text variant="heading" style={[styles.center, { color: colors.reward }]}>{ev.cheer}</Text>
             </Animated.View>
           ) : null}
@@ -132,7 +133,7 @@ function Scene({ stage, onDone }: { stage: number; onDone: () => void }) {
         <View style={styles.bottom}>
           {evolved ? (
             <Animated.View entering={FadeIn.delay(250).duration(300)} exiting={FadeOut.duration(150)} style={styles.bottomInner}>
-              <Text variant="body" tone="onFocus2" style={styles.center}>{ev.line[stage % ev.line.length]}</Text>
+              <Text variant="body" tone="roomInk2" style={styles.center}>{ev.line[stage % ev.line.length]}</Text>
               <PressScale accessibilityRole="button" onPress={onDone} style={[styles.ok, { backgroundColor: colors.reward }]}>
                 <Text variant="bodyBold" tone="onReward">{ev.ok}</Text>
               </PressScale>

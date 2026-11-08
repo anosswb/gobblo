@@ -10,7 +10,7 @@ import { font, MAX_FONT_SCALE, tracking, typeScale } from '@/theme/tokens';
  * subhead = Subheadline, caption = Footnote, label = small semibold caps-free label.
  */
 type Variant = 'title' | 'title2' | 'heading' | 'body' | 'bodyBold' | 'subhead' | 'caption' | 'label' | 'timer';
-type Tone = 'ink' | 'ink2' | 'ink3' | 'primary' | 'onPrimary' | 'onReward' | 'onFocus' | 'onFocus2' | 'roomInk' | 'roomInk2' | 'danger';
+type Tone = 'ink' | 'ink2' | 'ink3' | 'primary' | 'onPrimary' | 'onReward' | 'onFocus' | 'onFocus2' | 'onLightScene' | 'roomInk' | 'roomInk2' | 'danger';
 
 type Props = TextProps & { variant?: Variant; tone?: Tone };
 
