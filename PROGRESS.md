@@ -48,6 +48,25 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 - Checks: tsc, lint, all tests. Web preview: full onboarding → Home, light + dark.
 - Needs the phone: reload the app and test sound on vibrate.
 
+## Toolkit hub (2026-11-08) — DONE in web preview (Anass OK'd the 6 tools; not yet on a phone)
+Anass asked for a page of helpful ADHD tools: each tool is a tile, a tap opens its own page.
+
+Research (short): docs/07 says starting is the unsolved pain and body doubling helps but the setup is friction (HN). Reddit r/ADHD threads (2026) put body doubling first, then "tiny physical first step" ("get my body there before my brain is ready"). Tools must stay few (docs/07: "few tools, not a toolbox").
+
+The 6 tiles (all free, no ads on these pages):
+1. **Reminders**: opens the existing "Leaving soon" page, now with two kinds: "Leave at" (nudge before) and "Remind me at" (plain), plus "every day". Same store, same `planNudges`.
+2. **Breathe**: the pet grows and shrinks. Patterns: calm (4-6), box (4-4-4-4), 4-7-8. Soft haptic on each phase. Reduce Motion: fade + text only.
+3. **Calm down** (stress relief): 3 short modes: 5-4-3-2-1 grounding steps, "shake it out" (20 s), "pet me" (stroke the pet, it purrs with haptics).
+4. **Daily tip**: 60+ original, non-medical tips in `src/features/toolkit/tips.json`, picked by `dayKey` (same tip all day, new at 4 am). Save + share. Footer: "Tips from people, not medical advice."
+5. **Unstick me** (picked): stuck? shows ONE tiny physical first step ("Stand up.", "Open the file. Just open it."). "Another one" and "Add as a bite" buttons.
+6. **Sit with me** (picked): a body double without video. The pet sits and "works" next to you for 10/25/45 min or open-ended, soft check-in tap every 10 min. No task needed.
+
+Where it lives: a glass toolbox button in the Home header (next to the sparks chip). No new tab: the tab bar stays 4 tabs + dump.
+Reminders and nudges: reuse `Reminder` + `planNudges` + `rescheduleNudges`. New optional `repeat: 'daily'` on a reminder (no migration needed). Reminders the user sets still fire (they asked for them), but on a day with reminders the pet's own daily nudges shrink so the day never goes over the chosen nudge level. A time inside quiet hours shows a hint.
+Routes: `src/app/tools/index.tsx` + `src/app/tools/[tool].tsx`; bodies in `src/screens/tools/*`. Pure logic in `src/features/toolkit/*` with tests (tip picker, reminder plan, unstick picker).
+Checks: tsc, lint, jest, web preview light + dark, DECISIONS row, commit on main (no push).
+Built: hub (`/tools`), Breathe, Calm down, Daily tip (66 tips), Unstick me, Sit with me, Reminders with "Remind me" + "Every day". Seen in the web preview: hub light, Breathe running dark, Reminders dark. Not checked yet: Android haptics and the pet-me stroke on a real phone; Screenrove check_my_ui skipped (token budget).
+
 ## Next
 - Dev build on Anass's phone (he is logged in to EAS).
 - Phase 2: the pet (Skia, from R1 art).

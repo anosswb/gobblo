@@ -38,7 +38,9 @@ import House from 'lucide-react-native/icons/house';
 import Info from 'lucide-react-native/icons/info';
 import Keyboard from 'lucide-react-native/icons/keyboard';
 import Laptop from 'lucide-react-native/icons/laptop';
+import LayoutGrid from 'lucide-react-native/icons/layout-grid';
 import Leaf from 'lucide-react-native/icons/leaf';
+import Lightbulb from 'lucide-react-native/icons/lightbulb';
 import ListChecks from 'lucide-react-native/icons/list-checks';
 import Lock from 'lucide-react-native/icons/lock';
 import Mail from 'lucide-react-native/icons/mail';
@@ -83,6 +85,7 @@ import VolumeX from 'lucide-react-native/icons/volume-x';
 import WandSparkles from 'lucide-react-native/icons/wand-sparkles';
 import WashingMachine from 'lucide-react-native/icons/washing-machine';
 import Waves from 'lucide-react-native/icons/waves';
+import Wind from 'lucide-react-native/icons/wind';
 import Wrench from 'lucide-react-native/icons/wrench';
 import X from 'lucide-react-native/icons/x';
 import Zap from 'lucide-react-native/icons/zap';
@@ -188,6 +191,10 @@ const MAP = {
   slides: ['rectangle.on.rectangle', Presentation],
   list: ['checklist', ListChecks],
   wait: ['hourglass', Hourglass],
+  // toolkit
+  toolkit: ['square.grid.2x2.fill', LayoutGrid],
+  wind: ['wind', Wind],
+  bulb: ['lightbulb.fill', Lightbulb],
 } as const satisfies Record<string, readonly [string, LucideIcon]>;
 
 export type IconName = keyof typeof MAP;

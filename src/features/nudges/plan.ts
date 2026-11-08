@@ -32,6 +32,38 @@ const DAILY_LINES = [
 
 export const COMEBACK_LINE = 'I napped. Zero guilt. One bite?';
 
+/** Planning window for user reminders (the plan is rebuilt on every app open). */
+const WINDOW_DAYS = 2;
+/** A pet nudge this close to a user reminder is dropped (no double tap on the shoulder). */
+const NEAR_MS = 2 * 60 * 60_000;
+
+/**
+ * When the pet should tap you for one user reminder, from `now` up to 2 days ahead.
+ * One-off: its nudge time if still ahead. Daily: the same clock time every day in the window.
+ */
+export function reminderTimes(r: Reminder, now: Date, days = WINDOW_DAYS): Date[] {
+  const lead = r.leadMin * 60_000;
+  if (r.repeat !== 'daily') {
+    const at = new Date(r.at - lead);
+    return at > now ? [at] : [];
+  }
+  const first = new Date(r.at);
+  const out: Date[] = [];
+  for (let d = 0; d <= days; d++) {
+    const occ = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d, first.getHours(), first.getMinutes(), 0, 0);
+    const at = new Date(occ.getTime() - lead);
+    if (at > now && occ.getTime() >= r.at) out.push(at);
+  }
+  return out;
+}
+
+export function reminderText(r: Reminder): string {
+  return r.leadMin > 0 ? `${r.leadMin} min until “${r.text}”. Wrap up the tiny thing.` : `“${r.text}”. You asked me to remind you.`;
+}
+
+/** Same calendar day (local time). */
+const sameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
 export function planNudges(opts: {
   level: NudgeLevel;
   quietStart: number;
@@ -44,21 +76,33 @@ export function planNudges(opts: {
   const line = opts.petLine ?? ((i: number) => DAILY_LINES[i % DAILY_LINES.length]);
   const out: PlannedNudge[] = [];
 
-  // "leaving soon" reminders are asked for by the user, so they ignore the level (still never in the past).
+  // Reminders are asked for by the user, so they always fire, even with nudges off or in quiet
+  // hours (the Reminders page warns about quiet hours). They are never in the past.
+  const userTimes: Date[] = [];
   for (const r of opts.reminders ?? []) {
-    const at = new Date(r.at - r.leadMin * 60_000);
-    if (at > now) out.push({ at, kind: 'leaving', text: `${r.leadMin} min until “${r.text}”. Wrap up the tiny thing.` });
+    for (const at of reminderTimes(r, now)) {
+      userTimes.push(at);
+      out.push({ at, kind: 'leaving', text: reminderText(r) });
+    }
   }
 
   if (level === 'off') return out.sort((a, b) => +a.at - +b.at);
 
+  // The pet's own nudges make room for the user's: on a day with reminders, the day's total stays
+  // within the chosen level (reminders first), and no pet nudge lands within 2 h of a reminder.
   let n = 0;
   for (let day = 0; day < 2; day++) {
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + day);
+    const userToday = userTimes.filter((t) => sameDay(t, date));
+    let room = SLOTS[level].length - userToday.length;
     for (const hour of SLOTS[level]) {
+      if (room <= 0) break;
       if (inQuietHours(hour, quietStart, quietEnd)) continue;
-      const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + day, hour, 0, 0, 0);
+      const at = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0, 0);
       if (at <= now) continue;
+      if (userTimes.some((t) => Math.abs(+t - +at) < NEAR_MS)) continue;
       out.push({ at, kind: 'daily', text: line(n++) });
+      room--;
     }
   }
 

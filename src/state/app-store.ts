@@ -48,11 +48,12 @@ type Actions = {
   removeGoodThing: (id: string) => void;
   addReminder: (r: Omit<Reminder, 'id'>) => void;
   removeReminder: (id: string) => void;
+  toggleSavedTip: (id: number) => void;
 };
 
 export type AppState = PersistedState & Actions;
 
-const pick = ({ bites, sessions, pet, stats, settings, goodThings, reminders, focus, unlocked }: PersistedState): PersistedState => ({
+const pick = ({ bites, sessions, pet, stats, settings, goodThings, reminders, savedTips, focus, unlocked }: PersistedState): PersistedState => ({
   bites,
   sessions,
   pet,
@@ -60,6 +61,7 @@ const pick = ({ bites, sessions, pet, stats, settings, goodThings, reminders, fo
   settings,
   goodThings,
   reminders,
+  savedTips,
   focus,
   unlocked,
 });
@@ -149,6 +151,8 @@ export const useAppStore = create<AppState>()(
       removeGoodThing: (id) => set((s) => ({ goodThings: s.goodThings.filter((g) => g.id !== id) })),
       addReminder: (r) => set((s) => ({ reminders: [...s.reminders, { ...r, id: newId() }] })),
       removeReminder: (id) => set((s) => ({ reminders: s.reminders.filter((r) => r.id !== id) })),
+      toggleSavedTip: (id) =>
+        set((s) => ({ savedTips: s.savedTips.includes(id) ? s.savedTips.filter((t) => t !== id) : [id, ...s.savedTips] })),
     }),
     {
       name: 'app-state',

@@ -1,4 +1,4 @@
-import { inQuietHours, planNudges, SLOTS } from './plan';
+import { inQuietHours, planNudges, reminderText, reminderTimes, SLOTS } from './plan';
 
 const base = { quietStart: 22, quietEnd: 8 };
 
@@ -37,5 +37,58 @@ describe('nudge plan', () => {
     expect(plan).toHaveLength(1);
     expect(plan[0].at.getHours()).toBe(14);
     expect(plan[0].at.getMinutes()).toBe(40);
+  });
+
+  it('plain reminders (lead 0) fire at the time and say so', () => {
+    const now = new Date(2026, 10, 6, 9);
+    const r = { id: 'p', text: 'water plants', at: +new Date(2026, 10, 6, 18, 30), leadMin: 0 };
+    const plan = planNudges({ ...base, level: 'off', now, reminders: [r] });
+    expect(plan).toHaveLength(1);
+    expect(plan[0].at).toEqual(new Date(2026, 10, 6, 18, 30));
+    expect(plan[0].text).toBe(reminderText(r));
+    expect(plan[0].text).toContain('water plants');
+  });
+
+  it('daily reminders repeat at the same clock time inside the 2-day window', () => {
+    const now = new Date(2026, 10, 6, 10);
+    const r = { id: 'd', text: 'stretch', at: +new Date(2026, 10, 6, 9), leadMin: 0, repeat: 'daily' as const };
+    const times = reminderTimes(r, now);
+    // 9:00 today already passed → tomorrow and the day after
+    expect(times.map((t) => t.getDate())).toEqual([7, 8]);
+    expect(times.every((t) => t.getHours() === 9 && t.getMinutes() === 0)).toBe(true);
+  });
+
+  it('a daily reminder never fires before the day it was set for', () => {
+    const now = new Date(2026, 10, 6, 10);
+    const r = { id: 'd', text: 'bus', at: +new Date(2026, 10, 7, 8), leadMin: 10, repeat: 'daily' as const };
+    expect(reminderTimes(r, now).map((t) => [t.getDate(), t.getHours(), t.getMinutes()])).toEqual([[7, 7, 50], [8, 7, 50]]);
+  });
+
+  it('past one-off reminders are dropped', () => {
+    const now = new Date(2026, 10, 6, 16);
+    expect(reminderTimes({ id: 'x', text: 'old', at: +new Date(2026, 10, 6, 15), leadMin: 20 }, now)).toEqual([]);
+  });
+
+  it('on a day with reminders, pet nudges shrink so the day stays within the level', () => {
+    const now = new Date(2026, 10, 6, 8, 30);
+    const reminders = [
+      { id: 'a', text: 'call', at: +new Date(2026, 10, 6, 13, 30), leadMin: 0 },
+      { id: 'b', text: 'gym', at: +new Date(2026, 10, 6, 20), leadMin: 0 },
+    ];
+    const plan = planNudges({ ...base, level: 'normal', now, reminders });
+    const today = plan.filter((p) => p.at.getDate() === 6);
+    expect(today.filter((p) => p.kind === 'leaving')).toHaveLength(2);
+    expect(today.filter((p) => p.kind === 'daily')).toHaveLength(0); // normal = 2 a day, both used by reminders
+    // tomorrow has no reminders: the normal 2 pet nudges
+    expect(plan.filter((p) => p.at.getDate() === 7 && p.kind === 'daily')).toHaveLength(2);
+  });
+
+  it('no pet nudge lands within 2 hours of a reminder', () => {
+    const now = new Date(2026, 10, 6, 8);
+    const reminders = [{ id: 'a', text: 'call', at: +new Date(2026, 10, 6, 11, 30), leadMin: 0 }];
+    const plan = planNudges({ ...base, level: 'chaos', now, reminders });
+    const pet = plan.filter((p) => p.kind === 'daily' && p.at.getDate() === 6);
+    expect(pet.every((p) => Math.abs(+p.at - reminders[0].at) >= 2 * 60 * 60_000)).toBe(true);
+    expect(pet.length).toBeLessThanOrEqual(SLOTS.chaos.length - 1);
   });
 });

@@ -213,9 +213,17 @@ export function HomeScreen() {
       eyebrow={dateLine(openedAt)}
       title={h.greeting(openedAt.getHours())}
       right={
-        <View style={[styles.sparks, { backgroundColor: colors.reward }]} accessibilityLabel={`${stats.sparks} sparks`}>
-          <Icon name="sparkle" size={14} weight="bold" color={colors.onReward} />
-          <SlidingNumber value={stats.sparks} />
+        <View style={styles.headRight}>
+          <View style={[styles.sparks, { backgroundColor: colors.reward }]} accessibilityLabel={`${stats.sparks} sparks`}>
+            <Icon name="sparkle" size={14} weight="bold" color={colors.onReward} />
+            <SlidingNumber value={stats.sparks} />
+          </View>
+          {/* Toolkit (breathe, calm down, unstick, sit with me, reminders, daily tip) */}
+          <PressScale accessibilityRole="button" accessibilityLabel={en.tools.open} hitSlop={4} onPress={() => { haptics.select(); router.push('/tools'); }}>
+            <Glass interactive radius={22} style={styles.toolBtn}>
+              <Icon name="toolkit" size={20} color={colors.ink} />
+            </Glass>
+          </PressScale>
         </View>
       }>
       {/* hero: the pet on its stage */}
@@ -456,6 +464,8 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { textAlign: 'center' },
+  headRight: { flexDirection: 'row', alignItems: 'center', gap: space.s },
+  toolBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: space.xs },
   sparks: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.m, height: 32, borderRadius: radius.chip, marginBottom: space.xs },
   stage: { borderRadius: radius.scene, overflow: 'hidden' },
   stageTop: { flexDirection: 'row', justifyContent: 'space-between', padding: space.m, gap: space.s },

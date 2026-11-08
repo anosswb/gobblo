@@ -74,12 +74,18 @@ export interface GoodThing {
   at: number;
 }
 
-/** "leaving soon": I have to leave at a time, nudge me before (time blindness). */
+/**
+ * A reminder the user set (Toolkit › Reminders). Two kinds:
+ * - "leave at" (time blindness): leadMin > 0, the pet nudges this many minutes before `at`
+ * - "remind me at": leadMin 0, the pet nudges at `at`
+ * `repeat: 'daily'` keeps the clock time of `at` every day (no migration: optional field).
+ */
 export interface Reminder {
   id: string;
   text: string;
-  at: number; // when the user must leave / start
-  leadMin: number; // nudge this many minutes before
+  at: number; // when the user must leave / start (for daily: the first time, its clock time repeats)
+  leadMin: number; // nudge this many minutes before (0 = at the time)
+  repeat?: 'daily';
   notificationId?: string;
 }
 
@@ -143,6 +149,8 @@ export interface PersistedState {
   settings: Settings;
   goodThings: GoodThing[];
   reminders: Reminder[];
+  /** Toolkit › Daily tip: ids of tips the user saved */
+  savedTips: number[];
   focus: ActiveFocus | null;
   /** Plus packs owned ('startKit' | 'makeItYours' | 'focus', or 'plus' for all) */
   unlocked: string[];
@@ -176,6 +184,7 @@ export function freshState(now = Date.now()): PersistedState {
     },
     goodThings: [],
     reminders: [],
+    savedTips: [],
     focus: null,
     unlocked: [],
     settings: {

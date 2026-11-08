@@ -63,6 +63,8 @@ function RootStack() {
         <Stack.Screen name="settings/index" options={{ animation: 'default' }} />
         <Stack.Screen name="settings/[page]" options={{ animation: 'default' }} />
         <Stack.Screen name="reminders" options={{ animation: 'default' }} />
+        <Stack.Screen name="tools/index" options={{ animation: 'default' }} />
+        <Stack.Screen name="tools/[tool]" options={{ animation: 'default' }} />
         <Stack.Screen name="plus" options={{ animation: 'default' }} />
         <Stack.Screen name="start" options={{ animation: 'none' }} />
       </Stack>
