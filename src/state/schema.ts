@@ -127,6 +127,8 @@ export interface Settings {
   /** opt-in "one good thing?" after feeding (docs/12) */
   goodThingsJar: boolean;
   onboarded: boolean;
+  /** the drag-to-feed guide on Home was seen (dragged once or tapped Got it) */
+  tipDragSeen: boolean;
   firstOpen: number;
   reviewAskedVersion?: string;
 }
@@ -193,6 +195,7 @@ export function freshState(now = Date.now()): PersistedState {
       mindfulNote: false,
       goodThingsJar: false,
       onboarded: false,
+      tipDragSeen: false,
       firstOpen: now,
     },
   };

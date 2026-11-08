@@ -29,6 +29,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
 import { BiteRow } from './bite-row';
+import { DragGuide } from './drag-guide';
 import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
 import type { IconName } from '@/components/icon';
@@ -258,6 +259,7 @@ export function HomeScreen() {
           onStart: (_id, emoji) => {
             setFloatEmoji(emoji);
             setCarrying(true);
+            if (!useAppStore.getState().settings.tipDragSeen) useAppStore.getState().updateSettings({ tipDragSeen: true });
             haptics.light();
             play('pop');
           },
@@ -279,8 +281,22 @@ export function HomeScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHead}>
           <Text variant="title2" accessibilityRole="header">{h.bites}</Text>
-          <Text variant="caption" tone="ink2">{h.hint(pet.name)}</Text>
+          {list.length > 0 && !settings.tipDragSeen ? null : <Text variant="caption" tone="ink2">{h.hint(pet.name)}</Text>}
         </View>
+
+        {list.length > 0 && !settings.tipDragSeen ? (
+          <DragGuide
+            petName={pet.name}
+            color={look.color}
+            stage={look.stage}
+            hat={look.hat}
+            face={look.face}
+            onDone={() => {
+              haptics.light();
+              useAppStore.getState().updateSettings({ tipDragSeen: true });
+            }}
+          />
+        ) : null}
 
         <View style={[styles.list, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <View style={styles.addRow}>

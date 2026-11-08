@@ -41,6 +41,8 @@ export function Row({
   stacked,
   danger,
   leading,
+  value,
+  hideLabel,
 }: {
   label: string;
   hint?: string;
@@ -52,6 +54,10 @@ export function Row({
   danger?: boolean;
   /** an icon tile or emoji on the start side */
   leading?: ReactNode;
+  /** current value shown before the chevron (navigation rows, iOS style) */
+  value?: string;
+  /** stacked control under a section header that already names it: don't print the name twice */
+  hideLabel?: boolean;
 }) {
   const { colors } = useTheme();
   const body = (pressed = false) => (
@@ -59,23 +65,34 @@ export function Row({
       {leading ? <View style={styles.leading}>{leading}</View> : null}
       <View style={[stacked ? styles.rowStacked : styles.row, styles.flex]}>
         <View style={stacked ? undefined : styles.rowText}>
-          <Text variant="body" tone={danger ? 'danger' : 'ink'}>
-            {label}
-          </Text>
+          {hideLabel && stacked ? null : (
+            <Text variant="body" tone={danger ? 'danger' : 'ink'}>
+              {label}
+            </Text>
+          )}
           {hint ? (
             <Text variant="caption" tone="ink2">
               {hint}
             </Text>
           ) : null}
         </View>
-        {right ?? (onPress && !danger ? <Icon name="chevron" size={14} weight="bold" color={colors.ink3} /> : null)}
+        {right ?? (onPress && !danger ? (
+          <View style={styles.valueRow}>
+            {value ? (
+              <Text variant="body" tone="ink2" numberOfLines={1} style={styles.value}>
+                {value}
+              </Text>
+            ) : null}
+            <Icon name="chevron" size={14} weight="bold" color={colors.ink3} />
+          </View>
+        ) : null)}
         {!last ? <View style={[styles.sep, { backgroundColor: colors.line }]} /> : null}
       </View>
     </View>
   );
   if (!onPress) return body();
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityHint={hint} onPress={onPress}>
+    <Pressable accessibilityRole="button" accessibilityLabel={value ? `${label}, ${value}` : label} accessibilityHint={hint} onPress={onPress}>
       {({ pressed }) => body(pressed)}
     </Pressable>
   );
@@ -246,6 +263,8 @@ const styles = StyleSheet.create({
   timePill: { height: 40 },
   timeValue: { minWidth: 86, textAlign: 'center', fontVariant: ['tabular-nums'] },
   flex: { flex: 1 },
+  valueRow: { flexDirection: 'row', alignItems: 'center', gap: space.s, maxWidth: '55%' },
+  value: { flexShrink: 1 },
   section: { gap: space.s - 2 },
   pad: { paddingHorizontal: space.l },
   card: { borderRadius: radius.card, overflow: 'hidden' },

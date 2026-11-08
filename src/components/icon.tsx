@@ -30,6 +30,7 @@ import Gamepad2 from 'lucide-react-native/icons/gamepad-2';
 import Gift from 'lucide-react-native/icons/gift';
 import Glasses from 'lucide-react-native/icons/glasses';
 import GraduationCap from 'lucide-react-native/icons/graduation-cap';
+import Hand from 'lucide-react-native/icons/hand';
 import Headphones from 'lucide-react-native/icons/headphones';
 import Heart from 'lucide-react-native/icons/heart';
 import Hourglass from 'lucide-react-native/icons/hourglass';
@@ -148,6 +149,7 @@ const MAP = {
   waves: ['water.waves', Waves],
   keyboard: ['keyboard.fill', Keyboard],
   gift: ['gift.fill', Gift],
+  hand: ['hand.point.up.left.fill', Hand],
   star: ['star.fill', Star],
   sun: ['sun.max.fill', Sun],
   confetti: ['party.popper.fill', PartyPopper],

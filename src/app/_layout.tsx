@@ -60,7 +60,8 @@ function RootStack() {
         <Stack.Screen name="onboarding" options={{ animation: 'fade', gestureEnabled: false }} />
         <Stack.Screen name="dump" options={{ presentation: 'formSheet', sheetGrabberVisible: true, sheetAllowedDetents: [1], sheetCornerRadius: 38, contentStyle: { backgroundColor: colors.card } }} />
         <Stack.Screen name="focus" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
-        <Stack.Screen name="settings" options={{ animation: 'default' }} />
+        <Stack.Screen name="settings/index" options={{ animation: 'default' }} />
+        <Stack.Screen name="settings/[page]" options={{ animation: 'default' }} />
         <Stack.Screen name="reminders" options={{ animation: 'default' }} />
         <Stack.Screen name="plus" options={{ animation: 'default' }} />
         <Stack.Screen name="start" options={{ animation: 'none' }} />
