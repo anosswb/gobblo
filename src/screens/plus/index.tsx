@@ -9,7 +9,7 @@ import { toast } from '@/components/toast';
 import { LINKS } from '@/config/app';
 import { MONETIZATION } from '@/config/monetization';
 import { askNotificationPermission } from '@/features/nudges/schedule';
-import { canShowOffer, DISPLAY_PRICE, hasPack, PACK_IDS, PACKS, type PackId } from '@/features/plus/catalog';
+import { canShowOffer, DISPLAY_PRICE, hasPack, PACKS, SHOWN_PACK_IDS, type PackId } from '@/features/plus/catalog';
 import { ROUTINE_IDS, ROUTINES, type RoutineId } from '@/features/plus/routines';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -71,7 +71,7 @@ export function PlusScreen() {
         </View>
       ) : null}
 
-      {PACK_IDS.map((id) => {
+      {SHOWN_PACK_IDS.map((id) => {
         const owned = hasPack(unlocked, id);
         const p = t.packs[id];
         return (

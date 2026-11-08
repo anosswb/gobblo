@@ -17,12 +17,15 @@ export interface Pack {
 }
 
 export const PACKS: Record<PackId, Pack> = {
-  startKit: { id: 'startKit', icon: 'bolt', sparks: 120 },
+  startKit: { id: 'startKit', icon: 'bolt', sparks: 60 },
   makeItYours: { id: 'makeItYours', icon: 'palette', sparks: 150 },
   focus: { id: 'focus', icon: 'headphones', sparks: 120 },
 };
 
 export const PACK_IDS = Object.keys(PACKS) as PackId[];
+
+/** Packs the Plus screen lists: only what is built today (Focus comes back once its extras exist). */
+export const SHOWN_PACK_IDS: PackId[] = ['startKit', 'makeItYours'];
 
 /** Display defaults for iOS until RevenueCat returns localized store prices. */
 export const DISPLAY_PRICE = { pack: '$1.99', plus: '$4.99' } as const;

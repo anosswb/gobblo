@@ -1,4 +1,4 @@
-import { freshState, todayKey, type Session } from '@/state/schema';
+import { dayKey, freshState, type Session } from '@/state/schema';
 
 import { addBites, daysAway, feed, newDayCheck, plate, reorder, rewardStart, toggleDaily } from './logic';
 
@@ -22,8 +22,8 @@ describe('bites', () => {
     const now = new Date(2026, 10, 6, 10);
     const r = feed(s, s.bites[0].id, session(), now);
     expect(r.bites).toHaveLength(1);
-    expect(plate(r.bites, todayKey(now))).toHaveLength(0);
-    expect(plate(r.bites, todayKey(new Date(2026, 10, 7, 9)))).toHaveLength(1);
+    expect(plate(r.bites, dayKey(now))).toHaveLength(0);
+    expect(plate(r.bites, dayKey(new Date(2026, 10, 7, 9)))).toHaveLength(1);
   });
 
   it('normal bite leaves the plate and pays sparks by size', () => {
@@ -60,7 +60,25 @@ describe('days', () => {
     expect(newDayCheck({ ...s, stats: r!.stats! }, new Date(2026, 10, 6, 20))).toBeNull();
   });
 
+  it('the day turns over at 4 am, not midnight (night owls stay in one day)', () => {
+    const s = freshState(new Date(2026, 10, 5, 20).getTime());
+    s.stats.todayEaten = 2;
+    expect(newDayCheck(s, new Date(2026, 10, 6, 1, 30))).toBeNull();
+    expect(newDayCheck(s, new Date(2026, 10, 6, 3, 59))).toBeNull();
+    expect(newDayCheck(s, new Date(2026, 10, 6, 4, 0))?.stats?.todayEaten).toBe(0);
+  });
+
+  it('a daily bite eaten at 1 am stays eaten until 4 am', () => {
+    const s = freshState(0);
+    s.bites = addBites(s, [{ text: 'meds', size: 0 }]).bites;
+    s.bites = toggleDaily(s.bites, s.bites[0].id);
+    const r = feed(s, s.bites[0].id, session(), new Date(2026, 10, 6, 1));
+    expect(plate(r.bites, dayKey(new Date(2026, 10, 6, 3)))).toHaveLength(0);
+    expect(plate(r.bites, dayKey(new Date(2026, 10, 6, 9)))).toHaveLength(1);
+  });
+
   it('counts days away', () => {
-    expect(daysAway('2026-11-01', new Date(2026, 10, 6, 1))).toBe(5);
+    expect(daysAway('2026-11-01', new Date(2026, 10, 6, 5))).toBe(5);
+    expect(daysAway('2026-11-01', new Date(2026, 10, 6, 1))).toBe(4);
   });
 });

@@ -72,7 +72,7 @@ function PrimaryButton({ data, scheme, compact = false }: { data: WidgetData; sc
   const c = PALETTE[scheme];
   // Start Kit: one tap starts 2 minutes from the home screen. Free: opens the app on that bite's
   // start sheet (one more tap). Both start the clock; Plus only saves a step.
-  const label = data.focus ? `Ends ${clock(data.focus.endsAt)}` : !data.bite ? 'Add bites' : data.canStart ? 'Start 2 min' : 'Start';
+  const label = data.focus ? `Ends ${clock(data.focus.endsAt)}` : !data.bite ? 'Add bites' : data.canStart ? 'Start 2 min' : 'Start in app';
   const icon = data.focus ? 'timer' : !data.bite ? 'plus' : 'play';
   const uri = data.focus ? focusUri() : !data.bite ? dumpUri() : startUri(data.bite.id);
   return (

@@ -13,6 +13,8 @@ import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { daysAway, FOOD, plate } from '@/features/bites/logic';
 import { useLook } from '@/features/closet/use-look';
+import { shouldAskNudgeAgain } from '@/features/nudges/ask-again';
+import { askNotificationPermission } from '@/features/nudges/schedule';
 import { levelOf, STAGES, stageOfLevel } from '@/features/progress/logic';
 import { skyOf, StageBackdrop } from '@/components/stage-backdrop';
 import { LevelUp } from '@/pet/level-up';
@@ -23,7 +25,7 @@ import { Burst } from '@/pet/burst';
 import { Evolution } from '@/pet/evolution';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
-import { todayKey, type Bite, type Size } from '@/state/schema';
+import { dayKey, type Bite, type Size } from '@/state/schema';
 import { duration, staggerDelay } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
@@ -91,7 +93,7 @@ export function HomeScreen() {
     return () => clearTimeout(t);
   }, [reaction]);
 
-  const today = todayKey(openedAt);
+  const today = dayKey(openedAt);
   const list = plate(bites, today);
   const shown = settings.oneThingMode ? list.slice(0, 1) : list;
   const look = useLook();
@@ -133,7 +135,26 @@ export function HomeScreen() {
 
   // a bite was eaten (focus finished): chomp, then celebrate with a sparkle burst
   const [burst, setBurst] = useState(0);
+  const [askAgain, setAskAgain] = useState(false);
   const eatenBefore = useRef(stats.eaten);
+  // said "Not now" in onboarding: ask once more, gently, right after a bite on day 3+
+  const maybeAskAgain = () => {
+    const st = useAppStore.getState();
+    if (!shouldAskNudgeAgain(st.settings)) return;
+    st.updateSettings({ nudgeAskedAgain: true });
+    setAskAgain(true);
+  };
+  const answerAskAgain = async (yes: boolean) => {
+    setAskAgain(false);
+    haptics.light();
+    if (!yes) {
+      toast(h.askAgainLater);
+      return;
+    }
+    const ok = await askNotificationPermission().catch(() => false);
+    if (ok) useAppStore.getState().updateSettings({ nudge: 'gentle' });
+    toast(ok ? h.askAgainOn : h.askAgainLater);
+  };
   useEffect(() => {
     if (stats.eaten > eatenBefore.current) {
       setReaction('chomp');
@@ -143,10 +164,12 @@ export function HomeScreen() {
         haptics.success();
       }, 700);
       const t2 = setTimeout(evolveIfNew, 1700);
+      const t3 = setTimeout(maybeAskAgain, 2400);
       eatenBefore.current = stats.eaten;
       return () => {
         clearTimeout(t);
         clearTimeout(t2);
+        clearTimeout(t3);
       };
     }
     eatenBefore.current = stats.eaten;
@@ -158,7 +181,7 @@ export function HomeScreen() {
   const mindful = en.mindful[dayIndex(openedAt) % en.mindful.length];
   const belly = Math.min(1, stats.todayEaten / 4);
   const asleep = sky === 'night' && settings.autoSleep && list.length === 0;
-  const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'hungry' : 'happy';
+  const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'curious' : 'happy';
   // the face chosen in the Closet wins; 'auto' reacts to the day
   const baseMood: Mood = look.homeMood === 'auto' ? autoMood : look.homeMood;
   const mood: Mood = carrying ? (overPet ? 'chomp' : 'hungry') : (reaction ?? baseMood);
@@ -240,7 +263,28 @@ export function HomeScreen() {
         </View>
       </View>
 
-      {/* one line of pet wisdom */}
+      {/* one line of pet wisdom (or, once, the gentle "can I nudge you?" ask) */}
+      {askAgain ? (
+        <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} style={[styles.note, styles.askNote, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
+          <View style={styles.askHead}>
+            <View style={[styles.noteIcon, { backgroundColor: colors.primarySoft }]}>
+              <Icon name="bell" size={16} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="bodyBold">{h.askAgainTitle(pet.name)}</Text>
+              <Text variant="caption" tone="ink2">{h.askAgainSub}</Text>
+            </View>
+          </View>
+          <View style={styles.askRow}>
+            <PressScale accessibilityRole="button" onPress={() => void answerAskAgain(false)} style={[styles.askBtn, { backgroundColor: colors.fill }]}>
+              <Text variant="bodyBold">{h.askAgainNo}</Text>
+            </PressScale>
+            <PressScale accessibilityRole="button" onPress={() => void answerAskAgain(true)} style={[styles.askBtn, { backgroundColor: colors.primary }]}>
+              <Text variant="bodyBold" tone="onPrimary">{h.askAgainYes}</Text>
+            </PressScale>
+          </View>
+        </Animated.View>
+      ) : (
       <View style={[styles.note, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={[styles.noteIcon, { backgroundColor: colors.primarySoft }]}>
           <Icon name="sparkle" size={16} color={colors.primary} />
@@ -250,6 +294,7 @@ export function HomeScreen() {
           <Text variant="body">{settings.mindfulNote ? mindful : wisdom}</Text>
         </View>
       </View>
+      )}
 
       {/* the plate */}
       <FeedDragProvider
@@ -422,6 +467,10 @@ const styles = StyleSheet.create({
   bubble: { paddingHorizontal: space.l, paddingVertical: space.m },
   pet: { position: 'absolute', bottom: 10, start: 0, end: 0, alignItems: 'center' },
   note: { flexDirection: 'row', alignItems: 'center', gap: space.m, borderRadius: radius.card - 6, padding: space.l },
+  askNote: { flexDirection: 'column', alignItems: 'stretch' },
+  askHead: { flexDirection: 'row', alignItems: 'center', gap: space.m },
+  askRow: { flexDirection: 'row', gap: space.s },
+  askBtn: { flex: 1, minHeight: 44, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   noteIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   section: { gap: space.m },
   sectionHead: { gap: 2, paddingHorizontal: space.xs },

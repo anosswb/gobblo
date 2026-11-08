@@ -1,5 +1,5 @@
 import type { Bite, PersistedState, Session, Size } from '@/state/schema';
-import { todayKey } from '@/state/schema';
+import { dayKey } from '@/state/schema';
 
 /** Food by size (docs/01). `icon` is what the UI shows (SF Symbols / Phosphor); `emoji` stays for native widgets. */
 export const FOOD = [
@@ -20,7 +20,7 @@ export function makeBite(text: string, size: Size, order: number, now = Date.now
 }
 
 /** Bites still on today's plate (daily bites eaten today are hidden until tomorrow). */
-export function plate(bites: Bite[], today = todayKey()): Bite[] {
+export function plate(bites: Bite[], today = dayKey()): Bite[] {
   return bites.filter((b) => !(b.daily && b.doneOn === today)).sort((a, b) => a.order - b.order);
 }
 
@@ -63,7 +63,7 @@ export function rewardStart(state: PersistedState, twoMinute: boolean): Pick<Per
 export function feed(state: PersistedState, biteId: string, session: Session, now = new Date()) {
   const bite = state.bites.find((b) => b.id === biteId);
   const sparks = bite ? FOOD[bite.size].sparks : 1;
-  const today = todayKey(now);
+  const today = dayKey(now);
   const bites = bite?.daily
     ? state.bites.map((b) => (b.id === biteId ? { ...b, doneOn: today } : b))
     : state.bites.filter((b) => b.id !== biteId);
@@ -86,11 +86,11 @@ export function feed(state: PersistedState, biteId: string, session: Session, no
 }
 
 /**
- * Runs on launch and on every foreground. A new local day resets "today" counters and
+ * Runs on launch and on every foreground. A new pet day (from 4 am) resets "today" counters and
  * counts a "comeback day" (only goes up, never resets: no streak shame).
  */
 export function newDayCheck(state: PersistedState, now = new Date()): Partial<PersistedState> | null {
-  const today = todayKey(now);
+  const today = dayKey(now);
   if (state.stats.lastVisit === today) return null;
   return {
     stats: { ...state.stats, lastVisit: today, todayEaten: 0, comebacks: state.stats.comebacks + 1 },
@@ -102,6 +102,7 @@ export function daysAway(lastVisit: string, now = new Date()): number {
   const [y, m, d] = lastVisit.split('-').map(Number);
   if (!y || !m || !d) return 0;
   const last = new Date(y, m - 1, d).getTime();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const [ty, tm, td] = dayKey(now).split('-').map(Number);
+  const today = new Date(ty, tm - 1, td).getTime();
   return Math.max(0, Math.round((today - last) / 86_400_000));
 }

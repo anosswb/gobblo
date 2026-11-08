@@ -11,6 +11,8 @@ import { Text } from '@/components/text';
 import { capFirst } from '@/features/bites/logic';
 import { COLORS, FACES, HATS, isUnlocked, ROOMS, type HomeMood, type Item, type RoomId, type Slot } from '@/features/closet/items';
 import { useLook } from '@/features/closet/use-look';
+import { PACKS } from '@/features/plus/catalog';
+import { MONETIZATION } from '@/config/monetization';
 import { STAGES } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -21,6 +23,9 @@ import { useAppStore } from '@/state/app-store';
 import { duration } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { petColors, radius, space, type PetColor } from '@/theme/tokens';
+
+/** Android earns packs with sparks: show the price, not "Plus" (panel: Android unlocks felt far away). */
+const plusLock = MONETIZATION === 'ads' ? en.closet.sparkBadge(PACKS.makeItYours.sparks) : en.closet.plusBadge;
 
 const t = en.closet;
 type Tab = 'mood' | Slot;
@@ -128,7 +133,7 @@ export function ClosetScreen() {
           const open = unlocked(tile);
           const on = worn(tile);
           const it = tile.item;
-          const lockLabel = it && !open ? (it.unlock.type === 'level' ? t.lvBadge(it.unlock.level) : t.plusBadge) : null;
+          const lockLabel = it && !open ? (it.unlock.type === 'level' ? t.lvBadge(it.unlock.level) : plusLock) : null;
           return (
             <Pressable
               key={`${tab}-${tile.key}`}

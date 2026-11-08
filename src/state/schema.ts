@@ -23,7 +23,7 @@ export interface Bite {
   example?: boolean;
   /** "keep daily": stays on the plate every day (free, DECISIONS.md) */
   daily?: boolean;
-  /** local day (todayKey) a daily bite was last eaten; it comes back the next day */
+  /** pet day (dayKey, starts 4 am) a daily bite was last eaten; it comes back the next day */
   doneOn?: string;
   createdAt: number;
   order: number;
@@ -129,6 +129,8 @@ export interface Settings {
   onboarded: boolean;
   /** the drag-to-feed guide on Home was seen (dragged once or tapped Got it) */
   tipDragSeen: boolean;
+  /** the one extra "can I nudge you?" card after "Not now" in onboarding was shown (never asks twice) */
+  nudgeAskedAgain: boolean;
   firstOpen: number;
   reviewAskedVersion?: string;
 }
@@ -149,6 +151,12 @@ export interface PersistedState {
 export const todayKey = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+/** The pet's day starts at 4 am, not midnight, so a night owl's 1 am bite still counts for "today". */
+export const DAY_START_HOUR = 4;
+
+/** The pet's day (belly, daily bites, comeback days): like todayKey, but the day turns over at 4 am. */
+export const dayKey = (d = new Date()) => todayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() - DAY_START_HOUR, d.getMinutes()));
+
 export function freshState(now = Date.now()): PersistedState {
   return {
     bites: [],
@@ -160,7 +168,7 @@ export function freshState(now = Date.now()): PersistedState {
       eaten: 0,
       minutes: 0,
       comebacks: 1,
-      lastVisit: todayKey(new Date(now)),
+      lastVisit: dayKey(new Date(now)),
       todayEaten: 0,
       starts2: 0,
       byPart: { morning: 0, day: 0, night: 0 },
@@ -196,6 +204,7 @@ export function freshState(now = Date.now()): PersistedState {
       goodThingsJar: false,
       onboarded: false,
       tipDragSeen: false,
+      nudgeAskedAgain: false,
       firstOpen: now,
     },
   };

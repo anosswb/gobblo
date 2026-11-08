@@ -20,14 +20,14 @@ import { duration } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 import { backOrHome } from '@/lib/nav';
-import { FoodIcon } from '@/components/food-icon';
+import { BiteIcon } from '@/components/bite-icon';
 
 const d = en.dump;
 type Edit = { size?: Size; removed?: boolean };
 
 /**
  * Brain dump (docs/01 §5) as a native form sheet. Type or ramble; the bites appear live
- * underneath (no extra "chop" step). Tap the food to change the size, × to drop one,
+ * underneath (no extra "chop" step). Tap the icon to change the size, × to drop one,
  * then "serve" puts them on Home where they pop in with a stagger. The pet watches,
  * hungry while empty, excited once there is food.
  */
@@ -126,7 +126,7 @@ export default function DumpScreen() {
                         play('tick');
                       }}
                       style={[styles.food, { backgroundColor: colors.card }]}>
-                      <FoodIcon size={b.size} />
+                      <BiteIcon text={b.text} size={b.size} />
                     </PressScale>
                     <View style={styles.flex}>
                       <Text variant="body" numberOfLines={2}>{b.text}</Text>

@@ -1,5 +1,5 @@
 import { migrate, mergeDefaults } from './migrations';
-import { freshState, SCHEMA_VERSION, todayKey } from './schema';
+import { dayKey, freshState, SCHEMA_VERSION, todayKey } from './schema';
 
 describe('migrate', () => {
   it('returns fresh defaults for empty or broken data', () => {
@@ -44,6 +44,11 @@ describe('mergeDefaults', () => {
 describe('todayKey', () => {
   it('uses the local day', () => {
     expect(todayKey(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
+  });
+  it('dayKey starts the pet day at 4 am', () => {
+    expect(dayKey(new Date(2026, 0, 6, 3, 59))).toBe('2026-01-05');
+    expect(dayKey(new Date(2026, 0, 6, 4, 0))).toBe('2026-01-06');
+    expect(dayKey(new Date(2026, 2, 1, 2))).toBe('2026-02-28');
   });
 });
 

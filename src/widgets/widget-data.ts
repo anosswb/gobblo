@@ -3,7 +3,7 @@ import { biteIcon } from '@/features/bites/bite-icon';
 import { FOOD, plate } from '@/features/bites/logic';
 import { hasPack } from '@/features/plus/catalog';
 import { storage } from '@/lib/storage';
-import { todayKey, type PersistedState } from '@/state/schema';
+import { dayKey, type PersistedState } from '@/state/schema';
 import { petColors, type PetColor } from '@/theme/tokens';
 
 import type { WidgetMood } from './svg-art';
@@ -47,7 +47,7 @@ function readState(): Partial<PersistedState> {
  */
 export function readWidgetData(now = new Date()): WidgetData {
   const s = readState();
-  const list = plate(s.bites ?? []);
+  const list = plate(s.bites ?? [], dayKey(now));
   const skip = storage.getNumber(SKIP_KEY) ?? 0;
   const index = list.length ? skip % list.length : 0;
   const pick = list[index];
@@ -63,6 +63,6 @@ export function readWidgetData(now = new Date()): WidgetData {
     left: list.length,
     canStart: hasPack(s.unlocked ?? [], 'startKit'),
     focus,
-    fedToday: s.stats?.lastVisit === todayKey(now) ? (s.stats?.todayEaten ?? 0) : 0,
+    fedToday: s.stats?.lastVisit === dayKey(now) ? (s.stats?.todayEaten ?? 0) : 0,
   };
 }
