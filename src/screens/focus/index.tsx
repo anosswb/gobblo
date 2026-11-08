@@ -150,7 +150,7 @@ export function FocusScreen() {
   }, []);
 
   if (!focus || !t) {
-    return <NoSession color={colors.focusBottom} onExit={exit} />;
+    return <NoSession color={colors.roomBottom} onExit={exit} />;
   }
 
   const spent = () => spentMinutes(t, Date.now()) + (focus.rodeWave ? 2 : 0);
@@ -195,7 +195,7 @@ export function FocusScreen() {
 
   return (
     <View style={styles.fill}>
-      <LinearGradient colors={[colors.focusTop, colors.focusMid, colors.focusBottom]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[colors.roomTop, colors.roomMid, colors.roomBottom]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
       <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none">
         <Defs>
           <RadialGradient id="focusGlow" cx="50%" cy="34%" r="45%">
@@ -208,33 +208,33 @@ export function FocusScreen() {
 
       <View style={[styles.content, { paddingTop: insets.top + space.s, paddingBottom: insets.bottom + space.l }]}>
         <View style={styles.topBar}>
-          <PressScale accessibilityRole="button" accessibilityLabel={f.closeLabel} hitSlop={10} onPress={() => setConfirmLeave(true)} style={[styles.round, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
-            <Icon name="close" size={16} weight="bold" color={colors.onFocus} />
+          <PressScale accessibilityRole="button" accessibilityLabel={f.closeLabel} hitSlop={10} onPress={() => setConfirmLeave(true)} style={[styles.round, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
+            <Icon name="close" size={16} weight="bold" color={colors.roomInk} />
           </PressScale>
-          <PressScale accessibilityRole="button" accessibilityLabel={`${f.soundLabel}: ${SOUND_LABEL[settings.focusSound]}`} onPress={cycleSound} style={[styles.pill, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
-            <Icon name={settings.focusSound === 'none' ? 'mute' : 'sound'} size={16} color={colors.onFocus} />
-            <Text variant="caption" tone="onFocus" style={styles.semi}>{SOUND_LABEL[settings.focusSound]}</Text>
+          <PressScale accessibilityRole="button" accessibilityLabel={`${f.soundLabel}: ${SOUND_LABEL[settings.focusSound]}`} onPress={cycleSound} style={[styles.pill, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
+            <Icon name={settings.focusSound === 'none' ? 'mute' : 'sound'} size={16} color={colors.roomInk} />
+            <Text variant="caption" tone="roomInk" style={styles.semi}>{SOUND_LABEL[settings.focusSound]}</Text>
           </PressScale>
         </View>
 
         <View style={styles.hero}>
-          <Text variant="subhead" tone="onFocus2" numberOfLines={1} style={styles.workingOn}>
+          <Text variant="subhead" tone="roomInk2" numberOfLines={1} style={styles.workingOn}>
             {f.workingOn} · {focus.biteText}
           </Text>
           <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={biteIcon(focus.biteText, focus.size)} size={compact ? 168 : 224} />
-          <Text variant="timer" tone="onFocus" style={compact ? styles.timerCompact : undefined} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
+          <Text variant="timer" tone="roomInk" style={compact ? styles.timerCompact : undefined} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
             {formatClock(left)}
           </Text>
-          <Text variant="subhead" tone="onFocus2">
+          <Text variant="subhead" tone="roomInk2">
             {ended ? f.timeUp : f.endsAt(formatEndsAt(paused ? now + left : t.endsAt, settings.clock24h))}
           </Text>
         </View>
 
         <View style={styles.petRow}>
           <Pet size={compact ? 70 : 92} color={look.color} hat={look.hat} face={look.face} mood={petMood} stage={stage} headphones working={!paused && !ended} />
-          <View style={[styles.bubble, compact && styles.bubbleCompact, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
+          <View style={[styles.bubble, compact && styles.bubbleCompact, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
             <Animated.View key={line} entering={textIn}>
-              <Text variant="body" tone="onFocus">{line}</Text>
+              <Text variant="body" tone="roomInk">{line}</Text>
             </Animated.View>
           </View>
         </View>
@@ -274,9 +274,9 @@ export function FocusScreen() {
             </View>
           </Animated.View>
         ) : keepGoing ? (
-          <Animated.View entering={FadeIn.duration(duration.fast)} style={[styles.card, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
-            <Text variant="heading" tone="onFocus">{f.twoDone}</Text>
-            <Text variant="subhead" tone="onFocus2">{f.twoDoneSub}</Text>
+          <Animated.View entering={FadeIn.duration(duration.fast)} style={[styles.card, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
+            <Text variant="heading" tone="roomInk">{f.twoDone}</Text>
+            <Text variant="subhead" tone="roomInk2">{f.twoDoneSub}</Text>
             <PressScale accessibilityRole="button" onPress={() => {
               haptics.medium();
               play('pop');
@@ -287,8 +287,8 @@ export function FocusScreen() {
             }} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.ride}</Text>
             </PressScale>
-            <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.focusGlass }]}>
-              <Text variant="bodyBold" tone="onFocus">{f.imDone(pet.name)}</Text>
+            <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.roomGlass }]}>
+              <Text variant="bodyBold" tone="roomInk">{f.imDone(pet.name)}</Text>
             </PressScale>
           </Animated.View>
         ) : (
@@ -299,9 +299,9 @@ export function FocusScreen() {
                 const nowMs = Date.now();
                 patch(paused ? resumeTimer(t, nowMs) : pauseTimer(t, nowMs));
                 swapLine(paused ? f.back : f.paused);
-              }} style={[styles.chip, { backgroundColor: colors.focusGlass, opacity: ended ? 0.4 : 1 }]}>
-                <Icon name={paused ? 'play' : 'pause'} size={16} color={colors.onFocus} />
-                <Text variant="bodyBold" tone="onFocus">{paused ? f.resume : f.pause}</Text>
+              }} style={[styles.chip, { backgroundColor: colors.roomGlass, opacity: ended ? 0.4 : 1 }]}>
+                <Icon name={paused ? 'play' : 'pause'} size={16} color={colors.roomInk} />
+                <Text variant="bodyBold" tone="roomInk">{paused ? f.resume : f.pause}</Text>
               </PressScale>
               <PressScale accessibilityRole="button" onPress={() => {
                 haptics.light();
@@ -309,15 +309,15 @@ export function FocusScreen() {
                 endedChime.current = false;
                 const base = ended ? { ...t, endsAt: Date.now(), totalMs: t.totalMs } : t;
                 patch(addMinutes(base, 5));
-              }} style={[styles.chip, { backgroundColor: colors.focusGlass }]}>
-                <Text variant="bodyBold" tone="onFocus">{f.plus5}</Text>
+              }} style={[styles.chip, { backgroundColor: colors.roomGlass }]}>
+                <Text variant="bodyBold" tone="roomInk">{f.plus5}</Text>
               </PressScale>
               <PressScale accessibilityRole="button" accessibilityLabel={f.restartTitle} onPress={() => {
                 haptics.light();
                 setConfirmRestart(true);
-              }} style={[styles.chip, { backgroundColor: colors.focusGlass }]}>
-                <Icon name="reset" size={16} color={colors.onFocus} />
-                <Text variant="bodyBold" tone="onFocus">{f.restart}</Text>
+              }} style={[styles.chip, { backgroundColor: colors.roomGlass }]}>
+                <Icon name="reset" size={16} color={colors.roomInk} />
+                <Text variant="bodyBold" tone="roomInk">{f.restart}</Text>
               </PressScale>
             </View>
             <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.reward }]}>
@@ -328,7 +328,7 @@ export function FocusScreen() {
               play('boop');
               swapLine(f.drifted[focus.drifts % f.drifted.length]);
             }} style={styles.link}>
-              <Text variant="subhead" tone="onFocus2">{f.driftBtn}</Text>
+              <Text variant="subhead" tone="roomInk2">{f.driftBtn}</Text>
             </PressScale>
           </View>
         )}

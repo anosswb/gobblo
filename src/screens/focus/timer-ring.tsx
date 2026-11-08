@@ -51,7 +51,7 @@ export function TimerRing({
   return (
     <View style={{ width: size, height: size }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
-        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.focusGlass} strokeWidth={stroke} fill="none" />
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.roomGlass} strokeWidth={stroke} fill="none" />
         <AnimatedCircle
           cx={size / 2}
           cy={size / 2}
@@ -67,7 +67,7 @@ export function TimerRing({
       </Svg>
       <View style={styles.center}>
         <Animated.View style={food}>
-          <Icon name={emoji} size={54} color={colors.onFocus} />
+          <Icon name={emoji} size={54} color={colors.roomInk} />
         </Animated.View>
       </View>
     </View>

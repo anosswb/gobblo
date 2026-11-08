@@ -67,6 +67,13 @@ export type ColorTokens = {
   onFocus2: string;
   focusGlass: string;
   focusScrim: string;
+  /** the focus timer room: follows the theme (Anass 2026-11-08: dark timer in light mode looked broken) */
+  roomTop: string;
+  roomMid: string;
+  roomBottom: string;
+  roomInk: string;
+  roomInk2: string;
+  roomGlass: string;
   /** dark theme: dims bright scenes */
   sceneDim: string;
 };
@@ -87,6 +94,12 @@ const shared = {
 
 export const light: ColorTokens = {
   ...shared,
+  roomTop: '#FFFFFF',
+  roomMid: '#F5F5F7',
+  roomBottom: '#ECECF0',
+  roomInk: '#0B0B0D',
+  roomInk2: 'rgba(60,60,67,0.62)',
+  roomGlass: 'rgba(0,0,0,0.05)',
   // Apple neutral light: soft grey canvas, solid white cards, hairline edges, no colour glows
   bg: '#F5F5F7',
   bgTop: '#FBFBFC',
@@ -124,6 +137,12 @@ export const light: ColorTokens = {
 
 export const dark: ColorTokens = {
   ...shared,
+  roomTop: '#1C1C1F',
+  roomMid: '#111113',
+  roomBottom: '#050506',
+  roomInk: '#FFFFFF',
+  roomInk2: 'rgba(235,235,245,0.6)',
+  roomGlass: 'rgba(255,255,255,0.08)',
   // Apple neutral dark: near-black, graphite cards, white hairlines, one soft top light. No pink/purple.
   bg: '#0A0A0B',
   bgTop: '#151517',
