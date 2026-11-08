@@ -18,6 +18,7 @@ import {
   pauseTimer,
   progressLeft,
   remainingMs,
+  restartTimer,
   resumeTimer,
   shouldWarn,
   spentMinutes,
@@ -70,6 +71,7 @@ export function FocusScreen() {
 
   const [now, setNow] = useState(() => Date.now());
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [confirmRestart, setConfirmRestart] = useState(false);
   const [line, setLine] = useState<string>(() => (focus?.mode === '2min' ? f.two : f.working(pet.name)));
   const endedChime = useRef(false);
   // finishing clears the session, which also renders <NoSession>: leave the screen only once
@@ -250,6 +252,27 @@ export function FocusScreen() {
               </PressScale>
             </View>
           </Animated.View>
+        ) : confirmRestart ? (
+          // "are you sure?": a mis-tap must never wipe the time already done
+          <Animated.View entering={FadeIn.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} style={[styles.card, styles.alert, { backgroundColor: colors.card }]}>
+            <Text variant="heading" style={styles.center}>{f.restartTitle}</Text>
+            <Text variant="subhead" tone="ink2" style={styles.center}>{f.restartSub(formatClock(t.totalMs))}</Text>
+            <View style={styles.row}>
+              <PressScale accessibilityRole="button" onPress={() => setConfirmRestart(false)} style={[styles.btn, styles.flex, { backgroundColor: colors.primary }]}>
+                <Text variant="bodyBold" tone="onPrimary">{f.restartNo}</Text>
+              </PressScale>
+              <PressScale accessibilityRole="button" onPress={() => {
+                haptics.medium();
+                play('pop');
+                endedChime.current = false;
+                patch({ ...restartTimer(t, Date.now()), warned: false });
+                setConfirmRestart(false);
+                swapLine(f.restarted);
+              }} style={[styles.btn, styles.flex, { backgroundColor: colors.fill }]}>
+                <Text variant="bodyBold">{f.restartYes}</Text>
+              </PressScale>
+            </View>
+          </Animated.View>
         ) : keepGoing ? (
           <Animated.View entering={FadeIn.duration(duration.fast)} style={[styles.card, { backgroundColor: colors.focusGlass, borderColor: colors.focusGlass }]}>
             <Text variant="heading" tone="onFocus">{f.twoDone}</Text>
@@ -288,6 +311,13 @@ export function FocusScreen() {
                 patch(addMinutes(base, 5));
               }} style={[styles.chip, { backgroundColor: colors.focusGlass }]}>
                 <Text variant="bodyBold" tone="onFocus">{f.plus5}</Text>
+              </PressScale>
+              <PressScale accessibilityRole="button" accessibilityLabel={f.restartTitle} onPress={() => {
+                haptics.light();
+                setConfirmRestart(true);
+              }} style={[styles.chip, { backgroundColor: colors.focusGlass }]}>
+                <Icon name="reset" size={16} color={colors.onFocus} />
+                <Text variant="bodyBold" tone="onFocus">{f.restart}</Text>
               </PressScale>
             </View>
             <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.reward }]}>

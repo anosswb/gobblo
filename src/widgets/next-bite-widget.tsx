@@ -66,17 +66,19 @@ function mainText(data: WidgetData): string {
   return data.bite.text;
 }
 
-/** The black (or white in dark) capsule: Start 2 min / Add / Open timer. */
+/** The black (or white in dark) capsule: Start / Add bites / the running timer. */
 function PrimaryButton({ data, scheme, compact = false }: { data: WidgetData; scheme: Scheme; compact?: boolean }) {
   'use no memo';
   const c = PALETTE[scheme];
-  const label = data.focus ? `Ends ${clock(data.focus.endsAt)}` : !data.bite ? 'Add bites' : data.canStart ? 'Start 2 min' : 'Open';
+  // Start Kit: one tap starts 2 minutes from the home screen. Free: opens the app on that bite's
+  // start sheet (one more tap). Both start the clock; Plus only saves a step.
+  const label = data.focus ? `Ends ${clock(data.focus.endsAt)}` : !data.bite ? 'Add bites' : data.canStart ? 'Start 2 min' : 'Start';
   const icon = data.focus ? 'timer' : !data.bite ? 'plus' : 'play';
-  const uri = data.focus ? focusUri() : !data.bite ? dumpUri() : data.canStart ? startUri(data.bite.id) : null;
+  const uri = data.focus ? focusUri() : !data.bite ? dumpUri() : startUri(data.bite.id);
   return (
     <FlexWidget
-      clickAction={uri ? 'OPEN_URI' : 'OPEN_APP'}
-      clickActionData={uri ? { uri } : undefined}
+      clickAction="OPEN_URI"
+      clickActionData={{ uri }}
       style={{
         flex: 1,
         height: compact ? 40 : 44,
@@ -95,14 +97,14 @@ function PrimaryButton({ data, scheme, compact = false }: { data: WidgetData; sc
 }
 
 /** Round chip button (Skip, Add). */
-function RoundButton({ icon, scheme, action, uri }: { icon: 'skip' | 'plus'; scheme: Scheme; action?: string; uri?: string }) {
+function RoundButton({ icon, scheme, action, uri, size = 44 }: { icon: 'skip' | 'plus'; scheme: Scheme; action?: string; uri?: string; size?: number }) {
   'use no memo';
   const c = PALETTE[scheme];
   return (
     <FlexWidget
       clickAction={action ?? 'OPEN_URI'}
       clickActionData={uri ? { uri } : undefined}
-      style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: c.chip, alignItems: 'center', justifyContent: 'center' }}>
+      style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: c.chip, alignItems: 'center', justifyContent: 'center' }}>
       <SvgWidget svg={iconSvg(icon, c.ink, 2.4)} style={{ width: 18, height: 18 }} />
     </FlexWidget>
   );
@@ -112,7 +114,7 @@ function RoundButton({ icon, scheme, action, uri }: { icon: 'skip' | 'plus'; sch
 export function PetSmallWidget({ data, scheme }: { data: WidgetData; scheme: Scheme }) {
   'use no memo';
   const c = colorsFor(data, scheme);
-  const uri = data.focus ? focusUri() : data.bite && data.canStart ? startUri(data.bite.id) : null;
+  const uri = data.focus ? focusUri() : data.bite ? startUri(data.bite.id) : null;
   return (
     <OverlapWidget
       clickAction={uri ? 'OPEN_URI' : 'OPEN_APP'}
@@ -153,7 +155,7 @@ export function NextBiteSquareWidget({ data, scheme }: { data: WidgetData; schem
             <SvgWidget svg={petSvg(data.petColor, data.mood)} style={{ width: 28, height: 34 }} />
           )}
         </FlexWidget>
-        {data.bite && !data.focus ? <SvgWidget svg={petSvg(data.petColor, data.mood)} style={{ width: 30, height: 36 }} /> : null}
+        {data.bite && !data.focus ? <RoundButton icon="plus" scheme={scheme} uri={dumpUri()} size={40} /> : null}
       </FlexWidget>
       <FlexWidget style={{ width: 'match_parent', flexDirection: 'column', flexGap: 2 }}>
         <TextWidget text={headline(data)} maxLines={1} style={{ fontSize: 12, fontWeight: '600', color: c.ink2 }} />
@@ -161,7 +163,7 @@ export function NextBiteSquareWidget({ data, scheme }: { data: WidgetData; schem
       </FlexWidget>
       <FlexWidget style={{ width: 'match_parent', flexDirection: 'row', alignItems: 'center', flexGap: 8 }}>
         <PrimaryButton data={data} scheme={scheme} compact />
-        {canSkip ? <RoundButton icon="skip" scheme={scheme} action={SKIP_ACTION} /> : null}
+        {canSkip ? <RoundButton icon="skip" scheme={scheme} action={SKIP_ACTION} size={40} /> : null}
       </FlexWidget>
     </FlexWidget>
   );

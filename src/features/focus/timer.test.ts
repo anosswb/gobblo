@@ -1,4 +1,4 @@
-import { addMinutes, formatClock, formatEndsAt, pauseTimer, progressLeft, remainingMs, resumeTimer, spentMinutes, startTimer } from './timer';
+import { addMinutes, formatClock, formatEndsAt, MIN, pauseTimer, progressLeft, remainingMs, restartTimer, resumeTimer, spentMinutes, startTimer } from './timer';
 
 describe('wall-clock timer', () => {
   const t0 = 1_000_000;
@@ -21,6 +21,16 @@ describe('wall-clock timer', () => {
     expect(remainingMs(addMinutes(pauseTimer(t, t0), 1), t0 + 9e9)).toBe(8 * 60_000);
     expect(spentMinutes(t, t0 + 60_000)).toBeCloseTo(1);
   });
+  it('restarts to the full time, running, even when paused', () => {
+    const t0 = startTimer(0, 5);
+    expect(remainingMs(restartTimer(t0, 60_000), 60_000)).toBe(5 * MIN);
+    const paused = pauseTimer(t0, 2 * MIN);
+    const r = restartTimer(paused, 3 * MIN);
+    expect(r.pausedRemaining).toBeNull();
+    expect(remainingMs(r, 3 * MIN)).toBe(5 * MIN);
+    expect(r.endsAt).toBe(8 * MIN);
+  });
+
   it('formats', () => {
     expect(formatClock(61_000)).toBe('1:01');
     expect(formatClock(0)).toBe('0:00');

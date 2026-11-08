@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, View } from 'react-native';
 
@@ -20,6 +21,8 @@ import { radius, space } from '@/theme/tokens';
 import { Icon } from '@/components/icon';
 
 const t = en.plus;
+/** dev app + the GitHub preview APK (testers): a button to unlock everything. Never in store builds. */
+const TEST_BUILD = __DEV__ || Constants.expoConfig?.extra?.variant === 'preview';
 
 /**
  * Gobblo Plus (docs/13). Opened only by the user (Settings, Closet): never a pop-up, never in
@@ -137,11 +140,11 @@ export function PlusScreen() {
         </View>
       ) : null}
 
-      {__DEV__ && !unlocked.includes('plus') ? (
-        // dev builds only (stripped from release): lets Anass test Start Kit before store purchases exist
-        <PressScale accessibilityRole="button" onPress={() => { unlock('plus'); void askNotificationPermission().catch(() => false); toast('Dev: all packs unlocked'); }}
+      {TEST_BUILD && !unlocked.includes('plus') ? (
+        // dev + preview builds only: lets Anass and testers try Start Kit before store purchases exist
+        <PressScale accessibilityRole="button" onPress={() => { unlock('plus'); void askNotificationPermission().catch(() => false); toast('Test: all packs unlocked'); }}
           style={[styles.btn, { backgroundColor: colors.fill }]}>
-          <Text variant="caption" tone="ink2">Test: unlock all packs (dev app only)</Text>
+          <Text variant="caption" tone="ink2">Test: unlock all packs (test builds only)</Text>
         </PressScale>
       ) : null}
 

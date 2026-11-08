@@ -41,6 +41,11 @@ export function addMinutes(t: TimerState, minutes: number): TimerState {
     : { ...t, endsAt: t.endsAt + ms, totalMs: t.totalMs + ms };
 }
 
+/** Back to the full time, running (Anass: "mom came in, start the 5 minutes again"). */
+export function restartTimer(t: TimerState, now: number): TimerState {
+  return { startedAt: now, endsAt: now + t.totalMs, pausedRemaining: null, totalMs: t.totalMs };
+}
+
 export function spentMinutes(t: TimerState, now: number): number {
   return Math.max(0, (t.totalMs - remainingMs(t, now)) / MIN);
 }

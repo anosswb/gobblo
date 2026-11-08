@@ -1,4 +1,4 @@
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
@@ -61,6 +61,19 @@ export function HomeScreen() {
   const [text, setText] = useState('');
   const [size, setSize] = useState<Size>(1);
   const [selected, setSelected] = useState<Bite | null>(null);
+  // widget Start without Start Kit: gobblo://start → Home?start=<id>&at=<tap time> opens that
+  // bite's start sheet once per tap (the param is left in place: clearing it hid the sheet)
+  const { start: startParam, at: startAt } = useLocalSearchParams<{ start?: string; at?: string }>();
+  const handledStart = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (!startParam || handledStart.current === startAt) return;
+    handledStart.current = startAt;
+    const id = setTimeout(() => {
+      const b = plate(useAppStore.getState().bites).find((x) => x.id === startParam);
+      if (b) setSelected(b);
+    }, 250);
+    return () => clearTimeout(id);
+  }, [startParam, startAt]);
   const [reaction, setReaction] = useState<Mood | null>(null);
 
   // drag-to-feed
