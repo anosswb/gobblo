@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useAudioPlayer, type AudioPlayer } from 'expo-audio';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -14,7 +15,6 @@ import { BREATH_PATTERNS, type BreathPattern } from '@/features/toolkit/logic';
 import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { en } from '@/i18n/en';
 import { haptics } from '@/lib/haptics';
-import { playBreath, stopBreath } from '@/lib/sound';
 import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { duration, easing } from '@/theme/motion';
@@ -25,6 +25,70 @@ import { Button, Card, toolStyles } from './parts';
 
 const t = en.tools.breathe;
 const STAGE = 260;
+
+/**
+ * Breathing cues: one soft, clean synth tone (sine pad, no noise), made to the phase length.
+ * In: swells up over 4 s. Out: falls and fades over 4, 6 or 8 s (assets/sounds/CREDITS.md).
+ */
+const CUES = {
+  in: require('@/assets/sounds/breathe-in.m4a'),
+  out4: require('@/assets/sounds/breathe-out-4.m4a'),
+  out6: require('@/assets/sounds/breathe-out.m4a'),
+  out8: require('@/assets/sounds/breathe-out-8.m4a'),
+} as const;
+type Cue = keyof typeof CUES;
+const cueFor = (kind: 'in' | 'out', seconds: number): Cue => (kind === 'in' ? 'in' : seconds <= 4 ? 'out4' : seconds >= 8 ? 'out8' : 'out6');
+
+/** Fade a cue out over 250 ms, then pause it (no click when you stop or mute mid-tone). */
+function hushPlayer(p: AudioPlayer) {
+  if (!p.playing) return;
+  const from = p.volume;
+  let i = 0;
+  const id = setInterval(() => {
+    i += 1;
+    try {
+      p.volume = from * (1 - i / 5);
+      if (i >= 5) p.pause();
+    } catch {
+      i = 5; // the page closed and released the player
+    }
+    if (i >= 5) clearInterval(id);
+  }, 50);
+}
+
+function startPlayer(p: AudioPlayer, volume: number) {
+  try {
+    p.volume = volume;
+    void p.seekTo(0);
+    p.play();
+  } catch {
+    // sound is never critical
+  }
+}
+
+function useBreathCues() {
+  const a = useAudioPlayer(CUES.in);
+  const b = useAudioPlayer(CUES.out4);
+  const c = useAudioPlayer(CUES.out6);
+  const d = useAudioPlayer(CUES.out8);
+  const players = useMemo(() => ({ in: a, out4: b, out6: c, out8: d }), [a, b, c, d]);
+  const hush = useCallback(() => {
+    try {
+      Object.values(players).forEach(hushPlayer);
+    } catch {
+      // sound is never critical
+    }
+  }, [players]);
+  const play = useCallback(
+    (cue: Cue) => {
+      const { sound, volume } = useAppStore.getState().settings;
+      if (!sound) return;
+      startPlayer(players[cue], volume * 0.9);
+    },
+    [players],
+  );
+  return { play, hush };
+}
 
 function KeepAwake() {
   useSafeKeepAwake('breathe');
@@ -49,6 +113,7 @@ export function BreatheTool() {
   const [finished, setFinished] = useState<number | null>(null);
   const soundOn = useAppStore((s) => s.settings.sound);
   const [muted, setMuted] = useState(false);
+  const cues = useBreathCues();
 
   const v = useSharedValue(0);
   const current = pattern.phases[phase];
@@ -72,7 +137,7 @@ export function BreatheTool() {
     if (!running) return;
     if (current.kind === 'hold') haptics.select();
     else haptics.light();
-    if (current.kind !== 'hold' && !muted) playBreath(current.kind);
+    if (current.kind !== 'hold' && !muted) cues.play(cueFor(current.kind, current.seconds));
     if (current.kind !== 'hold') v.set(withTiming(current.kind === 'in' ? 1 : 0, { duration: current.seconds * 1000, easing: easing.inOut }));
   // eslint-disable-next-line react-hooks/exhaustive-deps -- muting mid-phase shouldn't replay the cue
   }, [running, phase, current.kind, current.seconds, v]);
@@ -85,19 +150,16 @@ export function BreatheTool() {
   const stop = () => {
     setRunning(false);
     setFinished(rounds);
-    stopBreath();
+    cues.hush();
     cancelAnimation(v);
     v.set(withTiming(0, { duration: duration.medium, easing: easing.smoothOut }));
     haptics.success();
   };
 
-  // leaving the page stops a cue that is still ringing
-  useEffect(() => stopBreath, []);
-
   const toggleMute = () => {
     haptics.select();
     setMuted((m) => {
-      if (!m) stopBreath();
+      if (!m) cues.hush();
       return !m;
     });
   };
