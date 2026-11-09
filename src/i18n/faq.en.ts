@@ -1,5 +1,5 @@
 import { APP_NAME } from '@/config/app';
-import { MONETIZATION } from '@/config/monetization';
+import { MONETIZATION, PLUS_VISIBLE } from '@/config/monetization';
 
 /**
  * Settings › FAQ. Short, honest answers (no medical claims, nothing promised that isn't built).
@@ -36,11 +36,13 @@ export const FAQ: { q: string; a: string }[] = [
     q: 'How do the widgets work?',
     a: android
       ? 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. With Start Kit, Start begins 2 minutes in one tap.'
-      : 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. With Start Kit, Start begins 2 minutes in one tap, and the timer shows on the lock screen.',
+      : PLUS_VISIBLE
+        ? 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. With Start Kit, Start begins 2 minutes in one tap, and the timer shows on the lock screen.'
+        : 'Add the widget from your home screen. It shows your next bite; Start opens it in the app.',
   },
   {
     q: 'What do levels unlock?',
-    a: 'Every level gives your pet something: a hat, a colour, a room or a face. It changes form 5 times on the way to level 20, with a surprise at the end. Levels never go down.',
+    a: 'Every level gives your pet something: a hat, a colour, a room or a face. It changes form 5 times on the way to level 20, with a surprise at the end. Levels never go down. From your second week, a free new colour also arrives every week.',
   },
   {
     q: 'Does spending sparks lower my level?',
@@ -51,10 +53,15 @@ export const FAQ: { q: string; a: string }[] = [
         q: 'Is there anything to pay for?',
         a: 'No payments on Android. Packs are earned with sparks you get by starting bites. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.',
       }
-    : {
-        q: 'What is Plus?',
-        a: 'Small packs you buy once, no subscription, offered only after your first week. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good. Restore purchases is at the bottom of the Plus page.',
-      },
+    : !PLUS_VISIBLE
+      ? {
+          q: 'Is there anything to pay for?',
+          a: 'No. Everything you see in the app is free.',
+        }
+      : {
+          q: 'What is Plus?',
+          a: 'Small packs you buy once, no subscription, offered only after your first week. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good. Restore purchases is at the bottom of the Plus page.',
+        },
   {
     q: 'Do I lose anything if I skip days?',
     a: 'No. There’s no streak to break. Your pet naps and is happy to see you when you come back.',

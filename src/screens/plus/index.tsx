@@ -10,7 +10,7 @@ import { toast } from '@/components/toast';
 import { LINKS } from '@/config/app';
 import { MONETIZATION } from '@/config/monetization';
 import { askNotificationPermission } from '@/features/nudges/schedule';
-import { canShowOffer, DISPLAY_PRICE, hasPack, PACKS, SHOWN_PACK_IDS, type PackId } from '@/features/plus/catalog';
+import { canShowOffer, hasPack, PACKS, SHOWN_PACK_IDS, type PackId } from '@/features/plus/catalog';
 import { ROUTINE_IDS, ROUTINES, type RoutineId } from '@/features/plus/routines';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -28,7 +28,8 @@ const TEST_BUILD = __DEV__ || Constants.expoConfig?.extra?.variant === 'preview'
 /**
  * Gobblo Plus (docs/13). Opened only by the user (Settings, Closet): never a pop-up, never in
  * onboarding, never in the core loop (CLAUDE.md). Android: packs cost sparks. iOS: App Store
- * purchases arrive in Phase 6 (RevenueCat), so prices show as "coming soon" until then.
+ * purchases arrive in Phase 6 (RevenueCat); until they work, iPhone users never reach this page
+ * (PLUS_VISIBLE) and no price is shown here (hide, don't fake).
  */
 export function PlusScreen() {
   const { colors } = useTheme();
@@ -124,22 +125,11 @@ export function PlusScreen() {
                   style={[styles.btn, { backgroundColor: sparks >= PACKS[id].sparks ? colors.primary : colors.fill }]}>
                   <Text variant="bodyBold" tone={sparks >= PACKS[id].sparks ? 'onPrimary' : 'ink2'}>{t.unlockSparks(PACKS[id].sparks)}</Text>
                 </PressScale>
-              ) : (
-                <View style={[styles.btn, { backgroundColor: colors.fill }]}>
-                  <Text variant="bodyBold" tone="ink2">{t.priceSoon(DISPLAY_PRICE.pack)}</Text>
-                </View>
-              )
+              ) : null // iOS buy button: Phase 6 (RevenueCat), with the store's real price
             ) : null}
           </View>
         );
       })}
-
-      {!android ? (
-        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
-          <Text variant="heading">{t.bundle(DISPLAY_PRICE.plus)}</Text>
-          <Text variant="caption" tone="ink2">{t.soonNote}</Text>
-        </View>
-      ) : null}
 
       {TEST_BUILD && !unlocked.includes('plus') ? (
         // dev + preview builds only: lets Anass and testers try Start Kit before store purchases exist

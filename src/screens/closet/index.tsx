@@ -13,7 +13,7 @@ import { capFirst } from '@/features/bites/logic';
 import { COLORS, FACES, HATS, isUnlocked, ROOMS, type HomeMood, type Item, type RoomId, type Slot } from '@/features/closet/items';
 import { useLook } from '@/features/closet/use-look';
 import { PACKS } from '@/features/plus/catalog';
-import { MONETIZATION } from '@/config/monetization';
+import { MONETIZATION, PLUS_VISIBLE } from '@/config/monetization';
 import { STAGES } from '@/features/progress/logic';
 import { daysUntilWeek } from '@/features/weekly/logic';
 import { haptics } from '@/lib/haptics';
@@ -28,6 +28,7 @@ import { petColors, radius, space, type PetColor } from '@/theme/tokens';
 
 /** Android earns packs with sparks: show the price, not "Plus" (panel: Android unlocks felt far away). */
 const plusLock = MONETIZATION === 'ads' ? en.closet.sparkBadge(PACKS.makeItYours.sparks) : en.closet.plusBadge;
+const daysBadge = (days: number) => (days <= 1 ? en.closet.tomorrowBadge : en.closet.daysBadge(days));
 
 const t = en.closet;
 type Tab = 'mood' | Slot;
@@ -55,6 +56,8 @@ export function ClosetScreen() {
     tab === 'mood'
       ? [{ key: 'auto', tab, label: t.auto, mood: 'auto' as const }, ...MOODS.map((m) => ({ key: m, tab, label: capFirst(m), mood: m }))]
       : (tab === 'hat' ? HATS : tab === 'face' ? FACES : tab === 'color' ? COLORS : ROOMS).filter((i: Item) => i.unlock.type !== 'week' || i.unlock.week <= look.week + 1) // open weekly colours + the next one
+          // pack items only where Plus really works (hide, don't fake: config/monetization)
+          .filter((i: Item) => PLUS_VISIBLE || i.unlock.type !== 'pack' || look.makeItYours)
           .map((i: Item) => ({ key: i.id, tab, label: i.name, item: i }));
 
   const unlocked = (tile: Tile) => !tile.item || isUnlocked(tile.item.unlock, look.level, look.makeItYours, look.week);
@@ -103,7 +106,7 @@ export function ClosetScreen() {
         <Pet size={150} color={show.color} mood={show.mood} stage={look.stage} hat={show.hat} face={show.face} onPress={() => play('boop')} accessibilityLabel={pet.name} />
         <Animated.View key={status} entering={FadeIn.duration(duration.quick)} style={styles.status}>
           <Text variant="subhead" tone={onDarkStage ? 'onFocus' : 'onLightScene'} style={styles.center}>{status}</Text>
-          {lockedPlus ? (
+          {lockedPlus && PLUS_VISIBLE ? (
             <PressScale accessibilityRole="button" onPress={() => router.push('/plus')} style={[styles.plusBtn, { backgroundColor: colors.primary }]}>
               <Text variant="caption" tone="onPrimary">{t.getPlus}</Text>
             </PressScale>
@@ -138,7 +141,7 @@ export function ClosetScreen() {
           const open = unlocked(tile);
           const on = worn(tile);
           const it = tile.item;
-          const lockLabel = it && !open ? (it.unlock.type === 'level' ? t.lvBadge(it.unlock.level) : it.unlock.type === 'week' ? t.soonBadge : plusLock) : null;
+          const lockLabel = it && !open ? (it.unlock.type === 'level' ? t.lvBadge(it.unlock.level) : it.unlock.type === 'week' ? daysBadge(daysUntilWeek(firstOpen, it.unlock.week)) : plusLock) : null;
           return (
             <Pressable
               key={`${tab}-${tile.key}`}

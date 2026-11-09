@@ -11,6 +11,7 @@ import { Text } from '@/components/text';
 import { useLook } from '@/features/closet/use-look';
 import { STAGES } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
+import { PLUS_VISIBLE } from '@/config/monetization';
 import { en } from '@/i18n/en';
 import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
@@ -59,9 +60,11 @@ export function SettingsScreen() {
         <Icon name="chevron" size={14} weight="bold" color={colors.ink3} />
       </PressScale>
 
-      <Section>
-        <Row leading={<IconTile name="sparkle" color="pink" />} last label={en.plus.settingsRow} onPress={() => router.push('/plus')} />
-      </Section>
+      {PLUS_VISIBLE ? (
+        <Section>
+          <Row leading={<IconTile name="sparkle" color="pink" />} last label={en.plus.settingsRow} onPress={() => router.push('/plus')} />
+        </Section>
+      ) : null}
 
       <Section>
         {row('look', theme)}

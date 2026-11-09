@@ -1,5 +1,5 @@
 import { APP_NAME } from '@/config/app';
-import { MONETIZATION } from '@/config/monetization';
+import { MONETIZATION, PLUS_VISIBLE } from '@/config/monetization';
 
 /**
  * Page guides: 2–4 short steps per page, each with a little pet demo (components/guide).
@@ -42,7 +42,11 @@ export const GUIDES = {
     {
       demo: 'sparkle',
       title: 'Locked items',
-      body: android ? 'Most open as you level up. A few cost sparks: the price is on the item.' : 'Most open as you level up. A few are part of a Plus pack.',
+      body: android
+        ? 'Most open as you level up. A few cost sparks: the price is on the item. A free new colour arrives every week.'
+        : PLUS_VISIBLE
+          ? 'Most open as you level up. A few are part of a Plus pack. A free new colour arrives every week.'
+          : 'They open as you level up, and a free new colour arrives every week.',
     },
     { demo: 'shake', title: 'Pick a face', body: 'The face you choose is {pet}’s face on Home. “Auto” reacts to your day.' },
   ],
