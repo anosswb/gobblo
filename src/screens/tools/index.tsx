@@ -1,4 +1,5 @@
 import { router, type Href } from 'expo-router';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -52,7 +53,7 @@ export function ToolkitScreen() {
   const enter = (i: number) => (reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast).delay(staggerDelay(i)));
 
   return (
-    <Screen back eyebrow={t.eyebrow} title={t.title}>
+    <Screen back eyebrow={t.eyebrow} title={t.title} right={<GuideHelp id="tools" />}>
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro(petName)}</Text>
 
       <PressScale accessibilityRole="button" accessibilityLabel={`${t.tip.today}: ${tip.text}`} onPress={() => { haptics.select(); router.push('/tools/tip'); }}>

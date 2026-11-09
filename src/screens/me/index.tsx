@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -64,11 +65,14 @@ export function MeScreen() {
       eyebrow={`You + ${pet.name}`}
       title="Progress"
       right={
+        <View style={styles.headRight}>
+        <GuideHelp id="me" />
         <PressScale accessibilityRole="button" accessibilityLabel="Settings" hitSlop={4} onPress={() => router.push('/settings')}>
           <Glass interactive radius={22} style={styles.gear}>
             <Icon name="gear" size={20} color={colors.ink} />
           </Glass>
         </PressScale>
+        </View>
       }>
       <View style={[styles.card, styles.levelCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <LevelRing progress={lp.progress} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={lp.toNext === null ? 'confident' : 'proud'} />
@@ -82,8 +86,9 @@ export function MeScreen() {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.rowBetween}>
-          <Text variant="heading">Road to 20</Text>
+          <Text variant="heading" style={styles.flexOne}>Road to 20</Text>
           <Text variant="bodyBold" tone="primary">{lp.level}/20</Text>
+          <GuideHelp id="road" size={32} />
         </View>
         <RoadTo20 level={lp.level} total={stats.total} color={look.color} />
       </View>
@@ -164,6 +169,8 @@ export function MeScreen() {
 }
 
 const styles = StyleSheet.create({
+  flexOne: { flex: 1 },
+  headRight: { flexDirection: 'row', alignItems: 'center', gap: space.s },
   flex: { flex: 1, gap: 2 },
   gear: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: space.xs },
   card: { borderRadius: radius.card, padding: space.l + 2, gap: space.m },
@@ -174,7 +181,7 @@ const styles = StyleSheet.create({
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.m },
   tile: { flexBasis: '46%', flexGrow: 1, borderRadius: radius.card - 6, padding: space.l, gap: space.s },
   tileHead: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 2 },
-  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: space.s },
   heat: { flexDirection: 'row', gap: 3, height: 28 },
   cell: { flex: 1, borderRadius: 4 },
   addRow: { borderRadius: radius.field, paddingHorizontal: space.l },

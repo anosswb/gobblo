@@ -2,9 +2,10 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Linking, StyleSheet, TextInput } from 'react-native';
+import { Linking, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
-import type { IconName } from '@/components/icon';
+import { Icon, type IconName } from '@/components/icon';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { Chips, IconTile, Row, Section, Stepper } from '@/components/settings-parts';
@@ -18,10 +19,12 @@ import { haptics } from '@/lib/haptics';
 import { canUseBiometrics, unlock } from '@/lib/lock';
 import { play, previewNudgeSound, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
+import { FAQ } from '@/i18n/faq.en';
+import { duration } from '@/theme/motion';
 import { useAppStore } from '@/state/app-store';
 import type { Accent, FocusSound, NudgeSound, NudgeTime, Settings } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
-import { accents, fonts, petColors, typeScale, type PetColor, type TileColor } from '@/theme/tokens';
+import { accents, fonts, petColors, radius, space, typeScale, type PetColor, type TileColor } from '@/theme/tokens';
 
 const t = en.settings;
 
@@ -39,6 +42,7 @@ export const PAGE_TILE: Record<PageId, { icon: IconName; color: TileColor }> = {
   time: { icon: 'clock', color: 'gray' },
   privacy: { icon: 'lock', color: 'green' },
   about: { icon: 'info', color: 'gray' },
+  faq: { icon: 'help', color: 'blue' },
 };
 
 const hourLabel = (h: number, h24: boolean) => (h24 ? `${String(h).padStart(2, '0')}:00` : `${h % 12 || 12} ${h < 12 ? 'am' : 'pm'}`);
@@ -55,6 +59,7 @@ export function SettingsPage({ id }: { id: PageId }) {
       {id === 'time' ? <Time /> : null}
       {id === 'privacy' ? <Privacy /> : null}
       {id === 'about' ? <About /> : null}
+      {id === 'faq' ? <Faq /> : null}
     </Screen>
   );
 }
@@ -192,6 +197,36 @@ function Focus() {
   );
 }
 
+/** FAQ: tap a question to open its answer (one open at a time keeps it short). */
+function Faq() {
+  const { colors, reduceMotion } = useTheme();
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <View style={[styles.faq, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+      {FAQ.map((item, i) => {
+        const on = open === i;
+        return (
+          <View key={item.q} style={i > 0 ? [styles.faqSep, { borderTopColor: colors.line }] : undefined}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ expanded: on }}
+              onPress={() => { haptics.select(); setOpen(on ? null : i); }}
+              style={styles.faqQ}>
+              <Text variant="bodyBold" style={styles.flex}>{item.q}</Text>
+              <Icon name={on ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
+            </Pressable>
+            {on ? (
+              <Animated.View entering={FadeIn.duration(reduceMotion ? duration.quick : duration.fast)}>
+                <Text variant="body" tone="ink2" style={styles.faqA}>{item.a}</Text>
+              </Animated.View>
+            ) : null}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 function PetPage() {
   const { s, update, set } = useSettings();
   const { colors } = useTheme();
@@ -312,5 +347,10 @@ function About() {
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  faq: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
+  faqSep: { borderTopWidth: StyleSheet.hairlineWidth },
+  faqQ: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 52, paddingHorizontal: space.l, paddingVertical: space.m },
+  faqA: { paddingHorizontal: space.l, paddingBottom: space.l },
   nameInput: { minWidth: 110, maxWidth: 170, minHeight: 36, textAlign: 'right', fontSize: typeScale.body },
 });

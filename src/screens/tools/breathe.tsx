@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -89,7 +90,7 @@ export function BreatheTool() {
   const left = running ? current.seconds - elapsed : null;
 
   return (
-    <Screen back title={en.tools.tiles.breathe.title}>
+    <Screen back title={en.tools.tiles.breathe.title} right={<GuideHelp id="breathe" auto />}>
       {running ? <KeepAwake /> : null}
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro}</Text>
 

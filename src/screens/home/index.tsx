@@ -1,4 +1,5 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
@@ -240,6 +241,7 @@ export function HomeScreen() {
             <Icon name="sparkle" size={14} weight="bold" color={colors.onReward} />
             <SlidingNumber value={stats.sparks} />
           </View>
+          <GuideHelp id="home" />
           {/* Toolkit (breathe, calm down, unstick, sit with me, reminders, daily tip) */}
           <PressScale accessibilityRole="button" accessibilityLabel={en.tools.open} hitSlop={4} onPress={() => { haptics.select(); router.push('/tools'); }}>
             <Glass interactive radius={22} style={styles.toolBtn}>

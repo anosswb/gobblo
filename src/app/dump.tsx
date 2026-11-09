@@ -22,6 +22,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 import { backOrHome } from '@/lib/nav';
 import { BiteIcon } from '@/components/bite-icon';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { Chips } from '@/components/settings-parts';
 import { WHEN_LABEL } from '@/components/when-picker';
 import { WHENS, type When } from '@/features/bites/when';
@@ -84,6 +85,7 @@ export default function DumpScreen() {
           <Text variant="title2" accessibilityRole="header">{big ? d.splitTitle : d.title}</Text>
           <Text variant="subhead" tone="ink2">{big ? d.splitSub(big.text) : d.sub}</Text>
         </View>
+        <GuideHelp id="dump" size={32} />
         <PressScale accessibilityRole="button" accessibilityLabel="Close" hitSlop={8} onPress={backOrHome} style={[styles.close, { backgroundColor: colors.fill }]}>
           <Icon name="close" size={14} weight="bold" color={colors.ink2} />
         </PressScale>

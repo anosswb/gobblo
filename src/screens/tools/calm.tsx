@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -38,7 +39,7 @@ type Mode = 'ground' | 'shake' | 'pet';
 export function CalmTool() {
   const [mode, setMode] = useState<Mode>('ground');
   return (
-    <Screen back title={en.tools.tiles.calm.title}>
+    <Screen back title={en.tools.tiles.calm.title} right={<GuideHelp id="calm" auto />}>
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro}</Text>
       <Segmented
         accessibilityLabel={t.mode}

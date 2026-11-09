@@ -395,6 +395,7 @@ export const en = {
       time: 'Date & time',
       privacy: 'Privacy & data',
       about: 'About',
+      faq: 'Questions & answers',
     },
     petCard: (lv: number, stage: string) => `Level ${lv} · ${stage}`,
     petCardHint: 'Name, colour, how it talks',

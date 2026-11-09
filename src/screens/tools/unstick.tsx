@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -36,7 +37,7 @@ export function UnstickTool() {
   const enter = reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast);
 
   return (
-    <Screen back title={en.tools.tiles.unstick.title}>
+    <Screen back title={en.tools.tiles.unstick.title} right={<GuideHelp id="unstick" auto />}>
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro}</Text>
 
       <Card style={styles.card}>

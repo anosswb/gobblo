@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -80,7 +81,7 @@ export function SitTool() {
   const line = sitting && checkIn > 0 ? t.checkIns[(checkIn - 1) % t.checkIns.length] : t.working(petName);
 
   return (
-    <Screen back title={en.tools.tiles.sit.title}>
+    <Screen back title={en.tools.tiles.sit.title} right={<GuideHelp id="sit" auto />}>
       {sitting ? <Session /> : null}
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro(petName)}</Text>
 

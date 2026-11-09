@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { GuideHelp } from '@/components/guide/page-guide';
 import { Share, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
@@ -36,7 +37,7 @@ export function TipTool() {
   const exit = FadeOut.duration(duration.quick);
 
   return (
-    <Screen back title={en.tools.tiles.tip.title}>
+    <Screen back title={en.tools.tiles.tip.title} right={<GuideHelp id="tip" auto />}>
       <Card style={styles.hero}>
         <View style={styles.head}>
           <Pet size={64} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood="excited" />

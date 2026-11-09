@@ -33,6 +33,8 @@ import { en } from '@/i18n/en';
 import { useLook } from '@/features/closet/use-look';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
+import { PageGuide } from '@/components/guide/page-guide';
+import { guideCopy } from '@/i18n/guides.en';
 import type { FocusSound } from '@/state/schema';
 import { duration, textSwapIn } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
@@ -55,6 +57,7 @@ const SOUND_LABEL: Record<FocusSound, string> = { none: 'Silence', brown: 'Brown
  * 2-minute "keep going" card, drift (no penalty), inline leave confirm.
  */
 export function FocusScreen() {
+  const [helpOpen, setHelpOpen] = useState(false);
   useSafeKeepAwake('focus', useAppStore((st) => st.settings.focusKeepAwake));
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
@@ -211,11 +214,18 @@ export function FocusScreen() {
           <PressScale accessibilityRole="button" accessibilityLabel={f.closeLabel} hitSlop={10} onPress={() => setConfirmLeave(true)} style={[styles.round, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
             <Icon name="close" size={16} weight="bold" color={colors.roomInk} />
           </PressScale>
+          <View style={styles.topRight}>
           <PressScale accessibilityRole="button" accessibilityLabel={`${f.soundLabel}: ${SOUND_LABEL[settings.focusSound]}`} onPress={cycleSound} style={[styles.pill, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
             <Icon name={settings.focusSound === 'none' ? 'mute' : 'sound'} size={16} color={colors.roomInk} />
             <Text variant="caption" tone="roomInk" style={styles.semi}>{SOUND_LABEL[settings.focusSound]}</Text>
           </PressScale>
+          {/* "?" in the room's own colours (the timer keeps running behind the guide) */}
+          <PressScale accessibilityRole="button" accessibilityLabel={guideCopy.help} hitSlop={4} onPress={() => { haptics.select(); setHelpOpen(true); }} style={[styles.round, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
+            <Icon name="help" size={18} color={colors.roomInk} />
+          </PressScale>
+          </View>
         </View>
+        <PageGuide id="focus" visible={helpOpen} onClose={() => setHelpOpen(false)} />
 
         <View style={styles.hero}>
           <Text variant="subhead" tone="roomInk2" numberOfLines={1} style={styles.workingOn}>
@@ -354,6 +364,7 @@ const styles = StyleSheet.create({
   semi: { fontWeight: '600' },
   content: { flex: 1, paddingHorizontal: space.gutter + 4, justifyContent: 'space-between' },
   topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  topRight: { flexDirection: 'row', alignItems: 'center', gap: space.s },
   round: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
   pill: { height: 44, borderRadius: radius.chip, paddingHorizontal: space.l, flexDirection: 'row', alignItems: 'center', gap: space.s, borderWidth: StyleSheet.hairlineWidth },
   hero: { alignItems: 'center', gap: space.xs },
