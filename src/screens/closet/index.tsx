@@ -15,6 +15,7 @@ import { useLook } from '@/features/closet/use-look';
 import { PACKS } from '@/features/plus/catalog';
 import { MONETIZATION } from '@/config/monetization';
 import { STAGES } from '@/features/progress/logic';
+import { daysUntilWeek } from '@/features/weekly/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
@@ -45,6 +46,7 @@ export function ClosetScreen() {
   const look = useLook();
   const pet = useAppStore((s) => s.pet);
   const patchPet = useAppStore((s) => s.patchPet);
+  const firstOpen = useAppStore((s) => s.settings.firstOpen);
   const [tab, setTab] = useState<Tab>('mood');
   const [preview, setPreview] = useState<Tile | null>(null);
   const sky = skyOf(new Date().getHours());
@@ -52,9 +54,10 @@ export function ClosetScreen() {
   const tiles: Tile[] =
     tab === 'mood'
       ? [{ key: 'auto', tab, label: t.auto, mood: 'auto' as const }, ...MOODS.map((m) => ({ key: m, tab, label: capFirst(m), mood: m }))]
-      : (tab === 'hat' ? HATS : tab === 'face' ? FACES : tab === 'color' ? COLORS : ROOMS).map((i: Item) => ({ key: i.id, tab, label: i.name, item: i }));
+      : (tab === 'hat' ? HATS : tab === 'face' ? FACES : tab === 'color' ? COLORS : ROOMS).filter((i: Item) => i.unlock.type !== 'week' || i.unlock.week <= look.week + 1) // open weekly colours + the next one
+          .map((i: Item) => ({ key: i.id, tab, label: i.name, item: i }));
 
-  const unlocked = (tile: Tile) => !tile.item || isUnlocked(tile.item.unlock, look.level, look.makeItYours);
+  const unlocked = (tile: Tile) => !tile.item || isUnlocked(tile.item.unlock, look.level, look.makeItYours, look.week);
   const worn = (tile: Tile) =>
     tile.mood !== undefined ? look.homeMood === tile.mood : tile.item ? look[tile.item.slot as 'hat' | 'face' | 'color' | 'room'] === tile.item.id : false;
 
@@ -82,7 +85,8 @@ export function ClosetScreen() {
 
   const status = (() => {
     if (preview && !unlocked(preview) && preview.item) {
-      return preview.item.unlock.type === 'level' ? t.lockedLevel(preview.item.unlock.level) : t.lockedPlus;
+      const u = preview.item.unlock;
+      return u.type === 'level' ? t.lockedLevel(u.level) : u.type === 'week' ? t.lockedWeek(daysUntilWeek(firstOpen, u.week)) : t.lockedPlus;
     }
     if (tab === 'mood') return look.homeMood === 'auto' ? t.homeAuto(pet.name) : t.homeFace(pet.name, look.homeMood);
     const it = [...HATS, ...FACES, ...COLORS, ...ROOMS].find((i) => i.slot === tab && i.id === look[tab as 'hat' | 'face' | 'color' | 'room']);
@@ -134,7 +138,7 @@ export function ClosetScreen() {
           const open = unlocked(tile);
           const on = worn(tile);
           const it = tile.item;
-          const lockLabel = it && !open ? (it.unlock.type === 'level' ? t.lvBadge(it.unlock.level) : plusLock) : null;
+          const lockLabel = it && !open ? (it.unlock.type === 'level' ? t.lvBadge(it.unlock.level) : it.unlock.type === 'week' ? t.soonBadge : plusLock) : null;
           return (
             <Pressable
               key={`${tab}-${tile.key}`}

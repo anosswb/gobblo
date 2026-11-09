@@ -214,6 +214,17 @@ export const petColors = {
   gold: '#FFC93C',
   lilac: '#C39BFF',
   mango: '#FFB23D',
+  // weekly surprises (features/weekly): one free colour a week from day 7
+  peach: '#FFA48A',
+  lime: '#9BE15D',
+  lagoon: '#1FB5B0',
+  cocoa: '#A97458',
+  plum: '#7A3E9D',
+  coral: '#FF6B6B',
+  denim: '#4F6DDB',
+  blush: '#FFB3C7',
+  storm: '#6E7B8F',
+  cherry: '#E2324F',
 } as const;
 export type PetColor = keyof typeof petColors;
 

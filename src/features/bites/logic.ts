@@ -115,6 +115,7 @@ export function feed(state: PersistedState, biteId: string, session: Session, no
     sessions: [...state.sessions, session].slice(-2000),
     stats: {
       ...s,
+      awayDays: 0,
       sparks: s.sparks + sparks,
       total: s.total + sparks,
       eaten: s.eaten + 1,
@@ -133,7 +134,7 @@ export function newDayCheck(state: PersistedState, now = new Date()): Partial<Pe
   const today = dayKey(now);
   if (state.stats.lastVisit === today) return null;
   return {
-    stats: { ...state.stats, lastVisit: today, todayEaten: 0, comebacks: state.stats.comebacks + 1 },
+    stats: { ...state.stats, lastVisit: today, todayEaten: 0, comebacks: state.stats.comebacks + 1, awayDays: daysAway(state.stats.lastVisit, now) },
   };
 }
 

@@ -8,9 +8,10 @@ import type { IconName } from '@/components/icon';
  * - level: free, earned by levelling up (one reward per level, 2 → 20)
  * - pack: Gobblo Plus "Make It Yours" (iOS purchase / Android sparks)
  * - free: from the start
+ * - week: a free weekly surprise colour, one each pet week from day 7 (features/weekly)
  * Level 20 ("Legend") is the surprise: golden form + golden crown + gold colour + golden room.
  */
-export type Unlock = { type: 'free' } | { type: 'level'; level: number } | { type: 'pack' };
+export type Unlock = { type: 'free' } | { type: 'level'; level: number } | { type: 'pack' } | { type: 'week'; week: number };
 
 export type Slot = 'hat' | 'face' | 'color' | 'room';
 
@@ -28,6 +29,7 @@ export interface Item<Id extends string = string> {
 const free: Unlock = { type: 'free' };
 const lv = (level: number): Unlock => ({ type: 'level', level });
 const pack: Unlock = { type: 'pack' };
+const wk = (week: number): Unlock => ({ type: 'week', week });
 
 export const HATS: Item<HatId>[] = [
   { id: 'none', slot: 'hat', name: 'No hat', emoji: '🚫', unlock: free },
@@ -66,6 +68,17 @@ export const COLORS: Item<PetColor>[] = [
   { id: 'gold', slot: 'color', name: 'Gold', emoji: '💛', unlock: lv(20) },
   { id: 'lilac', slot: 'color', name: 'Lilac', emoji: '🪻', unlock: pack },
   { id: 'mango', slot: 'color', name: 'Mango', emoji: '🥭', unlock: pack },
+  // weekly surprises, in WEEKLY_COLORS order (features/weekly/logic.ts)
+  { id: 'peach', slot: 'color', name: 'Peach', emoji: '🍑', unlock: wk(1) },
+  { id: 'lime', slot: 'color', name: 'Lime', emoji: '🍋', unlock: wk(2) },
+  { id: 'lagoon', slot: 'color', name: 'Lagoon', emoji: '🏝️', unlock: wk(3) },
+  { id: 'cocoa', slot: 'color', name: 'Cocoa', emoji: '🍫', unlock: wk(4) },
+  { id: 'plum', slot: 'color', name: 'Plum', emoji: '🫐', unlock: wk(5) },
+  { id: 'coral', slot: 'color', name: 'Coral', emoji: '🪸', unlock: wk(6) },
+  { id: 'denim', slot: 'color', name: 'Denim', emoji: '👖', unlock: wk(7) },
+  { id: 'blush', slot: 'color', name: 'Blush', emoji: '🌸', unlock: wk(8) },
+  { id: 'storm', slot: 'color', name: 'Storm', emoji: '🌧️', unlock: wk(9) },
+  { id: 'cherry', slot: 'color', name: 'Cherry', emoji: '🍒', unlock: wk(10) },
 ];
 
 export type RoomId = 'auto' | 'sunset' | 'ocean' | 'garden' | 'aurora' | 'galaxy' | 'golden';
@@ -84,9 +97,11 @@ export const ROOMS: Item<RoomId>[] = [
 /** Moods the user can set as the pet's face on Home ('auto' reacts to the day). */
 export type HomeMood = Mood | 'auto';
 
-export function isUnlocked(u: Unlock, level: number, hasMakeItYours: boolean): boolean {
+/** `week` = the pet week now (features/weekly petWeek). */
+export function isUnlocked(u: Unlock, level: number, hasMakeItYours: boolean, week = 0): boolean {
   if (u.type === 'free') return true;
   if (u.type === 'level') return level >= u.level;
+  if (u.type === 'week') return week >= u.week;
   return hasMakeItYours;
 }
 

@@ -14,7 +14,8 @@ import { toast } from '@/components/toast';
 import { Toggle } from '@/components/toggle';
 import { APP_NAME, LINKS } from '@/config/app';
 import { exportBackup, importBackup } from '@/features/backup/backup';
-import { capFirst } from '@/features/bites/logic';
+import { COLORS, isUnlocked } from '@/features/closet/items';
+import { useLook } from '@/features/closet/use-look';
 import { haptics } from '@/lib/haptics';
 import { canUseBiometrics, unlock } from '@/lib/lock';
 import { play, previewNudgeSound, startLoop, stopLoop } from '@/lib/sound';
@@ -231,6 +232,7 @@ function PetPage() {
   const { s, update, set } = useSettings();
   const { colors } = useTheme();
   const pet = useAppStore((st) => st.pet);
+  const look = useLook();
   const patchPet = useAppStore((st) => st.patchPet);
   const [nameDraft, setNameDraft] = useState(pet.name);
   return (
@@ -252,8 +254,8 @@ function PetPage() {
       </Section>
       <Section title={t.petColor}>
         <Row last stacked hideLabel label={t.petColor} right={
-          <Chips<PetColor> accessibilityLabel={t.petColor} value={pet.color} onChange={(c) => patchPet({ color: c })}
-            options={(Object.keys(petColors) as PetColor[]).map((c) => ({ value: c, label: c === 'pink' ? 'Bubblegum' : c === 'violet' ? 'Grape' : capFirst(c), swatch: petColors[c] }))} />
+          <Chips<PetColor> accessibilityLabel={t.petColor} value={look.color} onChange={(c) => patchPet({ color: c })}
+            options={COLORS.filter((c) => isUnlocked(c.unlock, look.level, look.makeItYours, look.week)).map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))} />
         } />
       </Section>
       <Section title={t.petTalk}>

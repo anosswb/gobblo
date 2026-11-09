@@ -60,6 +60,14 @@ describe('days', () => {
     expect(newDayCheck({ ...s, stats: r!.stats! }, new Date(2026, 10, 6, 20))).toBeNull();
   });
 
+  it('keeps how long you were away for the welcome back (never a streak loss)', () => {
+    const s = freshState(new Date(2026, 10, 2, 12).getTime());
+    const r = newDayCheck(s, new Date(2026, 10, 6, 9));
+    expect(r?.stats?.awayDays).toBe(4);
+    expect(r?.stats?.comebacks).toBe(2);
+    expect(newDayCheck(s, new Date(2026, 10, 3, 9))?.stats?.awayDays).toBe(1);
+  });
+
   it('the day turns over at 4 am, not midnight (night owls stay in one day)', () => {
     const s = freshState(new Date(2026, 10, 5, 20).getTime());
     s.stats.todayEaten = 2;

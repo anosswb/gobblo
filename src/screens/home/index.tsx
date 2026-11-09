@@ -13,6 +13,7 @@ import { StartSheet } from '@/components/start-sheet';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { daysAway, FOOD, plate } from '@/features/bites/logic';
+import { recapDue } from '@/features/weekly/logic';
 import { useLook } from '@/features/closet/use-look';
 import { shouldAskNudgeAgain } from '@/features/nudges/ask-again';
 import { askNotificationPermission } from '@/features/nudges/schedule';
@@ -32,6 +33,7 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
 import { BiteRow } from './bite-row';
+import { WeeklyCard } from './weekly-card';
 import { DragGuide } from './drag-guide';
 import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
@@ -192,7 +194,21 @@ export function HomeScreen() {
   }, [stats.eaten]);
 
   const sky = skyOf(openedAt.getHours());
-  const away = daysAway(stats.lastVisit, openedAt);
+  // welcome back after 2+ days away: newDayCheck keeps the gap until you say hi (or feed)
+  const away = stats.lastVisit === dayKey() ? (stats.awayDays ?? 0) : daysAway(stats.lastVisit, new Date());
+  const sayHi = () => {
+    const st = useAppStore.getState();
+    useAppStore.setState({ stats: { ...st.stats, awayDays: 0 } });
+  };
+  // the pet lights up once when you come back (no sound until you tap: it may be a quiet moment)
+  const welcomed = useRef(false);
+  useEffect(() => {
+    if (away < 2 || welcomed.current) return;
+    welcomed.current = true;
+    const t = setTimeout(() => setReaction('love'), 500);
+    return () => clearTimeout(t);
+  }, [away]);
+  const weeklyDue = recapDue(settings.weekSeen ?? 0, settings.firstOpen, new Date());
   const wisdom = en.wisdom[dayIndex(openedAt) % en.wisdom.length];
   const mindful = en.mindful[dayIndex(openedAt) % en.mindful.length];
   const belly = Math.min(1, stats.todayEaten / 4);
@@ -269,10 +285,21 @@ export function HomeScreen() {
         </View>
 
         {away >= 2 ? (
-          <Animated.View entering={FadeIn.duration(duration.fast)} style={styles.bubbleWrap}>
-            <Glass radius={20} style={styles.bubble}>
-              <Text variant="subhead" style={styles.chipText}>{h.comeback(away)}</Text>
-            </Glass>
+          <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} style={styles.bubbleWrap}>
+            <PressScale
+              accessibilityRole="button"
+              accessibilityLabel={h.comeback(away)}
+              accessibilityHint={en.weekly.away}
+              onPress={() => {
+                haptics.success();
+                play('boop');
+                setReaction('love');
+                sayHi();
+              }}>
+              <Glass radius={20} style={styles.bubble}>
+                <Text variant="subhead" style={styles.chipText}>{h.comeback(away)}</Text>
+              </Glass>
+            </PressScale>
           </Animated.View>
         ) : null}
 
@@ -318,6 +345,8 @@ export function HomeScreen() {
             </PressScale>
           </View>
         </Animated.View>
+      ) : weeklyDue ? (
+        <WeeklyCard now={new Date()} />
       ) : (
       <View style={[styles.note, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={[styles.noteIcon, { backgroundColor: colors.primarySoft }]}>

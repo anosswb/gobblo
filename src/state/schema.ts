@@ -73,6 +73,8 @@ export interface Stats {
   byPart: { morning: number; day: number; night: number };
   /** highest level already celebrated (the level-up card shows once per level) */
   seenLevel: number;
+  /** days away before today's first open (2+ shows the welcome back); cleared once said hi */
+  awayDays?: number;
 }
 
 export interface GoodThing {
@@ -150,6 +152,8 @@ export interface Settings {
   focusKeepAwake: boolean;
   /** page guides already shown once (guide ids: 'home', 'breathe'…) */
   guidesSeen: string[];
+  /** last pet week whose weekly card was closed (features/weekly) */
+  weekSeen: number;
   firstOpen: number;
   reviewAskedVersion?: string;
 }
@@ -230,6 +234,7 @@ export function freshState(now = Date.now()): PersistedState {
       nudgeTime: 'morning',
       focusKeepAwake: true,
       guidesSeen: [],
+      weekSeen: 0,
       firstOpen: now,
     },
   };

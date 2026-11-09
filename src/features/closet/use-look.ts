@@ -1,5 +1,6 @@
 import { hasPack } from '@/features/plus/catalog';
 import { levelOf, stageOfLevel } from '@/features/progress/logic';
+import { petWeek } from '@/features/weekly/logic';
 import type { Mood } from '@/pet/pet';
 import type { FaceId, HatId } from '@/pet/wardrobe';
 import { useAppStore } from '@/state/app-store';
@@ -16,12 +17,14 @@ export interface Look {
   room: RoomId;
   homeMood: HomeMood;
   makeItYours: boolean;
+  /** pet week now (weekly surprise colours) */
+  week: number;
 }
 
 /** Saved choice if it is (still) unlocked, else the free default. */
-function pick<T extends string>(items: Item<T>[], saved: string, level: number, miy: boolean, fallback: T): T {
+function pick<T extends string>(items: Item<T>[], saved: string, level: number, miy: boolean, fallback: T, week = 0): T {
   const it = items.find((i) => i.id === saved);
-  return it && isUnlocked(it.unlock, level, miy) ? it.id : fallback;
+  return it && isUnlocked(it.unlock, level, miy, week) ? it.id : fallback;
 }
 
 /** Everything that decides how the pet looks right now (all screens use this). */
@@ -31,14 +34,18 @@ export function useLook(): Look {
   const unlocked = useAppStore((s) => s.unlocked);
   const level = levelOf(total);
   const miy = hasPack(unlocked, 'makeItYours');
+  const firstOpen = useAppStore((s) => s.settings.firstOpen);
+  // the pet week only changes at 4 am; read on render (Home re-renders on foreground)
+  const week = petWeek(firstOpen, new Date());
   return {
     level,
     stage: stageOfLevel(level),
-    color: pick(COLORS, pet.color, level, miy, 'pink'),
+    color: pick(COLORS, pet.color, level, miy, 'pink', week),
     hat: pick(HATS, pet.hat, level, miy, 'none'),
     face: pick(FACES, pet.face ?? 'none', level, miy, 'none'),
     room: pick(ROOMS, pet.room ?? 'auto', level, miy, 'auto'),
     homeMood: (pet.mood as Mood | 'auto' | undefined) ?? 'auto',
     makeItYours: miy,
+    week,
   };
 }
