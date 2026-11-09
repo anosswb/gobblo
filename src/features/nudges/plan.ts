@@ -1,4 +1,4 @@
-import type { NudgeLevel, Reminder } from '@/state/schema';
+import type { NudgeLevel, NudgeTime, Reminder } from '@/state/schema';
 
 /**
  * Local nudge plan (docs/01 + .claude/rules/store.md). Pure, tested.
@@ -14,7 +14,16 @@ export const SLOTS: Record<NudgeLevel, number[]> = {
   chaos: [10, 13, 16, 19],
 };
 
-export type PlannedNudge = { at: Date; kind: 'daily' | 'comeback' | 'leaving'; text: string };
+/** Same counts, later hours for people whose day starts late (panel: night owls). */
+const SLOTS_BY_TIME: Record<NudgeTime, Record<NudgeLevel, number[]>> = {
+  morning: SLOTS,
+  afternoon: { off: [], gentle: [15], normal: [14, 18], chaos: [12, 15, 18, 21] },
+  evening: { off: [], gentle: [20], normal: [18, 21], chaos: [15, 18, 20, 22] },
+};
+
+export type PlannedNudge = { at: Date; kind: 'daily' | 'comeback' | 'leaving' | 'bite'; text: string; biteId?: string };
+
+export const biteLine = (text: string) => `Time for “${text}”. Just 2 minutes?`;
 
 export function inQuietHours(hour: number, quietStart: number, quietEnd: number): boolean {
   if (quietStart === quietEnd) return false;
@@ -70,9 +79,13 @@ export function planNudges(opts: {
   quietEnd: number;
   now: Date;
   reminders?: Reminder[];
+  /** bite times (when chip): they share the daily cap with the pet's nudges and respect quiet hours */
+  biteTimes?: { at: Date; text: string; id: string }[];
+  time?: NudgeTime;
   petLine?: (i: number) => string;
 }): PlannedNudge[] {
   const { level, quietStart, quietEnd, now } = opts;
+  const slots = SLOTS_BY_TIME[opts.time ?? 'morning'][level];
   const line = opts.petLine ?? ((i: number) => DAILY_LINES[i % DAILY_LINES.length]);
   const out: PlannedNudge[] = [];
 
@@ -88,14 +101,28 @@ export function planNudges(opts: {
 
   if (level === 'off') return out.sort((a, b) => +a.at - +b.at);
 
-  // The pet's own nudges make room for the user's: on a day with reminders, the day's total stays
-  // within the chosen level (reminders first), and no pet nudge lands within 2 h of a reminder.
+  // Bite times: never in quiet hours, and per day within the chosen level's count (after the
+  // user's own reminders, earliest first). They then take the pet nudges' place.
+  const biteDays = new Map<string, number>();
+  const asked = [...userTimes];
+  for (const b of opts.biteTimes ?? []) {
+    if (b.at <= now || inQuietHours(b.at.getHours(), quietStart, quietEnd)) continue;
+    const key = b.at.toDateString();
+    const used = (biteDays.get(key) ?? 0) + asked.filter((t) => sameDay(t, b.at)).length;
+    if (used >= slots.length) continue;
+    biteDays.set(key, (biteDays.get(key) ?? 0) + 1);
+    userTimes.push(b.at);
+    out.push({ at: b.at, kind: 'bite', text: biteLine(b.text), biteId: b.id });
+  }
+
+  // The pet's own nudges make room for the user's: on a day with reminders or bite times, the
+  // day's total stays within the chosen level, and no pet nudge lands within 2 h of one.
   let n = 0;
   for (let day = 0; day < 2; day++) {
     const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + day);
     const userToday = userTimes.filter((t) => sameDay(t, date));
-    let room = SLOTS[level].length - userToday.length;
-    for (const hour of SLOTS[level]) {
+    let room = slots.length - userToday.length;
+    for (const hour of slots) {
       if (room <= 0) break;
       if (inQuietHours(hour, quietStart, quietEnd)) continue;
       const at = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0, 0);
@@ -106,7 +133,7 @@ export function planNudges(opts: {
     }
   }
 
-  const comebackHour = SLOTS[level].find((h) => !inQuietHours(h, quietStart, quietEnd));
+  const comebackHour = slots.find((h) => !inQuietHours(h, quietStart, quietEnd));
   if (comebackHour !== undefined) {
     out.push({
       at: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3, comebackHour, 0, 0, 0),

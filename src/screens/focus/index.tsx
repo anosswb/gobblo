@@ -55,7 +55,7 @@ const SOUND_LABEL: Record<FocusSound, string> = { none: 'Silence', brown: 'Brown
  * 2-minute "keep going" card, drift (no penalty), inline leave confirm.
  */
 export function FocusScreen() {
-  useSafeKeepAwake();
+  useSafeKeepAwake('focus', useAppStore((st) => st.settings.focusKeepAwake));
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
   // short phones (iPhone SE, 360×640 Android): smaller ring, numerals and pet so nothing clips

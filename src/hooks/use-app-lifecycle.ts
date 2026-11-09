@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
-import { AppState } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { router, type Href } from 'expo-router';
+import { AppState, Platform } from 'react-native';
 
 import { rescheduleNudges } from '@/features/nudges/schedule';
 import { configureAudio, preloadSounds } from '@/lib/sound';
 import { syncFocusLive } from '@/features/focus/live';
 import { redrawWidgetsNow, updateWidgets } from '@/widgets/update';
 import { snapshot, useAppStore } from '@/state/app-store';
+import { biteTimesKey } from '@/features/bites/when';
 
 /**
  * Runs on launch and every time the app comes back to the foreground (docs/04):
@@ -35,7 +38,9 @@ export function useAppLifecycle() {
         s.settings.nudgeSound !== prev.settings.nudgeSound ||
         s.settings.quietStart !== prev.settings.quietStart ||
         s.settings.quietEnd !== prev.settings.quietEnd ||
-        s.reminders !== prev.reminders
+        s.settings.nudgeTime !== prev.settings.nudgeTime ||
+        s.reminders !== prev.reminders ||
+        (s.bites !== prev.bites && biteTimesKey(s.bites) !== biteTimesKey(prev.bites))
       ) {
         void rescheduleNudges(snapshot()).catch(() => undefined);
       }
@@ -54,9 +59,18 @@ export function useAppLifecycle() {
       }
       if (s.settings.mixWithMusic !== prev.settings.mixWithMusic || s.settings.soundOnSilent !== prev.settings.soundOnSilent) void configureAudio().catch(() => undefined);
     });
+    // tapping a nudge opens its page (a bite time opens that bite's start sheet on Home)
+    const tap =
+      Platform.OS === 'web'
+        ? null
+        : Notifications.addNotificationResponseReceivedListener((r) => {
+            const url = r.notification.request.content.data?.url;
+            if (typeof url === 'string' && url.startsWith('/') && url !== '/') router.push(url as Href);
+          });
     return () => {
       sub.remove();
       unsub();
+      tap?.remove();
     };
   }, []);
 }

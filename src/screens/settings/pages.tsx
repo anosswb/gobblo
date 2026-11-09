@@ -19,7 +19,7 @@ import { canUseBiometrics, unlock } from '@/lib/lock';
 import { play, previewNudgeSound, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { useAppStore } from '@/state/app-store';
-import type { Accent, FocusSound, NudgeSound, Settings } from '@/state/schema';
+import type { Accent, FocusSound, NudgeSound, NudgeTime, Settings } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
 import { accents, fonts, petColors, typeScale, type PetColor, type TileColor } from '@/theme/tokens';
 
@@ -133,6 +133,12 @@ function Nudges() {
             options={[{ value: 'off', label: t.off }, { value: 'gentle', label: t.gentle }, { value: 'normal', label: t.normal }, { value: 'chaos', label: t.chaos }]} />
         } />
       </Section>
+      <Section title={t.nudgeTime} footer={t.nudgeTimeHint}>
+        <Row last stacked hideLabel label={t.nudgeTime} right={
+          <Chips<NudgeTime> accessibilityLabel={t.nudgeTime} value={s.nudgeTime} onChange={set('nudgeTime')}
+            options={[{ value: 'morning', label: t.morning }, { value: 'afternoon', label: t.afternoon }, { value: 'evening', label: t.evening }]} />
+        } />
+      </Section>
       <Section title={t.nudgeSound} footer={t.loudHint}>
         <Row last stacked hideLabel label={t.nudgeSound} right={
           <Chips<NudgeSound> accessibilityLabel={t.nudgeSound} value={s.nudgeSound}
@@ -178,6 +184,9 @@ function Focus() {
       </Section>
       <Section footer={t.oneThingHint}>
         <Row leading={<IconTile name="target" color="red" />} last label={t.oneThing} right={<Toggle accessibilityLabel={t.oneThing} value={s.oneThingMode} onChange={set('oneThingMode')} />} />
+      </Section>
+      <Section footer={t.keepAwakeHint}>
+        <Row leading={<IconTile name="sun" color="orange" />} last label={t.keepAwake} right={<Toggle accessibilityLabel={t.keepAwake} value={s.focusKeepAwake} onChange={set('focusKeepAwake')} />} />
       </Section>
     </>
   );

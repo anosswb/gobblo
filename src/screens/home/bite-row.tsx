@@ -15,6 +15,9 @@ import { space } from '@/theme/tokens';
 import { DraggableFood } from './feed-drag';
 import { BiteIcon } from '@/components/bite-icon';
 import { biteIcon } from '@/features/bites/bite-icon';
+import { clockLabel } from '@/components/when-picker';
+import { clockOf } from '@/features/bites/when';
+import { useAppStore } from '@/state/app-store';
 
 const h = en.home;
 const ACTION_W = 84;
@@ -26,14 +29,20 @@ const ACTION_W = 84;
  */
 export function BiteRow({
   bite,
+  tag,
   onOpen,
   onRemove,
 }: {
   bite: Bite;
+  /** "Tomorrow", "This week"… for bites in Later */
+  tag?: string;
   onOpen: () => void;
   onRemove: () => void;
 }) {
   const { colors } = useTheme();
+  const clock24h = useAppStore((s) => s.settings.clock24h);
+  const time = bite.at ? clockLabel(clockOf(bite.at), clock24h) : null;
+  const meta = [tag, time].filter(Boolean).join(' · ');
   const ref = useRef<SwipeableMethods>(null);
   const food = FOOD[bite.size];
 
@@ -59,7 +68,7 @@ export function BiteRow({
       }}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${bite.text}. ${food.label}, about ${food.min} minutes. Tap to start`}
+        accessibilityLabel={`${bite.text}. ${meta ? `${meta}. ` : ''}${food.label}, about ${food.min} minutes. Tap to start`}
         accessibilityActions={[{ name: 'delete', label: 'Remove' }]}
         onAccessibilityAction={(e) => e.nativeEvent.actionName === 'delete' && onRemove()}
         onPress={onOpen}>
@@ -74,6 +83,7 @@ export function BiteRow({
               <View style={styles.flex}>
                 <Text variant="body" numberOfLines={2}>{bite.text}</Text>
                 <Text variant="caption" tone="ink2">
+                  {meta ? <Text variant="caption" tone="primary" style={styles.meta}>{meta} · </Text> : null}
                   {food.label} · ~{food.min} min · +{food.sparks} ✦
                 </Text>
               </View>
@@ -111,6 +121,7 @@ function Action({ progress, side, color, icon, label }: { progress: SharedValue<
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  meta: { fontWeight: '600' },
   bite: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingStart: space.m },
   body: { flex: 1, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', gap: space.s, minHeight: 64, paddingVertical: space.s + 2, paddingEnd: space.l },
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },

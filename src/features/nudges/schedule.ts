@@ -5,6 +5,8 @@ import { Platform } from 'react-native';
 import { APP_NAME } from '@/config/app';
 import type { NudgeSound, PersistedState } from '@/state/schema';
 
+import { biteTimes } from '@/features/bites/when';
+
 import { planNudges } from './plan';
 
 /** One Android channel per sound (a channel's sound can't change after creation). */
@@ -62,13 +64,15 @@ export async function rescheduleNudges(state: PersistedState, now = new Date()) 
       .filter((n) => n.content.data?.kind !== 'focus')
       .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)),
   );
-  const { settings, pet, reminders } = state;
+  const { settings, pet, reminders, bites } = state;
   const plan = planNudges({
     level: settings.nudge,
     quietStart: settings.quietStart,
     quietEnd: settings.quietEnd,
     now,
     reminders,
+    biteTimes: biteTimes(bites, now),
+    time: settings.nudgeTime,
   });
   const sound = settings.nudgeSound;
   for (const p of plan) {
@@ -77,7 +81,8 @@ export async function rescheduleNudges(state: PersistedState, now = new Date()) 
         title: p.kind === 'leaving' ? `${pet.name} · heads up` : pet.name || APP_NAME,
         body: p.text,
         sound: SOUND_FILE[sound],
-        data: { kind: p.kind, url: '/' },
+        // a bite time opens that bite's start sheet on Home (same link as the widget's Start)
+        data: { kind: p.kind, url: p.biteId ? `/?start=${p.biteId}&at=${+p.at}` : '/' },
       },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: p.at, channelId: channelId(sound) },
     });

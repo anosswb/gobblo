@@ -15,6 +15,7 @@ export type ConfettiAmount = 'lots' | 'little' | 'none';
 export type Accent = 'cobalt' | 'berry' | 'jade' | 'sunset';
 export type NudgeSound = 'boop' | 'chime' | 'pop' | 'loud';
 export type FocusSound = 'none' | 'brown' | 'rain' | 'keys';
+export type NudgeTime = 'morning' | 'afternoon' | 'evening';
 
 export interface Bite {
   id: string;
@@ -25,6 +26,12 @@ export interface Bite {
   daily?: boolean;
   /** pet day (dayKey, starts 4 am) a daily bite was last eaten; it comes back the next day */
   doneOn?: string;
+  /** "when" chip (features/bites/when.ts): unset = today. Optional fields, no migration needed. */
+  when?: 'tomorrow' | 'week' | 'someday';
+  /** pet day (dayKey) a Tomorrow / This week bite comes onto the plate */
+  showOn?: string;
+  /** optional time: one ping then (within the nudge cap and quiet hours) */
+  at?: number;
   createdAt: number;
   order: number;
 }
@@ -137,6 +144,12 @@ export interface Settings {
   tipDragSeen: boolean;
   /** the one extra "can I nudge you?" card after "Not now" in onboarding was shown (never asks twice) */
   nudgeAskedAgain: boolean;
+  /** when the pet's own nudges come (night owls pick evening) */
+  nudgeTime: NudgeTime;
+  /** keep the screen on during a focus timer (off saves battery) */
+  focusKeepAwake: boolean;
+  /** page guides already shown once (guide ids: 'home', 'breathe'…) */
+  guidesSeen: string[];
   firstOpen: number;
   reviewAskedVersion?: string;
 }
@@ -214,6 +227,9 @@ export function freshState(now = Date.now()): PersistedState {
       onboarded: false,
       tipDragSeen: false,
       nudgeAskedAgain: false,
+      nudgeTime: 'morning',
+      focusKeepAwake: true,
+      guidesSeen: [],
       firstOpen: now,
     },
   };

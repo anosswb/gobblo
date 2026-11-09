@@ -43,3 +43,12 @@ describe('biteIcon', () => {
     expect(biteIcon('something vague', 3)).toBe('foodBig');
   });
 });
+
+describe('biteIcon: Spanish', () => {
+  it('knows common Spanish tasks', () => {
+    expect(biteIcon('llamar a la abuela', 1)).toBe('phone');
+    expect(biteIcon('comprar leche', 1)).toBe('shop');
+    expect(biteIcon('estudiar para el examen', 3)).toBe('study');
+    expect(biteIcon('pagar el alquiler', 0)).toBe('pay');
+  });
+});

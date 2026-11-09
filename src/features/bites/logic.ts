@@ -1,5 +1,6 @@
 import type { Bite, PersistedState, Session, Size } from '@/state/schema';
 import { dayKey } from '@/state/schema';
+import { onPlate } from './when';
 
 /** Food by size (docs/01). `icon` is what the UI shows (SF Symbols / Phosphor); `emoji` stays for native widgets. */
 export const FOOD = [
@@ -15,20 +16,59 @@ export const newId = (now = Date.now()) => `${now.toString(36)}${(seq++).toStrin
 /** Sentence case for anything the user types: "text mom" → "Text mom" (DECISIONS: sentence-case copy). */
 export const capFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export function makeBite(text: string, size: Size, order: number, now = Date.now()): Bite {
-  return { id: newId(now), text: capFirst(text.trim()), size, createdAt: now, order };
+/** What a new bite may carry besides text and size (the "when" chip). */
+export type NewBite = { text: string; size: Size } & Partial<Pick<Bite, 'when' | 'showOn' | 'at'>>;
+
+export function makeBite(text: string, size: Size, order: number, now = Date.now(), extra: Partial<Bite> = {}): Bite {
+  return { ...extra, id: newId(now), text: capFirst(text.trim()), size, createdAt: now, order };
 }
 
-/** Bites still on today's plate (daily bites eaten today are hidden until tomorrow). */
+const whenFields = (i: NewBite): Partial<Bite> => {
+  const out: Partial<Bite> = {};
+  if (i.when) out.when = i.when;
+  if (i.showOn) out.showOn = i.showOn;
+  if (i.at) out.at = i.at;
+  return out;
+};
+
+/**
+ * Bites on today's plate: daily bites eaten today are hidden until tomorrow, and bites set to
+ * Tomorrow / This week / Someday wait in "Later" (when.ts). `today = ''` lists every bite.
+ */
 export function plate(bites: Bite[], today = dayKey()): Bite[] {
-  return bites.filter((b) => !(b.daily && b.doneOn === today)).sort((a, b) => a.order - b.order);
+  return bites
+    .filter((b) => !(b.daily && b.doneOn === today) && (today === '' || onPlate(b, today)))
+    .sort((a, b) => a.order - b.order);
 }
 
-export function addBites(state: PersistedState, items: { text: string; size: Size }[], now = Date.now()) {
+export function addBites(state: PersistedState, items: NewBite[], now = Date.now()) {
   const kept = state.bites.filter((b) => !b.example);
   const start = kept.reduce((m, b) => Math.max(m, b.order), -1) + 1;
-  const fresh = items.filter((i) => i.text.trim()).map((i, k) => makeBite(i.text, i.size, start + k, now));
+  const fresh = items.filter((i) => i.text.trim()).map((i, k) => makeBite(i.text, i.size, start + k, now, whenFields(i)));
   return { bites: [...kept, ...fresh], added: fresh.map((b) => b.id) };
+}
+
+/** "Do this first": the bite goes to the top of the plate. */
+export function moveToTop(bites: Bite[], id: string): Bite[] {
+  const min = bites.reduce((m, b) => Math.min(m, b.order), 0);
+  return bites.map((b) => (b.id === id ? { ...b, order: min - 1 } : b));
+}
+
+/**
+ * "Break it into steps": the steps take the big bite's place in the list (same spot, same
+ * "when"), and the big bite leaves. No AI: the user types the steps (DECISIONS).
+ */
+export function splitBite(bites: Bite[], id: string, steps: { text: string; size: Size }[], now = Date.now()) {
+  const big = bites.find((b) => b.id === id);
+  const clean = steps.filter((s) => s.text.trim());
+  if (!big || !clean.length) return { bites, added: [] as string[] };
+  const keep: Partial<Bite> = { when: big.when, showOn: big.showOn };
+  const fresh = clean.map((s, k) => makeBite(s.text, s.size, big.order + k / clean.length, now, keep));
+  for (const f of fresh) {
+    if (!f.when) delete f.when;
+    if (!f.showOn) delete f.showOn;
+  }
+  return { bites: [...bites.filter((b) => b.id !== id), ...fresh], added: fresh.map((b) => b.id) };
 }
 
 export const removeBite = (bites: Bite[], id: string) => bites.filter((b) => b.id !== id);

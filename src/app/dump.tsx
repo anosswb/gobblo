@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +22,9 @@ import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 import { backOrHome } from '@/lib/nav';
 import { BiteIcon } from '@/components/bite-icon';
+import { Chips } from '@/components/settings-parts';
+import { WHEN_LABEL } from '@/components/when-picker';
+import { WHENS, type When } from '@/features/bites/when';
 
 const d = en.dump;
 type Edit = { size?: Size; removed?: boolean };
@@ -37,6 +41,11 @@ export default function DumpScreen() {
   const look = useLook();
   const stage = look.stage;
   const addBites = useAppStore((s) => s.addBites);
+  // "Break it into steps" from the start sheet opens this page for one big bite
+  const { split } = useLocalSearchParams<{ split?: string }>();
+  const big = useAppStore((s) => (split ? s.bites.find((b) => b.id === split) : undefined));
+  // big dumps felt heavy on the plate (panel): choose where they go
+  const [when, setWhen] = useState<When>('today');
   const [text, setText] = useState('');
   const [edits, setEdits] = useState<Record<string, Edit>>({});
 
@@ -53,11 +62,17 @@ export default function DumpScreen() {
       play('nope');
       return;
     }
-    addBites(items.map((b) => ({ text: b.text, size: b.size })));
+    const st = useAppStore.getState();
+    if (big) {
+      st.splitBite(big.id, items.map((b) => ({ text: b.text, size: b.size })));
+    } else {
+      const ids = addBites(items.map((b) => ({ text: b.text, size: b.size })));
+      if (when !== 'today') for (const id of ids) st.setBiteWhen(id, when);
+    }
     haptics.success();
     play('spark');
     backOrHome();
-    setTimeout(() => toast(d.served(items.length)), 350);
+    setTimeout(() => toast(big ? d.splitServed(items.length) : when === 'today' ? d.served(items.length) : en.when.moved(WHEN_LABEL[when])), 350);
   };
 
   const enter = (i: number) => (reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast).delay(Math.min(i, 8) * 30));
@@ -66,8 +81,8 @@ export default function DumpScreen() {
     <View style={[styles.wrap, { backgroundColor: colors.cardSolid }]}>
       <View style={styles.top}>
         <View style={styles.flex}>
-          <Text variant="title2" accessibilityRole="header">{d.title}</Text>
-          <Text variant="subhead" tone="ink2">{d.sub}</Text>
+          <Text variant="title2" accessibilityRole="header">{big ? d.splitTitle : d.title}</Text>
+          <Text variant="subhead" tone="ink2">{big ? d.splitSub(big.text) : d.sub}</Text>
         </View>
         <PressScale accessibilityRole="button" accessibilityLabel="Close" hitSlop={8} onPress={backOrHome} style={[styles.close, { backgroundColor: colors.fill }]}>
           <Icon name="close" size={14} weight="bold" color={colors.ink2} />
@@ -79,7 +94,7 @@ export default function DumpScreen() {
           <TextInput
             value={text}
             onChangeText={setText}
-            placeholder={d.placeholder}
+            placeholder={big ? d.splitPlaceholder : d.placeholder}
             placeholderTextColor={colors.ink3}
             multiline
             autoFocus={Platform.OS !== 'web'}
@@ -88,7 +103,7 @@ export default function DumpScreen() {
             style={[styles.input, fonts.body, styles.noOutline, { color: colors.ink }]}
           />
           <View style={styles.wellBar}>
-            {text ? (
+            {text || big ? (
               <Pressable accessibilityRole="button" hitSlop={8} onPress={() => { setText(''); setEdits({}); haptics.light(); }}>
                 <Text variant="caption" tone="ink2" style={styles.semi}>{d.clear}</Text>
               </Pressable>
@@ -144,12 +159,18 @@ export default function DumpScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, space.l) }]}>
+        {!big && items.length > 0 ? (
+          <View style={styles.serveTo}>
+            <Text variant="caption" tone="ink2" style={styles.semi}>{en.when.serveTo}</Text>
+            <Chips<When> accessibilityLabel={en.when.serveTo} value={when} onChange={setWhen} options={WHENS.map((v) => ({ value: v, label: WHEN_LABEL[v] }))} />
+          </View>
+        ) : null}
         <PressScale
           accessibilityRole="button"
           accessibilityState={{ disabled: items.length === 0 }}
           onPress={serve}
           style={[styles.serve, { backgroundColor: items.length ? colors.primary : colors.fill }]}>
-          <Text variant="bodyBold" tone={items.length ? 'onPrimary' : 'ink3'}>{d.serve(items.length)}</Text>
+          <Text variant="bodyBold" tone={items.length ? 'onPrimary' : 'ink3'}>{big ? d.splitServe(items.length) : d.serve(items.length)}</Text>
         </PressScale>
       </View>
     </View>
@@ -177,6 +198,7 @@ const styles = StyleSheet.create({
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   foodEmoji: { fontSize: 22, lineHeight: 28 },
   remove: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  footer: { paddingHorizontal: space.l, paddingTop: space.s },
+  footer: { paddingHorizontal: space.l, paddingTop: space.s, gap: space.m },
+  serveTo: { gap: space.xs },
   serve: { minHeight: 54, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
 });

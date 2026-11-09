@@ -10,6 +10,12 @@ import Cake from 'lucide-react-native/icons/cake';
 import Calendar from 'lucide-react-native/icons/calendar';
 import Car from 'lucide-react-native/icons/car';
 import Check from 'lucide-react-native/icons/check';
+import ArrowUpToLine from 'lucide-react-native/icons/arrow-up-to-line';
+import ChevronDown from 'lucide-react-native/icons/chevron-down';
+import ChevronUp from 'lucide-react-native/icons/chevron-up';
+import CircleCheck from 'lucide-react-native/icons/circle-check';
+import CircleHelp from 'lucide-react-native/icons/circle-help';
+import ListTree from 'lucide-react-native/icons/list-tree';
 import ChevronLeft from 'lucide-react-native/icons/chevron-left';
 import ChevronRight from 'lucide-react-native/icons/chevron-right';
 import Clock from 'lucide-react-native/icons/clock';
@@ -108,6 +114,12 @@ const MAP = {
   gear: ['gearshape.fill', Settings],
   back: ['chevron.left', ChevronLeft],
   chevron: ['chevron.right', ChevronRight],
+  chevronUp: ['chevron.up', ChevronUp],
+  chevronDown: ['chevron.down', ChevronDown],
+  help: ['questionmark.circle', CircleHelp],
+  toTop: ['arrow.up.to.line', ArrowUpToLine],
+  steps: ['list.bullet.indent', ListTree],
+  doneCheck: ['checkmark.circle', CircleCheck],
   close: ['xmark', X],
   repeat: ['arrow.clockwise', RefreshCw],
   trash: ['trash', Trash2],

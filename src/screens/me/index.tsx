@@ -103,7 +103,8 @@ export function MeScreen() {
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.rowBetween}>
           <Text variant="heading">This week</Text>
-          <Text variant="bodyBold" tone="primary">{meter.bites}/{meter.goal}</Text>
+          {/* a count, not a score out of 10 (panel: "0/10" on a Monday read like failing) */}
+          <Text variant="bodyBold" tone="primary">{meter.bites === 1 ? '1 bite' : `${meter.bites} bites`}</Text>
         </View>
         <View style={[styles.track, { backgroundColor: colors.fill }]}>
           <View style={[styles.fill, { width: `${Math.max(4, meter.progress * 100)}%`, backgroundColor: colors.primary }]} />

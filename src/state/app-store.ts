@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { addBites, feed, newDayCheck, newId, removeBite, reorder, rewardStart, toggleDaily } from '@/features/bites/logic';
+import { addBites, feed, FOOD, moveToTop, newDayCheck, newId, removeBite, reorder, rewardStart, splitBite, toggleDaily, type NewBite } from '@/features/bites/logic';
+import { setTime, setWhen, type When } from '@/features/bites/when';
 import { startTimer } from '@/features/focus/timer';
 import { hasPack, spendForPack, type PackId } from '@/features/plus/catalog';
 import { mmkvStateStorage } from '@/lib/storage';
@@ -33,7 +34,14 @@ type Actions = {
   importState: (data: PersistedState) => void;
   onAppActive: (now?: Date) => void;
   // bites
-  addBites: (items: { text: string; size: Size }[]) => string[];
+  addBites: (items: NewBite[]) => string[];
+  setBiteWhen: (id: string, when: When) => void;
+  /** minutes since midnight, or null to clear */
+  setBiteTime: (id: string, minutes: number | null) => void;
+  moveToTop: (id: string) => void;
+  splitBite: (id: string, steps: { text: string; size: Size }[]) => string[];
+  /** "I already did it" (hyperfocus happened without the timer): feed it now */
+  feedDone: (id: string) => { sparks: number } | null;
   removeBite: (id: string) => Bite | undefined;
   restoreBite: (bite: Bite) => void;
   toggleDaily: (id: string) => void;
@@ -102,6 +110,26 @@ export const useAppStore = create<AppState>()(
       restoreBite: (bite) => set((s) => ({ bites: [...s.bites.filter((b) => b.id !== bite.id), bite] })),
       toggleDaily: (id) => set((s) => ({ bites: toggleDaily(s.bites, id) })),
       reorderBites: (from, to) => set((s) => ({ bites: reorder(s.bites, from, to) })),
+      setBiteWhen: (id, when) =>
+        set((s) => ({ bites: s.bites.map((b) => (b.id === id ? setWhen(b, when, new Date(), s.settings.weekStartsMonday) : b)) })),
+      setBiteTime: (id, minutes) => set((s) => ({ bites: s.bites.map((b) => (b.id === id ? setTime(b, minutes, new Date()) : b)) })),
+      moveToTop: (id) => set((s) => ({ bites: moveToTop(s.bites, id) })),
+      splitBite: (id, steps) => {
+        const r = splitBite(get().bites, id, steps);
+        set({ bites: r.bites });
+        return r.added;
+      },
+      feedDone: (id) => {
+        const s = get();
+        const b = s.bites.find((x) => x.id === id);
+        if (!b) return null;
+        const now = Date.now();
+        const min = FOOD[b.size].min;
+        const session: Session = { id: newId(), biteText: b.text, plannedMin: 0, spentMin: min, mode: 'custom', startedAt: now - min * 60_000, endedAt: now, done: true, drifts: 0 };
+        const r = feed(pick(s), id, session);
+        set({ bites: r.bites, sessions: r.sessions, stats: r.stats });
+        return { sparks: r.sparks };
+      },
 
       startFocus: (bite, minutes, mode) => {
         const now = Date.now();

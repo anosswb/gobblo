@@ -36,6 +36,8 @@ import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
 import { BiteIcon } from '@/components/bite-icon';
 import { guessSize } from '@/features/bites/chop';
+import { clockOf, laterGroups, type When } from '@/features/bites/when';
+import { clockLabel, WHEN_LABEL, WhenPicker } from '@/components/when-picker';
 import type { IconName } from '@/components/icon';
 
 const h = en.home;
@@ -68,6 +70,11 @@ export function HomeScreen() {
   const [manualSize, setManualSize] = useState<Size | null>(null);
   const typing = text.trim().length > 0;
   const size: Size = manualSize ?? (typing ? guessSize(text) : 1);
+  // "when" for the new bite (panel #1 ask): Today by default, optional time
+  const [newWhen, setNewWhen] = useState<When>('today');
+  const [newMinutes, setNewMinutes] = useState<number | null>(null);
+  const [whenOpen, setWhenOpen] = useState(false);
+  const [laterOpen, setLaterOpen] = useState(false);
   const [selected, setSelected] = useState<Bite | null>(null);
   // widget Start without Start Kit: gobblo://start → Home?start=<id>&at=<tap time> opens that
   // bite's start sheet once per tap (the param is left in place: clearing it hid the sheet)
@@ -100,6 +107,8 @@ export function HomeScreen() {
 
   const today = dayKey(openedAt);
   const list = plate(bites, today);
+  const later = laterGroups(bites, today);
+  const laterCount = later.reduce((n, g) => n + g.bites.length, 0);
   const shown = settings.oneThingMode ? list.slice(0, 1) : list;
   const look = useLook();
   const stage = look.stage;
@@ -197,9 +206,16 @@ export function HomeScreen() {
       play('nope');
       return;
     }
-    addBites([{ text, size }]);
+    const [id] = addBites([{ text, size }]);
+    const st = useAppStore.getState();
+    if (id && newWhen !== 'today') st.setBiteWhen(id, newWhen);
+    if (id && newMinutes !== null && (newWhen === 'today' || newWhen === 'tomorrow')) st.setBiteTime(id, newMinutes);
+    if (newWhen !== 'today') toast(en.when.moved(WHEN_LABEL[newWhen]));
     setText('');
     setManualSize(null);
+    setNewWhen('today');
+    setNewMinutes(null);
+    setWhenOpen(false);
     haptics.light();
     play('pop');
   };
@@ -400,13 +416,33 @@ export function HomeScreen() {
                 <FoodIcon size={size} px={14} color={colors.ink2} />
                 <Text variant="caption" tone="ink2" style={styles.chipText}>{h.sizeChip(FOOD[size].label, FOOD[size].min)}</Text>
               </PressScale>
+              <PressScale
+                accessibilityRole="button"
+                accessibilityState={{ expanded: whenOpen }}
+                accessibilityLabel={`${en.when.title}: ${WHEN_LABEL[newWhen]}`}
+                hitSlop={8}
+                onPress={() => {
+                  setWhenOpen((v) => !v);
+                  haptics.select();
+                }}
+                style={[styles.addChip, { backgroundColor: newWhen !== 'today' || newMinutes !== null ? colors.primarySoft : colors.fill }]}>
+                <Icon name="calendar" size={14} color={newWhen !== 'today' || newMinutes !== null ? colors.primary : colors.ink2} />
+                <Text variant="caption" tone={newWhen !== 'today' || newMinutes !== null ? 'primary' : 'ink2'} style={styles.chipText}>
+                  {en.when.chip(WHEN_LABEL[newWhen], newMinutes !== null && (newWhen === 'today' || newWhen === 'tomorrow') ? clockLabel(newMinutes, settings.clock24h) : undefined)}
+                </Text>
+              </PressScale>
+              {whenOpen ? (
+                <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.whenPanel}>
+                  <WhenPicker when={newWhen} minutes={newMinutes} onWhen={setNewWhen} onTime={setNewMinutes} />
+                </Animated.View>
+              ) : null}
             </Animated.View>
           ) : null}
 
           {list.length === 0 ? (
             <View style={[styles.empty, { borderTopColor: colors.line }]}>
               <Text variant="bodyBold" style={styles.center}>{h.emptyTitle(pet.name)}</Text>
-              <Text variant="subhead" tone="ink2" style={styles.center}>{h.emptySub}</Text>
+              <Text variant="subhead" tone="ink2" style={styles.center}>{laterCount ? en.when.emptyLater(laterCount) : h.emptySub}</Text>
               <PressScale accessibilityRole="button" onPress={() => router.push('/dump')} style={[styles.cta, { backgroundColor: colors.primarySoft }]}>
                 <Text variant="bodyBold" tone="primary">{h.dump}</Text>
               </PressScale>
@@ -433,6 +469,49 @@ export function HomeScreen() {
         </View>
         {settings.oneThingMode && list.length > 1 ? (
           <Text variant="caption" tone="ink2" style={styles.footer}>{h.oneThingMore(list.length - 1)}</Text>
+        ) : null}
+
+        {/* Later: Tomorrow / This week / Someday, folded away so today's plate stays small */}
+        {laterCount > 0 && !settings.oneThingMode ? (
+          <View style={styles.laterWrap}>
+            <PressScale
+              accessibilityRole="button"
+              accessibilityState={{ expanded: laterOpen }}
+              accessibilityLabel={en.when.laterCount(laterCount)}
+              onPress={() => {
+                setLaterOpen((v) => !v);
+                haptics.select();
+              }}
+              style={[styles.laterHead, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Icon name="calendar" size={16} color={colors.ink2} />
+              <Text variant="bodyBold" style={styles.flex}>{en.when.laterCount(laterCount)}</Text>
+              <Icon name={laterOpen ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
+            </PressScale>
+            {laterOpen ? (
+              <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} style={styles.laterBody}>
+                <Text variant="caption" tone="ink2" style={styles.footer}>{en.when.laterHint}</Text>
+                {later.map((g) => (
+                  <View key={g.when} style={styles.laterGroup}>
+                    <Text variant="caption" tone="ink2" style={[styles.footer, styles.chipText]}>{WHEN_LABEL[g.when]}</Text>
+                    <View style={[styles.list, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
+                      {g.bites.map((b) => (
+                        <BiteRow
+                          key={b.id}
+                          bite={b}
+                          tag={WHEN_LABEL[g.when]}
+                          onOpen={() => {
+                            haptics.select();
+                            setSelected(b);
+                          }}
+                          onRemove={() => removeWithUndo(b.id)}
+                        />
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </Animated.View>
+            ) : null}
+          </View>
         ) : null}
       </View>
 
@@ -463,6 +542,42 @@ export function HomeScreen() {
           if (!selected) return;
           setSelected(null);
           removeWithUndo(selected.id);
+        }}
+        clock24h={settings.clock24h}
+        onWhen={(w) => {
+          if (!selected) return;
+          const st = useAppStore.getState();
+          st.setBiteWhen(selected.id, w);
+          setSelected(st.bites.find((b) => b.id === selected.id) ?? null);
+          haptics.select();
+        }}
+        onTime={(m) => {
+          if (!selected) return;
+          const st = useAppStore.getState();
+          st.setBiteTime(selected.id, m);
+          setSelected(useAppStore.getState().bites.find((b) => b.id === selected.id) ?? null);
+        }}
+        onFirst={() => {
+          if (!selected) return;
+          useAppStore.getState().moveToTop(selected.id);
+          if (selected.when) useAppStore.getState().setBiteWhen(selected.id, 'today');
+          setSelected(null);
+          haptics.light();
+          toast(en.start.firstDone);
+        }}
+        onSplit={() => {
+          if (!selected) return;
+          const id = selected.id;
+          setSelected(null);
+          router.push({ pathname: '/dump', params: { split: id } });
+        }}
+        onAlready={() => {
+          if (!selected) return;
+          const r = useAppStore.getState().feedDone(selected.id);
+          setSelected(null);
+          haptics.success();
+          play('spark');
+          if (r) toast(en.start.alreadyDone(r.sparks));
         }}
         onStart={(minutes, mode) => {
           if (!selected) return;
@@ -506,6 +621,11 @@ const styles = StyleSheet.create({
   input: { flex: 1, minHeight: 44, fontSize: typeScale.body },
   addChips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s, paddingHorizontal: space.m, paddingBottom: space.m, marginTop: -space.xs },
   addChip: { flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 32, paddingHorizontal: space.m, borderRadius: radius.chip },
+  whenPanel: { width: '100%', paddingTop: space.s },
+  laterWrap: { gap: space.s, marginTop: space.s },
+  laterHead: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 52, paddingHorizontal: space.l, borderRadius: radius.card - 6, borderWidth: StyleSheet.hairlineWidth },
+  laterBody: { gap: space.m },
+  laterGroup: { gap: space.xs },
   addBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   foodEmoji: { fontSize: 22, lineHeight: 28 },
