@@ -14,7 +14,7 @@ import { radius, space } from '@/theme/tokens';
 import { BiteIcon } from './bite-icon';
 import { clockOf, whenOf } from '@/features/bites/when';
 import { dayKey } from '@/state/schema';
-import { clockLabel, WHEN_LABEL, WhenPicker } from './when-picker';
+import { clockLabel, whenText, WhenPicker } from './when-picker';
 import { useState } from 'react';
 import type { When } from '@/features/bites/when';
 
@@ -48,7 +48,7 @@ export function StartSheet({
   onRemove: () => void;
   onToggleDaily: () => void;
   clock24h?: boolean;
-  onWhen?: (w: When) => void;
+  onWhen?: (w: When, day?: string) => void;
   onTime?: (minutes: number | null) => void;
   onFirst?: () => void;
   onSplit?: () => void;
@@ -65,6 +65,7 @@ export function StartSheet({
     { minutes: 60, mode: 'custom', label: s.sixty },
   ];
   const when: When = bite ? whenOf(bite, dayKey()) : 'today';
+  const day = when === 'date' ? bite?.showOn : undefined;
   const minutes = bite?.at ? clockOf(bite.at) : null;
   const close = () => {
     setWhenOpen(false);
@@ -133,17 +134,17 @@ export function StartSheet({
                   <Pressable
                     accessibilityRole="button"
                     accessibilityState={{ expanded: whenOpen }}
-                    accessibilityLabel={`${s.when}: ${WHEN_LABEL[when]}${minutes !== null ? `, ${clockLabel(minutes, clock24h)}` : ''}`}
+                    accessibilityLabel={`${s.when}: ${whenText(when, day)}${minutes !== null ? `, ${clockLabel(minutes, clock24h)}` : ''}`}
                     onPress={() => setWhenOpen((v) => !v)}
                     style={styles.groupRow}>
                     <Icon name="calendar" size={18} color={colors.ink2} />
                     <Text variant="body" style={styles.flex}>{s.when}</Text>
-                    <Text variant="body" tone="ink2">{en.when.chip(WHEN_LABEL[when], minutes !== null ? clockLabel(minutes, clock24h) : undefined)}</Text>
+                    <Text variant="body" tone="ink2">{en.when.chip(whenText(when, day), minutes !== null ? clockLabel(minutes, clock24h) : undefined)}</Text>
                     <Icon name={whenOpen ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
                   </Pressable>
                   {whenOpen ? (
                     <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.whenBody}>
-                      <WhenPicker when={when} minutes={minutes} onWhen={(w) => onWhen(w)} onTime={(m) => onTime?.(m)} />
+                      <WhenPicker when={when} day={day} minutes={minutes} onWhen={(w, d) => onWhen(w, d)} onTime={(m) => onTime?.(m)} />
                     </Animated.View>
                   ) : null}
                   <View style={[styles.sep, { backgroundColor: colors.line }]} />

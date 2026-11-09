@@ -24,7 +24,7 @@ import { backOrHome } from '@/lib/nav';
 import { BiteIcon } from '@/components/bite-icon';
 import { GuideHelp } from '@/components/guide/page-guide';
 import { Chips } from '@/components/settings-parts';
-import { WHEN_LABEL } from '@/components/when-picker';
+import { movedLabel, WHEN_LABEL } from '@/components/when-picker';
 import { WHENS, type When } from '@/features/bites/when';
 
 const d = en.dump;
@@ -73,7 +73,7 @@ export default function DumpScreen() {
     haptics.success();
     play('spark');
     backOrHome();
-    setTimeout(() => toast(big ? d.splitServed(items.length) : when === 'today' ? d.served(items.length) : en.when.moved(WHEN_LABEL[when])), 350);
+    setTimeout(() => toast(big ? d.splitServed(items.length) : when === 'today' ? d.served(items.length) : en.when.moved(movedLabel(when))), 350);
   };
 
   const enter = (i: number) => (reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast).delay(Math.min(i, 8) * 30));
@@ -164,7 +164,7 @@ export default function DumpScreen() {
         {!big && items.length > 0 ? (
           <View style={styles.serveTo}>
             <Text variant="caption" tone="ink2" style={styles.semi}>{en.when.serveTo}</Text>
-            <Chips<When> accessibilityLabel={en.when.serveTo} value={when} onChange={setWhen} options={WHENS.map((v) => ({ value: v, label: WHEN_LABEL[v] }))} />
+            <Chips<When> accessibilityLabel={en.when.serveTo} value={when} onChange={setWhen} options={DUMP_WHENS.map((v) => ({ value: v, label: WHEN_LABEL[v] }))} />
           </View>
         ) : null}
         <PressScale
@@ -179,6 +179,9 @@ export default function DumpScreen() {
   );
 }
 
+
+/** A whole dump goes to one simple bucket; dates are picked per bite in its start sheet. */
+const DUMP_WHENS = WHENS.filter((v) => v !== 'date');
 const styles = StyleSheet.create({
   wrap: { flex: 1 },
   flex: { flex: 1 },

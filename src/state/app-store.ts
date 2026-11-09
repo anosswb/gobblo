@@ -35,7 +35,8 @@ type Actions = {
   onAppActive: (now?: Date) => void;
   // bites
   addBites: (items: NewBite[]) => string[];
-  setBiteWhen: (id: string, when: When) => void;
+  /** `day` (pet day key) is the picked date for 'date' */
+  setBiteWhen: (id: string, when: When, day?: string) => void;
   /** minutes since midnight, or null to clear */
   setBiteTime: (id: string, minutes: number | null) => void;
   moveToTop: (id: string) => void;
@@ -110,8 +111,8 @@ export const useAppStore = create<AppState>()(
       restoreBite: (bite) => set((s) => ({ bites: [...s.bites.filter((b) => b.id !== bite.id), bite] })),
       toggleDaily: (id) => set((s) => ({ bites: toggleDaily(s.bites, id) })),
       reorderBites: (from, to) => set((s) => ({ bites: reorder(s.bites, from, to) })),
-      setBiteWhen: (id, when) =>
-        set((s) => ({ bites: s.bites.map((b) => (b.id === id ? setWhen(b, when, new Date(), s.settings.weekStartsMonday) : b)) })),
+      setBiteWhen: (id, when, day) =>
+        set((s) => ({ bites: s.bites.map((b) => (b.id === id ? setWhen(b, when, new Date(), s.settings.weekStartsMonday, day) : b)) })),
       setBiteTime: (id, minutes) => set((s) => ({ bites: s.bites.map((b) => (b.id === id ? setTime(b, minutes, new Date()) : b)) })),
       moveToTop: (id) => set((s) => ({ bites: moveToTop(s.bites, id) })),
       splitBite: (id, steps) => {

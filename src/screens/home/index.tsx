@@ -37,8 +37,8 @@ import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
 import { BiteIcon } from '@/components/bite-icon';
 import { guessSize } from '@/features/bites/chop';
-import { clockOf, laterGroups, type When } from '@/features/bites/when';
-import { clockLabel, WHEN_LABEL, WhenPicker } from '@/components/when-picker';
+import { laterGroups, timed, type When } from '@/features/bites/when';
+import { clockLabel, movedLabel, whenText, WhenPicker } from '@/components/when-picker';
 import type { IconName } from '@/components/icon';
 
 const h = en.home;
@@ -73,6 +73,7 @@ export function HomeScreen() {
   const size: Size = manualSize ?? (typing ? guessSize(text) : 1);
   // "when" for the new bite (panel #1 ask): Today by default, optional time
   const [newWhen, setNewWhen] = useState<When>('today');
+  const [newDay, setNewDay] = useState<string | undefined>(undefined);
   const [newMinutes, setNewMinutes] = useState<number | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [laterOpen, setLaterOpen] = useState(false);
@@ -209,12 +210,13 @@ export function HomeScreen() {
     }
     const [id] = addBites([{ text, size }]);
     const st = useAppStore.getState();
-    if (id && newWhen !== 'today') st.setBiteWhen(id, newWhen);
-    if (id && newMinutes !== null && (newWhen === 'today' || newWhen === 'tomorrow')) st.setBiteTime(id, newMinutes);
-    if (newWhen !== 'today') toast(en.when.moved(WHEN_LABEL[newWhen]));
+    if (id && newWhen !== 'today') st.setBiteWhen(id, newWhen, newDay);
+    if (id && newMinutes !== null && timed(newWhen)) st.setBiteTime(id, newMinutes);
+    if (newWhen !== 'today') toast(en.when.moved(movedLabel(newWhen, newDay)));
     setText('');
     setManualSize(null);
     setNewWhen('today');
+    setNewDay(undefined);
     setNewMinutes(null);
     setWhenOpen(false);
     haptics.light();
@@ -421,7 +423,7 @@ export function HomeScreen() {
               <PressScale
                 accessibilityRole="button"
                 accessibilityState={{ expanded: whenOpen }}
-                accessibilityLabel={`${en.when.title}: ${WHEN_LABEL[newWhen]}`}
+                accessibilityLabel={`${en.when.title}: ${whenText(newWhen, newDay)}`}
                 hitSlop={8}
                 onPress={() => {
                   setWhenOpen((v) => !v);
@@ -430,12 +432,21 @@ export function HomeScreen() {
                 style={[styles.addChip, { backgroundColor: newWhen !== 'today' || newMinutes !== null ? colors.primarySoft : colors.fill }]}>
                 <Icon name="calendar" size={14} color={newWhen !== 'today' || newMinutes !== null ? colors.primary : colors.ink2} />
                 <Text variant="caption" tone={newWhen !== 'today' || newMinutes !== null ? 'primary' : 'ink2'} style={styles.chipText}>
-                  {en.when.chip(WHEN_LABEL[newWhen], newMinutes !== null && (newWhen === 'today' || newWhen === 'tomorrow') ? clockLabel(newMinutes, settings.clock24h) : undefined)}
+                  {en.when.chip(whenText(newWhen, newDay), newMinutes !== null && timed(newWhen) ? clockLabel(newMinutes, settings.clock24h) : undefined)}
                 </Text>
               </PressScale>
               {whenOpen ? (
                 <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.whenPanel}>
-                  <WhenPicker when={newWhen} minutes={newMinutes} onWhen={setNewWhen} onTime={setNewMinutes} />
+                  <WhenPicker
+                    when={newWhen}
+                    day={newDay}
+                    minutes={newMinutes}
+                    onWhen={(w, d) => {
+                      setNewWhen(w);
+                      setNewDay(d);
+                    }}
+                    onTime={setNewMinutes}
+                  />
                 </Animated.View>
               ) : null}
             </Animated.View>
@@ -493,14 +504,14 @@ export function HomeScreen() {
               <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} style={styles.laterBody}>
                 <Text variant="caption" tone="ink2" style={styles.footer}>{en.when.laterHint}</Text>
                 {later.map((g) => (
-                  <View key={g.when} style={styles.laterGroup}>
-                    <Text variant="caption" tone="ink2" style={[styles.footer, styles.chipText]}>{WHEN_LABEL[g.when]}</Text>
+                  <View key={g.day ?? g.when} style={styles.laterGroup}>
+                    <Text variant="caption" tone="ink2" style={[styles.footer, styles.chipText]}>{whenText(g.when, g.day)}</Text>
                     <View style={[styles.list, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
                       {g.bites.map((b) => (
                         <BiteRow
                           key={b.id}
                           bite={b}
-                          tag={WHEN_LABEL[g.when]}
+                          tag={whenText(g.when, g.day)}
                           onOpen={() => {
                             haptics.select();
                             setSelected(b);
@@ -546,10 +557,10 @@ export function HomeScreen() {
           removeWithUndo(selected.id);
         }}
         clock24h={settings.clock24h}
-        onWhen={(w) => {
+        onWhen={(w, d) => {
           if (!selected) return;
           const st = useAppStore.getState();
-          st.setBiteWhen(selected.id, w);
+          st.setBiteWhen(selected.id, w, d);
           setSelected(st.bites.find((b) => b.id === selected.id) ?? null);
           haptics.select();
         }}

@@ -6,7 +6,11 @@ import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { Toggle } from '@/components/toggle';
 import { formatEndsAt } from '@/features/focus/timer';
-import { WHENS, type When } from '@/features/bites/when';
+import { addDays, defaultPickedDay, timed as isTimed, WHENS, type When } from '@/features/bites/when';
+import { dayKey } from '@/state/schema';
+
+import { DayField } from './day-field';
+import { dayLabel } from './day-field/shared';
 import { inQuietHours } from '@/features/nudges/plan';
 import { en } from '@/i18n/en';
 import { useAppStore } from '@/state/app-store';
@@ -16,7 +20,13 @@ import { haptics } from '@/lib/haptics';
 import { radius, space } from '@/theme/tokens';
 
 const w = en.when;
-export const WHEN_LABEL: Record<When, string> = { today: w.today, tomorrow: w.tomorrow, week: w.week, someday: w.someday };
+export const WHEN_LABEL: Record<When, string> = { today: w.today, tomorrow: w.tomorrow, week: w.week, someday: w.someday, date: w.date };
+
+/** What a bite's when reads as: "Tomorrow", or "Fri 14 Nov" for a picked date. */
+export const whenText = (when: When, day?: string) => (when === 'date' && day ? dayLabel(day) : WHEN_LABEL[when]);
+
+/** For "Moved to …": "tomorrow", "this week", "Fri 14 Nov". */
+export const movedLabel = (when: When, day?: string) => (when === 'date' && day ? dayLabel(day) : WHEN_LABEL[when].toLowerCase());
 
 /** "5:00 pm" / "17:00" for minutes since midnight, following the 24 h setting. */
 export function clockLabel(minutes: number, clock24h: boolean) {
@@ -25,25 +35,30 @@ export function clockLabel(minutes: number, clock24h: boolean) {
 }
 
 /**
- * The "when" picker: Today / Tomorrow / This week / Someday, then an optional time for Today and
- * Tomorrow. The hint says honestly whether a ping will come (bite times skip the nudge cap, never quiet hours).
+ * The "when" picker: Today / Tomorrow / This week / Someday / Pick a date (native calendar), then
+ * an optional time for Today, Tomorrow and a picked date. The hint says honestly whether a ping will come (bite times skip the nudge cap, never quiet hours).
  * Used by the Home add row and the start sheet.
  */
 export function WhenPicker({
   when,
+  day,
   minutes,
   onWhen,
   onTime,
 }: {
   when: When;
+  /** the picked pet day when `when` is 'date' */
+  day?: string;
   /** minutes since midnight, or null for no time */
   minutes: number | null;
-  onWhen: (w: When) => void;
+  /** `day` comes with 'date' */
+  onWhen: (w: When, day?: string) => void;
   onTime: (m: number | null) => void;
 }) {
   const settings = useAppStore((s) => s.settings);
   const { colors } = useTheme();
-  const timed = when === 'today' || when === 'tomorrow';
+  const timed = isTimed(when);
+  const tomorrow = addDays(dayKey(), 1);
   const hint =
     minutes === null
       ? null
@@ -53,7 +68,17 @@ export function WhenPicker({
 
   return (
     <View style={styles.wrap}>
-      <Chips<When> accessibilityLabel={w.title} value={when} onChange={onWhen} options={WHENS.map((v) => ({ value: v, label: WHEN_LABEL[v] }))} />
+      <Chips<When>
+        accessibilityLabel={w.title}
+        value={when}
+        onChange={(v) => (v === 'date' ? onWhen('date', day ?? defaultPickedDay(new Date())) : onWhen(v))}
+        options={WHENS.map((v) => ({ value: v, label: WHEN_LABEL[v] }))}
+      />
+      {when === 'date' ? (
+        <Animated.View entering={FadeIn.duration(duration.quick)}>
+          <DayField day={day && day >= tomorrow ? day : defaultPickedDay(new Date())} min={tomorrow} label={w.date} onChange={(d) => onWhen('date', d)} />
+        </Animated.View>
+      ) : null}
       {timed ? (
         <View style={styles.timeRow}>
           <Text variant="body" style={styles.flex}>{w.addTime}</Text>

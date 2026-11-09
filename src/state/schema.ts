@@ -27,8 +27,8 @@ export interface Bite {
   /** pet day (dayKey, starts 4 am) a daily bite was last eaten; it comes back the next day */
   doneOn?: string;
   /** "when" chip (features/bites/when.ts): unset = today. Optional fields, no migration needed. */
-  when?: 'tomorrow' | 'week' | 'someday';
-  /** pet day (dayKey) a Tomorrow / This week bite comes onto the plate */
+  when?: 'tomorrow' | 'week' | 'someday' | 'date';
+  /** pet day (dayKey) a Tomorrow / This week / picked-date bite comes onto the plate */
   showOn?: string;
   /** optional time: one ping then (outside the nudge cap, never in quiet hours) */
   at?: number;

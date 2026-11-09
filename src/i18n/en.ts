@@ -307,6 +307,9 @@ export const en = {
     tomorrow: 'Tomorrow',
     week: 'This week',
     someday: 'Someday',
+    date: 'Pick a date',
+    pickOk: 'Set date',
+    pickCancel: 'Cancel',
     title: 'When',
     addTime: 'Add a time',
     time: 'Ping me at',
@@ -316,10 +319,11 @@ export const en = {
     hintQuiet: 'That’s in your quiet hours, so no ping. It still waits on your plate.',
     later: 'Later',
     laterCount: (n: number) => (n === 1 ? '1 bite for later' : `${n} bites for later`),
-    laterHint: 'They come onto your plate on their day. Someday waits until you move it.',
+    laterHint: 'They come onto your plate on their day (from 4am). Someday waits until you move it.',
     emptyLater: (n: number) => (n === 1 ? 'Plate’s clear. 1 bite is waiting for later.' : `Plate’s clear. ${n} bites are waiting for later.`),
     serveTo: 'Put them on',
-    moved: (label: string) => `Moved to ${label.toLowerCase()}.`,
+    /** label is already in sentence position ("tomorrow", "Fri 14 Nov") */
+    moved: (label: string) => `Moved to ${label}.`,
   },
   wisdom: [
     'Starting > finishing. I said what I said.',
