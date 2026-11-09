@@ -29,6 +29,8 @@ export const en = {
       ready: 'Ready when you are',
       rounds: (n: number) => (n === 1 ? '1 round' : `${n} rounds`),
       done: (n: number) => `${n} ${n === 1 ? 'round' : 'rounds'}. Nice and slow.`,
+      soundOff: 'Mute the bowl sound',
+      soundOn: 'Turn the bowl sound on',
     },
     calm: {
       intro: 'Pick one. Short and simple.',
@@ -489,6 +491,7 @@ export const en = {
     privacyPolicy: 'Privacy policy',
     terms: 'Terms of use',
     contact: 'Contact us',
+    soundCredits: 'Sounds: real recordings from Freesound (CC0)',
     dataLocal: 'Your tasks stay on your phone. No account, no server. They’re saved in your phone’s own backup (iCloud or Google) and come back when you set up a new phone. Moving between iPhone and Android? Use Export.',
   },
 } as const;

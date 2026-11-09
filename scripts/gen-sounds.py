@@ -2,8 +2,8 @@
 """Generate Gobblo's original sounds (CC0, made by this script, no samples).
 
 Run:  python3 -I scripts/gen-sounds.py assets/sounds
-Writes short notification/UI sounds as .wav and 10 s focus loops as .wav
-(then converted to .m4a with macOS `afconvert` if available).
+Writes short notification/UI sounds as .wav. The focus loops and breathing cues are now real
+CC0 recordings (assets/sounds/CREDITS.md); the old math loops are only written with --old-loops.
 """
 import math
 import os
@@ -117,6 +117,9 @@ def main(dest):
     }
     for name, s in sounds.items():
         write_wav(os.path.join(dest, f"{name}.wav"), s)
+    if "--old-loops" not in sys.argv:
+        print("done:", sorted(os.listdir(dest)))
+        return
     loops = {"brown": brown(), "rain": rain(), "keys": keys()}
     for name, s in loops.items():
         wav = os.path.join(dest, f"{name}.wav")
@@ -131,4 +134,5 @@ def main(dest):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "assets/sounds")
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    main(args[0] if args else "assets/sounds")

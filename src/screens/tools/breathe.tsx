@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
+import { Glass } from '@/components/glass';
+import { GuideHelp } from '@/components/guide/page-guide';
+import { Icon } from '@/components/icon';
+import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { Text } from '@/components/text';
@@ -11,7 +14,9 @@ import { BREATH_PATTERNS, type BreathPattern } from '@/features/toolkit/logic';
 import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { en } from '@/i18n/en';
 import { haptics } from '@/lib/haptics';
+import { playBreath, stopBreath } from '@/lib/sound';
 import { Pet } from '@/pet/pet';
+import { useAppStore } from '@/state/app-store';
 import { duration, easing } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
@@ -29,7 +34,8 @@ function KeepAwake() {
 /**
  * Breathe: the pet grows on the in-breath and shrinks on the out-breath. One tick a second drives
  * the phases (no setState per frame); the grow/shrink is one long Reanimated timing per phase.
- * Reduce Motion: no size change, the halo fades brighter / dimmer instead. Haptic on each phase.
+ * Reduce Motion: no size change, the halo fades brighter / dimmer instead. Haptic on each phase, and a
+ * soft singing-bowl cue on in / out (sound toggle respected, plus a mute on this page).
  */
 export function BreatheTool() {
   const { colors, reduceMotion } = useTheme();
@@ -41,6 +47,8 @@ export function BreatheTool() {
   const [tick, setTick] = useState({ phase: 0, elapsed: 0, rounds: 0 });
   const { phase, elapsed, rounds } = tick;
   const [finished, setFinished] = useState<number | null>(null);
+  const soundOn = useAppStore((s) => s.settings.sound);
+  const [muted, setMuted] = useState(false);
 
   const v = useSharedValue(0);
   const current = pattern.phases[phase];
@@ -64,7 +72,9 @@ export function BreatheTool() {
     if (!running) return;
     if (current.kind === 'hold') haptics.select();
     else haptics.light();
+    if (current.kind !== 'hold' && !muted) playBreath(current.kind);
     if (current.kind !== 'hold') v.set(withTiming(current.kind === 'in' ? 1 : 0, { duration: current.seconds * 1000, easing: easing.inOut }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- muting mid-phase shouldn't replay the cue
   }, [running, phase, current.kind, current.seconds, v]);
 
   const start = () => {
@@ -75,9 +85,21 @@ export function BreatheTool() {
   const stop = () => {
     setRunning(false);
     setFinished(rounds);
+    stopBreath();
     cancelAnimation(v);
     v.set(withTiming(0, { duration: duration.medium, easing: easing.smoothOut }));
     haptics.success();
+  };
+
+  // leaving the page stops a cue that is still ringing
+  useEffect(() => stopBreath, []);
+
+  const toggleMute = () => {
+    haptics.select();
+    setMuted((m) => {
+      if (!m) stopBreath();
+      return !m;
+    });
   };
 
   const petStyle = useAnimatedStyle(() => ({ transform: [{ scale: reduceMotion ? 1 : 0.82 + 0.3 * v.get() }] }));
@@ -90,7 +112,18 @@ export function BreatheTool() {
   const left = running ? current.seconds - elapsed : null;
 
   return (
-    <Screen back title={en.tools.tiles.breathe.title} right={<GuideHelp id="breathe" auto />}>
+    <Screen back title={en.tools.tiles.breathe.title} right={
+        <View style={styles.right}>
+          {soundOn ? (
+            <PressScale accessibilityRole="button" accessibilityLabel={muted ? t.soundOn : t.soundOff} onPress={toggleMute}>
+              <Glass interactive radius={22} style={styles.mute}>
+                <Icon name={muted ? 'mute' : 'sound'} size={20} color={colors.ink} />
+              </Glass>
+            </PressScale>
+          ) : null}
+          <GuideHelp id="breathe" auto />
+        </View>
+      }>
       {running ? <KeepAwake /> : null}
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro}</Text>
 
@@ -131,4 +164,6 @@ const styles = StyleSheet.create({
   stage: { width: STAGE, height: STAGE, alignItems: 'center', justifyContent: 'center' },
   halo: { position: 'absolute', width: STAGE, height: STAGE, borderRadius: STAGE / 2, borderWidth: 2 },
   hint: { textAlign: 'center' },
+  right: { flexDirection: 'row', gap: space.s },
+  mute: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });

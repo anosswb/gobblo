@@ -15,11 +15,18 @@ const SFX = {
 } as const;
 export type Sfx = keyof typeof SFX;
 
+/** Real CC0 field recordings from Freesound, looped and levelled (assets/sounds/CREDITS.md). */
 const LOOPS: Record<Exclude<FocusSound, 'none'>, number> = {
   brown: require('@/assets/sounds/brown.m4a'),
   rain: require('@/assets/sounds/rain.m4a'),
   keys: require('@/assets/sounds/keys.m4a'),
 };
+
+/** Breathing cues: one CC0 singing bowl, its swell for the in-breath, its fade for the out-breath. */
+const BREATH = {
+  in: require('@/assets/sounds/breathe-in.m4a'),
+  out: require('@/assets/sounds/breathe-out.m4a'),
+} as const;
 
 const settings = () => useAppStore.getState().settings;
 const players = new Map<string, AudioPlayer>();
@@ -113,4 +120,22 @@ export function stopLoop(immediate = false) {
     return;
   }
   fade(p, 0, 600, () => p.pause());
+}
+
+/** Breathe tool: a soft bowl swell on the in-breath, its fade on the out-breath. Respects the sound toggle. */
+export function playBreath(kind: keyof typeof BREATH) {
+  const s = settings();
+  if (!s.sound) return;
+  try {
+    const p = player(`breath-${kind}`, BREATH[kind]);
+    p.volume = s.volume * 0.9;
+    void p.seekTo(0);
+    p.play();
+  } catch {
+    // sound is never critical
+  }
+}
+
+export function stopBreath() {
+  for (const k of Object.keys(BREATH)) players.get(`breath-${k}`)?.pause();
 }
