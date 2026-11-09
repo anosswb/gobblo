@@ -1,4 +1,4 @@
-import { inQuietHours, planNudges, reminderText, reminderTimes, SLOTS } from './plan';
+import { inQuietHours, MAX_BITE_PINGS, planNudges, reminderText, reminderTimes, SLOTS } from './plan';
 
 const base = { quietStart: 22, quietEnd: 8 };
 
@@ -92,20 +92,40 @@ describe('nudge plan', () => {
     expect(pet.length).toBeLessThanOrEqual(SLOTS.chaos.length - 1);
   });
 
-  it('bite times ping within the daily cap and never in quiet hours', () => {
+  it('bite times always ping, outside the daily cap, but never in quiet hours', () => {
     const now = new Date(2026, 10, 6, 9);
     const at = (h: number, id: string) => ({ at: new Date(2026, 10, 6, h), text: id, id });
-    // gentle = 1 a day: the first bite time takes the slot, the pet's own nudge steps aside
+    // gentle = 1 a day: both bite times still ping; the pet's own nudge steps aside
     const gentle = planNudges({ ...base, level: 'gentle', now, biteTimes: [at(17, 'a'), at(18, 'b')] });
     const today = gentle.filter((p) => p.at.getDate() === 6);
-    expect(today.map((p) => p.kind)).toEqual(['bite']);
-    expect(today[0].biteId).toBe('a');
-    // quiet hours drop it; nudges off drop it
-    expect(planNudges({ ...base, level: 'normal', now, biteTimes: [at(23, 'late')] }).some((p) => p.kind === 'bite')).toBe(false);
-    expect(planNudges({ ...base, level: 'off', now, biteTimes: [at(17, 'a')] })).toEqual([]);
-    // normal = 2 a day: two bite times, no pet nudge that day
+    expect(today.map((p) => p.biteId)).toEqual(['a', 'b']);
+    expect(today.some((p) => p.kind === 'daily')).toBe(false);
+    // normal = 2 a day: three bite times all ping
     const normal = planNudges({ ...base, level: 'normal', now, biteTimes: [at(13, 'a'), at(17, 'b'), at(19, 'c')] });
-    expect(normal.filter((p) => p.at.getDate() === 6).map((p) => p.biteId)).toEqual(['a', 'b']);
+    expect(normal.filter((p) => p.kind === 'bite').map((p) => p.biteId)).toEqual(['a', 'b', 'c']);
+    // quiet hours (22 → 8 here) drop it
+    expect(planNudges({ ...base, level: 'normal', now, biteTimes: [at(23, 'late')] }).some((p) => p.kind === 'bite')).toBe(false);
+  });
+
+  it('bite times ping with nudges off, and the pet stays silent', () => {
+    const now = new Date(2026, 10, 6, 9);
+    const plan = planNudges({ ...base, level: 'off', now, biteTimes: [{ at: new Date(2026, 10, 6, 17), text: 'x', id: 'x' }] });
+    expect(plan.map((p) => p.kind)).toEqual(['bite']);
+  });
+
+  it('pet nudges plus bite times: the pet never goes past the level', () => {
+    const now = new Date(2026, 10, 6, 9);
+    const plan = planNudges({ ...base, level: 'chaos', now, biteTimes: [{ at: new Date(2026, 10, 6, 21), text: 'x', id: 'x' }] });
+    const day = plan.filter((p) => p.at.getDate() === 6);
+    expect(day.filter((p) => p.kind === 'daily').length).toBeLessThanOrEqual(SLOTS.chaos.length - 1);
+  });
+
+  it('bite pings on far dates are planned, up to the cap', () => {
+    const now = new Date(2026, 10, 6, 9);
+    const far = Array.from({ length: 60 }, (_, i) => ({ at: new Date(2026, 10, 7 + i, 12), text: `b${i}`, id: `b${i}` }));
+    const bites = planNudges({ ...base, level: 'gentle', now, biteTimes: far }).filter((p) => p.kind === 'bite');
+    expect(bites.length).toBe(MAX_BITE_PINGS);
+    expect(bites[0].biteId).toBe('b0');
   });
 
   it('evening nudges for night owls keep the same count', () => {

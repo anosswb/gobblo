@@ -22,11 +22,11 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'How do “when” and times work?',
-    a: 'Tomorrow and This week bites wait in “bites for later” and come onto your plate on their day. Someday waits until you move it. A time sends one ping, within your nudge limit and never in quiet hours.',
+    a: 'Tomorrow and This week bites wait in “bites for later” and come onto your plate on their day. Someday waits until you move it. A time sends one ping, never in quiet hours. Your own times don’t count toward your nudge limit.',
   },
   {
     q: 'How many notifications will I get?',
-    a: 'Never more than your level: Gentle 1 a day, Normal 2, Chaos 4. None in quiet hours. Away for 3 days? One “I napped” note, then silence. Reminders you set yourself always ping.',
+    a: 'Your pet’s own nudges never go past your level: Gentle 1 a day, Normal 2, Chaos 4. None in quiet hours. Away for 3 days? One “I napped” note, then silence. Reminders and bite times you set yourself always ping (bite times not in quiet hours).',
   },
   {
     q: 'I never hear the nudges. Why?',

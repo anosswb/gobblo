@@ -30,7 +30,7 @@ export interface Bite {
   when?: 'tomorrow' | 'week' | 'someday';
   /** pet day (dayKey) a Tomorrow / This week bite comes onto the plate */
   showOn?: string;
-  /** optional time: one ping then (within the nudge cap and quiet hours) */
+  /** optional time: one ping then (outside the nudge cap, never in quiet hours) */
   at?: number;
   createdAt: number;
   order: number;

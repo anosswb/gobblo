@@ -2,7 +2,8 @@ import type { NudgeLevel, NudgeTime, Reminder } from '@/state/schema';
 
 /**
  * Local nudge plan (docs/01 + .claude/rules/store.md). Pure, tested.
- * - Never more than the chosen level per day: off 0 · gentle 1 · normal 2 · chaos 4.
+ * - The pet's own nudges: never more than the chosen level per day: off 0 · gentle 1 · normal 2 · chaos 4.
+ * - Reminders and bite times are the user's own asks: they always ping (bite times not in quiet hours).
  * - Never inside quiet hours.
  * - We only plan the next 2 days, then ONE comeback note on day 3, then silence.
  *   The plan is rebuilt every time the app opens, so an active user never gets the comeback note.
@@ -45,6 +46,8 @@ export const COMEBACK_LINE = 'I napped. Zero guilt. One bite?';
 const WINDOW_DAYS = 2;
 /** A pet nudge this close to a user reminder is dropped (no double tap on the shoulder). */
 const NEAR_MS = 2 * 60 * 60_000;
+/** Bite pings planned at once (iOS keeps at most 64 pending notifications per app). */
+export const MAX_BITE_PINGS = 40;
 
 /**
  * When the pet should tap you for one user reminder, from `now` up to 2 days ahead.
@@ -79,7 +82,7 @@ export function planNudges(opts: {
   quietEnd: number;
   now: Date;
   reminders?: Reminder[];
-  /** bite times (when chip): they share the daily cap with the pet's nudges and respect quiet hours */
+  /** bite times (when chip): always ping (outside the nudge cap), never in quiet hours */
   biteTimes?: { at: Date; text: string; id: string }[];
   time?: NudgeTime;
   petLine?: (i: number) => string;
@@ -99,21 +102,20 @@ export function planNudges(opts: {
     }
   }
 
-  if (level === 'off') return out.sort((a, b) => +a.at - +b.at);
-
-  // Bite times: never in quiet hours, and per day within the chosen level's count (after the
-  // user's own reminders, earliest first). They then take the pet nudges' place.
-  const biteDays = new Map<string, number>();
-  const asked = [...userTimes];
+  // Bite times (the "when" chip) are the user's own ask too (Anass, 2026-11-09): each one pings,
+  // even past the daily nudge limit or with nudges off, but never in quiet hours. Only the pet's
+  // own nudges stay capped. At most MAX_BITE_PINGS are planned (iOS keeps 64 pending; the plan
+  // is rebuilt on every open, so later ones are planned as their day comes closer).
+  let bitePings = 0;
   for (const b of opts.biteTimes ?? []) {
+    if (bitePings >= MAX_BITE_PINGS) break;
     if (b.at <= now || inQuietHours(b.at.getHours(), quietStart, quietEnd)) continue;
-    const key = b.at.toDateString();
-    const used = (biteDays.get(key) ?? 0) + asked.filter((t) => sameDay(t, b.at)).length;
-    if (used >= slots.length) continue;
-    biteDays.set(key, (biteDays.get(key) ?? 0) + 1);
+    bitePings++;
     userTimes.push(b.at);
     out.push({ at: b.at, kind: 'bite', text: biteLine(b.text), biteId: b.id });
   }
+
+  if (level === 'off') return out.sort((a, b) => +a.at - +b.at);
 
   // The pet's own nudges make room for the user's: on a day with reminders or bite times, the
   // day's total stays within the chosen level, and no pet nudge lands within 2 h of one.

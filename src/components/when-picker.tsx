@@ -7,7 +7,7 @@ import { Text } from '@/components/text';
 import { Toggle } from '@/components/toggle';
 import { formatEndsAt } from '@/features/focus/timer';
 import { WHENS, type When } from '@/features/bites/when';
-import { inQuietHours, SLOTS } from '@/features/nudges/plan';
+import { inQuietHours } from '@/features/nudges/plan';
 import { en } from '@/i18n/en';
 import { useAppStore } from '@/state/app-store';
 import { duration } from '@/theme/motion';
@@ -26,7 +26,7 @@ export function clockLabel(minutes: number, clock24h: boolean) {
 
 /**
  * The "when" picker: Today / Tomorrow / This week / Someday, then an optional time for Today and
- * Tomorrow. The hint says honestly whether a ping will come (nudge cap, quiet hours, nudges off).
+ * Tomorrow. The hint says honestly whether a ping will come (bite times skip the nudge cap, never quiet hours).
  * Used by the Home add row and the start sheet.
  */
 export function WhenPicker({
@@ -47,11 +47,9 @@ export function WhenPicker({
   const hint =
     minutes === null
       ? null
-      : settings.nudge === 'off'
-        ? w.hintOff
-        : inQuietHours(Math.floor(minutes / 60), settings.quietStart, settings.quietEnd)
-          ? w.hintQuiet
-          : w.hintOk(SLOTS[settings.nudge].length);
+      : inQuietHours(Math.floor(minutes / 60), settings.quietStart, settings.quietEnd)
+        ? w.hintQuiet
+        : w.hintOk;
 
   return (
     <View style={styles.wrap}>

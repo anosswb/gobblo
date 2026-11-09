@@ -45,7 +45,7 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 - **Light + dark mode** everywhere, following the system by default, with a Settings override (System / Light / Dark). Every color comes from theme tokens. No hard-coded hex colors in components.
 - **Accessibility:** tap targets ≥ 44×44 pt, Dynamic Type / font scaling respected (cap at 1.4×), `accessibilityLabel` on every icon button, honor Reduce Motion (swap big motion for fades).
 - **No medical claims.** Never write "treats", "cures", "manages ADHD", "clinically proven". OK: "made for ADHD brains", "for brains that struggle to start". Add "Nomling is not a medical device" in Settings > About.
-- **Notifications are local only and capped** (see spec). Never more than the user's chosen level.
+- **Notifications are local only and capped** (see spec). Gobblo's own nudges never go past the user's chosen level. The user's own times (Reminders and the time on a bite) are exempt from the cap: each one pings, but bite times still never ping in quiet hours (Anass, 2026-11-09).
 - **Paywall rules:** never inside onboarding, never blocking the core loop (add task → start → feed). Always show price, what you get, Restore Purchases, Terms and Privacy links.
 - **Rating prompt:** only via `expo-store-review`, only after the 3rd fed task AND at least 2 days after install, max once per app version. Never in the first session.
 - **Money per platform** (docs/06): `MONETIZATION = Platform.select({ ios: 'iap', android: 'ads' })`. Android = AdMob ads only (rewarded first, never in onboarding, Focus, Feed, Evolution or Brain dump). iOS = one-time Plus purchase via RevenueCat, no ads. Use Google's TEST ad unit IDs in development, real IDs only in the production profile via env vars.

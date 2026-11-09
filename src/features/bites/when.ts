@@ -7,7 +7,7 @@ import { dayKey, DAY_START_HOUR, todayKey } from '@/state/schema';
  * - Today (no field): on the plate now.
  * - Tomorrow / This week: hidden in "Later" until their pet day (`showOn`), then on the plate.
  * - Someday: stays in "Later" until you move it.
- * A time pings once (local notification, within the nudge cap and quiet hours: nudges/plan.ts).
+ * A time pings once (local notification, outside the nudge cap, never in quiet hours: nudges/plan.ts).
  */
 export type When = 'today' | 'tomorrow' | 'week' | 'someday';
 export const WHENS: When[] = ['today', 'tomorrow', 'week', 'someday'];
