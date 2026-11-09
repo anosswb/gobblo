@@ -34,6 +34,8 @@ import { BiteRow } from './bite-row';
 import { DragGuide } from './drag-guide';
 import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
+import { BiteIcon } from '@/components/bite-icon';
+import { guessSize } from '@/features/bites/chop';
 import type { IconName } from '@/components/icon';
 
 const h = en.home;
@@ -62,7 +64,10 @@ export function HomeScreen() {
   const stageH = Math.round(Math.min(330, Math.max(240, screenH * 0.38)));
   const [openedAt] = useState(() => new Date());
   const [text, setText] = useState('');
-  const [size, setSize] = useState<Size>(1);
+  // the size is guessed live from the words ("write the report" → Big); a tap on the size chip overrides it
+  const [manualSize, setManualSize] = useState<Size | null>(null);
+  const typing = text.trim().length > 0;
+  const size: Size = manualSize ?? (typing ? guessSize(text) : 1);
   const [selected, setSelected] = useState<Bite | null>(null);
   // widget Start without Start Kit: gobblo://start → Home?start=<id>&at=<tap time> opens that
   // bite's start sheet once per tap (the param is left in place: clearing it hid the sheet)
@@ -194,6 +199,7 @@ export function HomeScreen() {
     }
     addBites([{ text, size }]);
     setText('');
+    setManualSize(null);
     haptics.light();
     play('pop');
   };
@@ -353,21 +359,15 @@ export function HomeScreen() {
 
         <View style={[styles.list, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <View style={styles.addRow}>
-            <PressScale
-              accessibilityRole="button"
-              accessibilityLabel={`${h.sizeLabel}: ${FOOD[size].label}`}
-              hitSlop={6}
-              onPress={() => {
-                setSize(((size + 1) % 4) as Size);
-                haptics.select();
-                play('tick');
-              }}
-              style={[styles.food, { backgroundColor: colors.fill }]}>
-              <FoodIcon size={size} />
-            </PressScale>
+            <View style={[styles.food, { backgroundColor: colors.fill }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              {typing ? <BiteIcon text={text} size={size} /> : <FoodIcon size={size} color={colors.ink3} />}
+            </View>
             <TextInput
               value={text}
-              onChangeText={setText}
+              onChangeText={(v) => {
+                setText(v);
+                if (!v.trim()) setManualSize(null);
+              }}
               onSubmitEditing={add}
               placeholder={h.addPlaceholder}
               placeholderTextColor={colors.ink3}
@@ -381,10 +381,27 @@ export function HomeScreen() {
               accessibilityLabel={h.add}
               hitSlop={6}
               onPress={add}
-              style={[styles.addBtn, { backgroundColor: text.trim() ? colors.primary : colors.fill }]}>
-              <Icon name="plus" size={18} weight="bold" color={text.trim() ? colors.onPrimary : colors.ink3} />
+              style={[styles.addBtn, { backgroundColor: typing ? colors.primary : colors.fill }]}>
+              <Icon name="plus" size={18} weight="bold" color={typing ? colors.onPrimary : colors.ink3} />
             </PressScale>
           </View>
+          {typing ? (
+            <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.addChips}>
+              <PressScale
+                accessibilityRole="button"
+                accessibilityLabel={`${h.sizeLabel}: ${FOOD[size].label}, ${FOOD[size].min} min`}
+                hitSlop={8}
+                onPress={() => {
+                  setManualSize(((size + 1) % 4) as Size);
+                  haptics.select();
+                  play('tick');
+                }}
+                style={[styles.addChip, { backgroundColor: colors.fill }]}>
+                <FoodIcon size={size} px={14} color={colors.ink2} />
+                <Text variant="caption" tone="ink2" style={styles.chipText}>{h.sizeChip(FOOD[size].label, FOOD[size].min)}</Text>
+              </PressScale>
+            </Animated.View>
+          ) : null}
 
           {list.length === 0 ? (
             <View style={[styles.empty, { borderTopColor: colors.line }]}>
@@ -487,6 +504,8 @@ const styles = StyleSheet.create({
   list: { borderRadius: radius.card, overflow: 'hidden' },
   addRow: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingHorizontal: space.m, minHeight: 64 },
   input: { flex: 1, minHeight: 44, fontSize: typeScale.body },
+  addChips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s, paddingHorizontal: space.m, paddingBottom: space.m, marginTop: -space.xs },
+  addChip: { flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 32, paddingHorizontal: space.m, borderRadius: radius.chip },
   addBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   foodEmoji: { fontSize: 22, lineHeight: 28 },

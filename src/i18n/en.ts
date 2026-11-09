@@ -130,6 +130,7 @@ export const en = {
     askAgainOn: 'Gentle nudges are on',
     askAgainLater: 'No worries. You can turn nudges on in Settings anytime.',
     sizeLabel: 'Change size',
+    sizeChip: (label: string, min: number) => `${label} · ~${min} min`,
   },
   onboarding: {
     hookTitle: 'Your brain isn’t lazy.',

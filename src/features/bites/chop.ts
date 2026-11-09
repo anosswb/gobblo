@@ -28,31 +28,59 @@ const FILLER = [
 const FR_VERBS = ['faire', 'finir', 'prendre', 'lire', 'écrire', 'mettre', 'sortir', 'dire', 'voir', 'rendre', 'remplir', 'choisir', 'promener'];
 
 /** Messages and calls: rarely 2 minutes once you open the thread, so Small (~5 min). */
-const MESSAGE = ['text', 'reply', 'call', 'email', 'mail', 'dm', 'message', 'appeler', 'répondre', 'envoyer', 'texto', 'sms'];
-const TINY = ['pay', 'book', 'order', 'water', 'send', 'sign', 'check', 'cancel', 'feed', 'take out', 'trash', 'pills', 'meds', 'payer', 'arroser', 'sortir la poubelle', 'poubelle'];
+const MESSAGE = ['text', 'reply', 'call', 'email', 'mail', 'dm', 'message', 'appeler', 'appelle', 'répondre', 'réponds', 'envoyer', 'texto', 'sms'];
+const TINY = ['pay', 'book', 'order', 'water', 'send', 'sign', 'check', 'cancel', 'feed', 'take out', 'trash', 'pills', 'meds', 'payer', 'arroser', 'sortir la poubelle', 'poubelle', 'prendre (?:mes|un|le) médicaments?'];
+/** Big jobs (~25 min or more): long writing, school, whole-house chores, admin marathons. */
 const BIG = [
-  'essay', 'project', 'report', 'taxes', 'thesis', 'presentation', 'study', 'homework', 'deep clean', 'whole', 'apply', 'application',
-  'resume', 'cv', 'move', 'exam', 'assignment', 'révision', 'révisions', 'réviser', 'examen', 'partiel', 'dissertation', 'dissert',
-  'mémoire', 'exposé', 'devoirs', 'étudier', 'projet', 'rapport', 'impôts',
+  'essay', 'project', 'report', 'taxes', 'thesis', 'dissertation', 'presentation', 'slides', 'deck', 'portfolio', 'research',
+  'study', 'homework', 'deep clean', 'spring clean', 'clean (?:the|my|our) (?:whole )?(?:house|home|apartment|flat|garage|kitchen|bathroom|car)',
+  'whole', 'apply', 'application', 'resume', 'cv', 'move', 'moving', 'exam', 'midterm', 'finals', 'assignment', 'chapter',
+  'révision', 'réviser', 'examen', 'partiel', 'bac', 'dissert', 'mémoire', 'exposé', 'devoirs?', 'étudier', 'projet', 'rapport', 'impôts',
+  'grand ménage', 'ménage (?:de|dans) (?:la|toute la) maison', 'nettoyer (?:la|toute la) maison', 'déménag(?:er|ement)', 'candidature', 'thèse',
 ];
 const MEDIUM = [
-  'clean', 'laundry', 'cook', 'groceries', 'grocery', 'shop', 'workout', 'gym', 'run', 'dishes', 'read', 'write', 'tidy', 'wash', 'vacuum',
-  'pack', 'practice', 'shower', 'lessive', 'linge', 'ménage', 'ranger', 'nettoyer', 'vaisselle', 'courses', 'cuisiner', 'sport', 'douche',
+  'clean', 'laundry', 'cook', 'groceries', 'grocery', 'shop', 'workout', 'gym', 'run', 'dishes', 'read', 'tidy', 'wash', 'vacuum',
+  'pack', 'practice', 'shower', 'lessive', 'linge', 'ménage', 'ranger', 'nettoyer', 'vaisselle', 'courses', 'cuisiner', 'sport', 'douche', 'lire',
 ];
+/** "Write" is long writing unless it is a note, list or message. */
+const WRITE = ['write', 'écrire', 'rédiger'];
+const SHORT_WRITE = ['list', 'note', 'notes', 'card', 'message', 'text', 'email', 'mail', 'reminder', 'liste', 'mot', 'carte', 'sms', 'texto'];
+/** Things you count in work: "50 pages", "20 questions". */
+const COUNT_UNITS = 'pages?|words?|slides?|questions?|exercises?|problems?|chapters?|emails?|flashcards?|cards?|mots|exercices?|diapos?|chapitres?|fiches?';
+/** Many quick things are no longer quick: "reply to 30 emails", "pay 12 bills". */
+const PILE = /(\d+)\s*(?:e-?mails?|messages?|texts?|calls?|bills?|invoices?|forms?|factures?|appels?)(?![\p{L}])/giu;
+/** A number followed by one of these is money, time or a measure, not work ("pay 100 dh", "at 5 pm"). */
+const NOT_WORK = /^\s*(?:dh|mad|dirhams?|\$|€|£|eur|euros?|usd|dollars?|%|g|kg|ml|l|cl|km|m|min|mins|minutes?|h|hrs?|hours?|heures?|am|pm|ans?|years?)(?![\p{L}])/iu;
 
-const has = (s: string, words: string[]) => words.some((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`).test(s));
+const has = (s: string, words: string[]) => words.some((w) => new RegExp(`(?:^|[^\\p{L}\\p{N}])${w}(?:s|es)?(?=$|[^\\p{L}\\p{N}])`, 'iu').test(s));
+
+/** How much a number in the text says "this is long": 2 = counted work (≥ 10 pages), 1 = a big bare number (≥ 50), 0 = none. */
+function numberWeight(s: string): 0 | 1 | 2 {
+  let best: 0 | 1 | 2 = 0;
+  const unit = new RegExp(`(\\d+)\\s*(?:${COUNT_UNITS})(?![\\p{L}])`, 'giu');
+  for (const m of s.matchAll(unit)) if (Number(m[1]) >= 10) best = 2;
+  if (best) return best;
+  for (const m of s.matchAll(/(?<![\d:.,])(\d+)(?![\d:.,])/g)) {
+    const after = s.slice((m.index ?? 0) + m[0].length);
+    if (Number(m[1]) >= 50 && Number(m[1]) < 10000 && !NOT_WORK.test(after)) best = 1;
+  }
+  return best;
+}
 
 export function guessSize(text: string): Size {
-  const s = text.toLowerCase();
-  // a quick action up front wins ("email my prof about the essay" is a message, not an essay)
-  const first = (words: string[]) => words.some((w) => s.startsWith(`${w} `) || s === w);
-  if (first(MESSAGE)) return 1;
-  if (first(TINY)) return 0;
-  if (has(s, BIG)) return 3;
-  if (has(s, MESSAGE)) return 1;
-  if (has(s, TINY)) return 0;
-  if (has(s, MEDIUM)) return 2;
-  return 1;
+  const s = text.toLowerCase().trim();
+  const weight = numberWeight(s);
+  // a quick action up front wins ("email my prof about the essay" is a message, not an essay),
+  // unless it is a pile of them ("reply to 30 emails")
+  const first = (words: string[]) => words.some((w) => new RegExp(`^${w}(?:s|es)?(?=$|[^\\p{L}])`, 'iu').test(s));
+  const pile = [...s.matchAll(PILE)].some((m) => Number(m[1]) >= 10);
+  if (first(MESSAGE)) return pile ? 2 : 1;
+  if (first(TINY)) return pile ? 2 : 0;
+  if (has(s, BIG) || weight === 2) return 3;
+  if (has(s, WRITE)) return has(s, SHORT_WRITE) ? 1 : 3;
+  let base: Size = has(s, MESSAGE) ? 1 : has(s, TINY) ? 0 : has(s, MEDIUM) ? 2 : 1;
+  if (weight === 1) base = Math.min(3, base + 1) as Size;
+  return base;
 }
 
 function stripFiller(part: string): string {
