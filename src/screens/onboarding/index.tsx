@@ -37,20 +37,19 @@ import { duration } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, petColors, radius, space, stages, typeScale, type PetColor } from '@/theme/tokens';
 
-import { FeelStep } from './feel-step';
 import { BiteIcon } from '@/components/bite-icon';
 import { FoodIcon } from '@/components/food-icon';
 
 const o = en.onboarding;
-type Step = 'hook' | 'quiz' | 'feel' | 'feed' | 'hatch' | 'name' | 'nudge';
-const DOTS: Step[] = ['hook', 'quiz', 'feel', 'feed', 'name', 'nudge'];
+type Step = 'hook' | 'quiz' | 'feed' | 'hatch' | 'name' | 'nudge';
+const DOTS: Step[] = ['hook', 'quiz', 'feed', 'name', 'nudge'];
 /** the free colours (the rest are unlocked by levels or Make It Yours, src/features/closet/items.ts) */
 const START_COLORS = COLORS.filter((c) => c.unlock.type === 'free');
 const ORBIT = [0, 1, 2, 3] as const;
 
 /**
  * Onboarding (docs/01 §0 + DECISIONS "hatch by feeding"), under 60 s, no paywall, no account:
- * hook → one quiz screen → make it yours (look + sound, Anass) → feed the egg your first thought (it hatches *because it ate*) →
+ * hook → one quiz screen → feed the egg your first thought (it hatches *because it ate*) →
  * name it (dice) + colour → soft nudge ask (the OS prompt only after "yes") → Home.
  */
 export function OnboardingScreen() {
@@ -187,25 +186,14 @@ export function OnboardingScreen() {
               <View style={styles.lineBox}>
                 {line ? (
                   <Animated.View key={line} entering={FadeIn.duration(duration.fast)} style={styles.lineRow}>
-                    <Pet size={40} mood="love" />
+                    <Egg size={40} />
                     <Text variant="subhead" tone="ink2" style={styles.flex}>{line}</Text>
                   </Animated.View>
                 ) : null}
               </View>
               <View style={styles.actions}>
-                <Primary label={picked.length ? o.next : o.skip} onPress={() => go('feel')} soft={!picked.length} />
+                <Primary label={picked.length ? o.next : o.skip} onPress={() => go('feed')} soft={!picked.length} />
               </View>
-            </Animated.View>
-          )}
-
-          {step === 'feel' && (
-            <Animated.View key="feel" entering={enter} exiting={exit} style={styles.page}>
-              <View style={styles.copyTop}>
-                <Text variant="title" accessibilityRole="header">{o.feelTitle}</Text>
-                <Text variant="body" tone="ink2">{o.feelSub}</Text>
-              </View>
-              <FeelStep />
-              <Primary label={o.next} onPress={() => go('feed')} />
             </Animated.View>
           )}
 
@@ -387,17 +375,17 @@ const styles = StyleSheet.create({
   actions: { gap: space.s },
   primary: { minHeight: 56, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.xl },
   feedRow: { flexDirection: 'row', alignItems: 'center', gap: space.s, borderRadius: radius.card, padding: space.s, minHeight: 64 },
-  food: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  food: { flexShrink: 0, width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   foodEmoji: { fontSize: 24, lineHeight: 30 },
-  input: { flex: 1, minHeight: 44, fontSize: typeScale.body },
+  input: { flex: 1, minWidth: 0, minHeight: 44, fontSize: typeScale.body },
   noOutline: Platform.select({ web: { outlineStyle: 'none' }, default: {} }) as object,
-  feedBtn: { minHeight: 44, paddingHorizontal: space.l, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
+  feedBtn: { flexShrink: 0, minHeight: 44, paddingHorizontal: space.l, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   flying: { position: 'absolute' },
   flyEmoji: { fontSize: 44, lineHeight: 52 },
   nameCard: { padding: space.l, gap: space.l, overflow: 'visible' },
   nameRow: { flexDirection: 'row', gap: space.s },
-  nameInput: { flex: 1, minHeight: 52, borderRadius: radius.field, paddingHorizontal: space.l, fontSize: typeScale.title3 },
-  dice: { width: 52, height: 52, borderRadius: radius.field, alignItems: 'center', justifyContent: 'center' },
+  nameInput: { flex: 1, minWidth: 0, minHeight: 52, borderRadius: radius.field, paddingHorizontal: space.l, fontSize: typeScale.title3 },
+  dice: { flexShrink: 0, width: 52, height: 52, borderRadius: radius.field, alignItems: 'center', justifyContent: 'center' },
   diceEmoji: { fontSize: 24, lineHeight: 30 },
   bell: { position: 'absolute', top: '12%', end: '18%', width: 60, height: 60, borderRadius: 18, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '12deg' }] },
   orbit: { position: 'absolute' },

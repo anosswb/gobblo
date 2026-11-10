@@ -88,7 +88,7 @@ export const en = {
       soundHint: 'Uses your focus sound from Settings.',
     },
   },
-  tabs: { home: 'Home', spin: 'Spin', dump: 'Dump', closet: 'Closet', me: 'Me' },
+  tabs: { home: 'Home', dump: 'Dump', closet: 'Closet', me: 'Me' },
   a11y: {
     dumpButton: 'Brain dump: add bites',
     tab: (name: string) => `${name} tab`,
@@ -96,6 +96,8 @@ export const en = {
   home: {
     today: 'Today',
     goodThingAsk: 'One good thing from that?',
+    pick: 'Pick for me',
+    pickHint: 'Can’t choose? Let your pet pick one bite',
     about: (min: number) => `~${min} min`,
     guideTitle: (name: string) => `Feed ${name} by starting`,
     guideBody: (name: string) => `Hold a bite’s food for a moment, then drag it onto ${name}. Or just tap the bite.`,
@@ -130,8 +132,6 @@ export const en = {
     hookCta: 'Let’s go',
     quizTitle: 'What wrecks your day?',
     quizSub: 'Pick any. No wrong answers.',
-    feelTitle: 'Make it yours',
-    feelSub: 'Tap around, you’ll hear and feel it. All of this lives in Settings too.',
     quiz: [
       { key: 'start', label: 'Starting things', line: 'Same. That’s literally what I eat.' },
       { key: 'time', label: 'Time vanishes', line: 'I’ll show you when things end. Time gets a shape.' },
@@ -303,6 +303,8 @@ export const en = {
   when: {
     today: 'Today',
     goodThingAsk: 'One good thing from that?',
+    pick: 'Pick for me',
+    pickHint: 'Can’t choose? Let your pet pick one bite',
     tomorrow: 'Tomorrow',
     week: 'This week',
     someday: 'Someday',
