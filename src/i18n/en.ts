@@ -84,6 +84,8 @@ export const en = {
     emptyTitle: (name: string) => `${name}’s plate is empty`,
     emptySub: 'Dump whatever’s in your head and it turns into bites.',
     dump: 'Brain dump',
+    showMore: (n: number) => `Show ${n} more`,
+    showLess: 'Show less',
     oneThingMore: (n: number) => `${n} more hidden · one-thing mode`,
     daily: 'Daily',
     dailyOn: 'Stays on your plate every day',

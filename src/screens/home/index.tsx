@@ -39,6 +39,7 @@ import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
 import { BiteIcon } from '@/components/bite-icon';
 import { guessSize } from '@/features/bites/chop';
+import { platePreview, plateLimit } from '@/features/bites/plate';
 import { laterGroups, timed, type When } from '@/features/bites/when';
 import { clockLabel, movedLabel, whenText, WhenPicker } from '@/components/when-picker';
 import type { IconName } from '@/components/icon';
@@ -78,6 +79,7 @@ export function HomeScreen() {
   const [newMinutes, setNewMinutes] = useState<number | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [laterOpen, setLaterOpen] = useState(false);
+  const [plateOpen, setPlateOpen] = useState(false);
   const [selected, setSelected] = useState<Bite | null>(null);
   // widget Start when it cannot start the clock (not onboarded, or a timer already runs): gobblo://start → Home?start=<id>&at=<tap time> opens that
   // bite's start sheet once per tap (the param is left in place: clearing it hid the sheet)
@@ -112,11 +114,23 @@ export function HomeScreen() {
   const list = plate(bites, today);
   const later = laterGroups(bites, today);
   const laterCount = later.reduce((n, g) => n + g.bites.length, 0);
-  const shown = settings.oneThingMode ? list.slice(0, 1) : list;
+  const preview = platePreview(list, { limit: plateLimit(screenH), expanded: plateOpen });
+  const shown = settings.oneThingMode ? list.slice(0, 1) : preview.visible;
+  const foldedCount = platePreview(list, { limit: plateLimit(screenH), expanded: false }).hiddenCount;
+  const canFold = !settings.oneThingMode && foldedCount > 0;
   const look = useLook();
   const stage = look.stage;
 
   // new food arrived (typed here or served from the brain dump): the pet gets excited
+  // a new bite that would land in the folded part opens it, so you see it land
+  const seenIds = useRef(new Set(list.map((b) => b.id)));
+  useEffect(() => {
+    const fresh = list.filter((b) => !seenIds.current.has(b.id));
+    seenIds.current = new Set(list.map((b) => b.id));
+    if (!fresh.length || plateOpen || settings.oneThingMode) return;
+    const vis = new Set(platePreview(list, { limit: plateLimit(screenH), expanded: false }).visible.map((b) => b.id));
+    if (fresh.some((b) => !vis.has(b.id))) setPlateOpen(true);
+  }, [list, plateOpen, screenH, settings.oneThingMode]);
   const plateBefore = useRef(list.length);
   useEffect(() => {
     if (list.length > plateBefore.current) setReaction('excited');
@@ -540,6 +554,21 @@ export function HomeScreen() {
             ))
           )}
         </View>
+        {canFold ? (
+          <PressScale
+            accessibilityRole="button"
+            accessibilityState={{ expanded: plateOpen }}
+            accessibilityLabel={plateOpen ? h.showLess : h.showMore(foldedCount)}
+            onPress={() => {
+              setPlateOpen((v) => !v);
+              haptics.light();
+            }}
+            style={[styles.plateMore, { backgroundColor: colors.fill }]}>
+            <Text variant="bodyBold" tone="ink2">{plateOpen ? h.showLess : h.showMore(foldedCount)}</Text>
+            <Icon name={plateOpen ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
+          </PressScale>
+        ) : null}
+
         {settings.oneThingMode && list.length > 1 ? (
           <Text variant="caption" tone="ink2" style={styles.footer}>{h.oneThingMore(list.length - 1)}</Text>
         ) : null}
@@ -704,6 +733,7 @@ const styles = StyleSheet.create({
   whenPanel: { width: '100%', paddingTop: space.s },
   laterWrap: { gap: space.s, marginTop: space.s },
   laterHead: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 52, paddingHorizontal: space.l, borderRadius: radius.card - 6, borderWidth: StyleSheet.hairlineWidth },
+  plateMore: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s, minHeight: 44, paddingHorizontal: space.l, borderRadius: radius.card - 6, marginTop: space.s },
   laterBody: { gap: space.m },
   laterGroup: { gap: space.xs },
   addBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
