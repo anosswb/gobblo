@@ -95,6 +95,18 @@ import Wind from 'lucide-react-native/icons/wind';
 import Wrench from 'lucide-react-native/icons/wrench';
 import X from 'lucide-react-native/icons/x';
 import Zap from 'lucide-react-native/icons/zap';
+import Atom from 'lucide-react-native/icons/atom';
+import Camera from 'lucide-react-native/icons/camera';
+import Languages from 'lucide-react-native/icons/languages';
+import MoonStar from 'lucide-react-native/icons/moon-star';
+import Package from 'lucide-react-native/icons/package';
+import Printer from 'lucide-react-native/icons/printer';
+import Recycle from 'lucide-react-native/icons/recycle';
+import ScanLine from 'lucide-react-native/icons/scan-line';
+import Smartphone from 'lucide-react-native/icons/smartphone';
+import SquareRadical from 'lucide-react-native/icons/square-radical';
+import Video from 'lucide-react-native/icons/video';
+import IdCard from 'lucide-react-native/icons/id-card';
 import { SymbolView, type SymbolWeight } from 'expo-symbols';
 import { Platform } from 'react-native';
 
@@ -203,6 +215,21 @@ const MAP = {
   slides: ['rectangle.on.rectangle', Presentation],
   list: ['checklist', ListChecks],
   wait: ['hourglass', Hourglass],
+  // more bite topics (bite-icon.ts)
+  cake: ['birthday.cake.fill', Cake],
+  camera: ['camera.fill', Camera],
+  video: ['video.fill', Video],
+  science: ['atom', Atom],
+  math: ['x.squareroot', SquareRadical],
+  language: ['character.bubble.fill', Languages],
+  parcel: ['shippingbox.fill', Package],
+  print: ['printer.fill', Printer],
+  scan: ['doc.viewfinder.fill', ScanLine],
+  idcard: ['person.text.rectangle.fill', IdCard],
+  pray: ['moon.stars.fill', MoonStar],
+  recycle: ['arrow.3.trianglepath', Recycle],
+  smartphone: ['iphone', Smartphone],
+  beauty: ['wand.and.stars', WandSparkles],
   // toolkit
   toolkit: ['square.grid.2x2.fill', LayoutGrid],
   wind: ['wind', Wind],
