@@ -1,5 +1,11 @@
 {
   "_help": "Paste your AdMob IDs between the quotes. Empty quotes = Google's test ads. Steps: docs/17-money-setup.md",
-  "android": { "appId": "", "rewardedId": "" },
-  "ios": { "appId": "", "rewardedId": "" }
+  "android": {
+    "appId": "ca-app-pub-7127060962131551~7470798384",
+    "rewardedId": "ca-app-pub-7127060962131551/7267618407"
+  },
+  "ios": {
+    "appId": "",
+    "rewardedId": ""
+  }
 }
