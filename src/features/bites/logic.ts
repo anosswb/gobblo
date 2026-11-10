@@ -99,10 +99,26 @@ export function rewardStart(state: PersistedState, twoMinute: boolean): Pick<Per
   return { stats: { ...s, sparks: s.sparks + 1, total: s.total + 1, starts2: s.starts2 + (twoMinute ? 1 : 0) } };
 }
 
+/** A timer ended before one real minute has passed earns nothing more than the +1 for starting. */
+export const MIN_FOCUS_MS = 60_000;
+/** "I already did it" (no timer ran): a flat spark, whatever the size. */
+export const ALREADY_DONE_SPARKS = 1;
+
+/**
+ * Sparks for a fed bite. The full size reward needs a real minute on the timer: sparks unlock
+ * packs on Android, so "start, tap Done after 10 seconds" must not pay like real focus
+ * (docs/15, review 2026-11-09). The bite is still eaten and nothing is said about it: no shame.
+ */
+export function sparksFor(size: Size | undefined, session: Pick<Session, 'startedAt' | 'endedAt' | 'plannedMin'>): number {
+  if (session.plannedMin === 0) return ALREADY_DONE_SPARKS;
+  if (session.endedAt - session.startedAt < MIN_FOCUS_MS) return 0;
+  return size === undefined ? 1 : FOOD[size].sparks;
+}
+
 /** Feed: the bite is eaten. Daily bites come back tomorrow, others leave the plate. */
 export function feed(state: PersistedState, biteId: string, session: Session, now = new Date()) {
   const bite = state.bites.find((b) => b.id === biteId);
-  const sparks = bite ? FOOD[bite.size].sparks : 1;
+  const sparks = sparksFor(bite?.size, session);
   const today = dayKey(now);
   const bites = bite?.daily
     ? state.bites.map((b) => (b.id === biteId ? { ...b, doneOn: today } : b))

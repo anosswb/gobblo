@@ -1,9 +1,9 @@
 import { dayKey, freshState, type Session } from '@/state/schema';
 
-import { addBites, daysAway, feed, newDayCheck, plate, reorder, rewardStart, toggleDaily } from './logic';
+import { addBites, daysAway, feed, newDayCheck, plate, reorder, rewardStart, sparksFor, toggleDaily } from './logic';
 
 const session = (over: Partial<Session> = {}): Session => ({
-  id: 's', biteText: 'x', plannedMin: 2, spentMin: 3, mode: '2min', startedAt: 0, endedAt: 0, done: true, drifts: 0, ...over,
+  id: 's', biteText: 'x', plannedMin: 2, spentMin: 3, mode: '2min', startedAt: 0, endedAt: 3 * 60_000, done: true, drifts: 0, ...over,
 });
 
 describe('bites', () => {
@@ -47,6 +47,22 @@ describe('bites', () => {
     const s = freshState(0);
     s.bites = addBites(s, [{ text: 'a', size: 0 }, { text: 'b', size: 0 }, { text: 'c', size: 0 }]).bites;
     expect(plate(reorder(s.bites, 2, 0), '').map((b) => b.text)).toEqual(['C', 'A', 'B']);
+  });
+});
+
+describe('sparks cannot be farmed', () => {
+  it('a timer ended before one real minute pays nothing more than the start spark', () => {
+    const s = freshState(0);
+    s.bites = addBites(s, [{ text: 'essay', size: 3 }]).bites;
+    const r = feed(s, s.bites[0].id, session({ startedAt: 0, endedAt: 10_000 }), new Date(2026, 10, 6, 12));
+    expect(r.sparks).toBe(0);
+    expect(r.stats.eaten).toBe(1); // the bite is still eaten: no policing, no shame
+    expect(r.bites).toHaveLength(0);
+  });
+  it('a real minute pays by size; "I already did it" pays one flat spark', () => {
+    expect(sparksFor(3, { startedAt: 0, endedAt: 60_000, plannedMin: 25 })).toBe(5);
+    expect(sparksFor(3, { startedAt: 0, endedAt: 25 * 60_000, plannedMin: 0 })).toBe(1);
+    expect(sparksFor(undefined, { startedAt: 0, endedAt: 5 * 60_000, plannedMin: 2 })).toBe(1);
   });
 });
 
