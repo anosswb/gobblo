@@ -249,7 +249,7 @@ function PetPage() {
       <Section title={t.petColor}>
         <Row last stacked hideLabel label={t.petColor} right={
           <Chips<PetColor> accessibilityLabel={t.petColor} value={look.color} onChange={(c) => patchPet({ color: c })}
-            options={COLORS.filter((c) => isUnlocked(c.unlock, look.level, look.makeItYours, look.week)).map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))} />
+            options={COLORS.filter((c) => isUnlocked(c.unlock, look.level, look.plus, look.week)).map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))} />
         } />
       </Section>
       <Section>

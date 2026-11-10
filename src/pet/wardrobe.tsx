@@ -20,7 +20,14 @@ export type HatId =
   | 'chef'
   | 'wizard'
   | 'bunny'
-  | 'goldCrown';
+  | 'goldCrown'
+  // weekly surprises (features/weekly)
+  | 'mushroom'
+  | 'friedEgg'
+  | 'bucket'
+  | 'propeller'
+  | 'cowboy'
+  | 'cherries';
 
 export type FaceId = 'none' | 'shades' | 'round' | 'hearts' | 'stars' | 'mustache';
 
@@ -36,6 +43,11 @@ export const HIDES_ANTENNA: ReadonlySet<HatId> = new Set<HatId>([
   'chef',
   'wizard',
   'goldCrown',
+  'mushroom',
+  'friedEgg',
+  'bucket',
+  'propeller',
+  'cowboy',
 ]);
 
 const C = {
@@ -60,6 +72,8 @@ const C = {
   black: '#1C1C24',
   brown: '#5A3A2A',
   gem: '#4FD1FF',
+  cream: '#FFF3DC',
+  tan: '#8A5A3C',
 };
 
 function Sparkle({ x, y, s = 1, fill = C.white }: { x: number; y: number; s?: number; fill?: string }) {
@@ -219,6 +233,70 @@ export function HatArt({ id }: { id: HatId }) {
           <Sparkle x={104} y={40} s={1} fill={C.gold} />
           <Sparkle x={122} y={58} s={0.6} fill={C.goldLight} />
           <Circle cx={92} cy={62} r={3} fill={C.goldLight} />
+        </G>
+      );
+    case 'mushroom':
+      return (
+        <G>
+          <Path d="M42 84 C42 22 158 22 158 84 Q100 98 42 84Z" fill={C.red} />
+          <Path d="M42 84 Q100 98 158 84 Q100 76 42 84Z" fill={C.cream} />
+          <Circle cx={74} cy={56} r={9} fill={C.white} />
+          <Circle cx={112} cy={44} r={11} fill={C.white} />
+          <Circle cx={138} cy={66} r={6} fill={C.white} />
+          <Circle cx={94} cy={72} r={5} fill={C.white} />
+          <Path d="M58 60 C62 46 72 38 84 34" stroke={C.white} strokeWidth={4} opacity={0.3} fill="none" strokeLinecap="round" />
+        </G>
+      );
+    case 'friedEgg':
+      return (
+        <G>
+          <Path d="M52 78 C40 66 56 50 70 54 C74 38 100 34 112 46 C130 38 152 52 146 68 C158 78 146 94 132 88 C120 96 104 90 98 84 C86 92 62 92 52 78Z" fill={C.white} />
+          <Path d="M58 76 C52 68 60 60 68 62" stroke={C.silver} strokeWidth={3} fill="none" strokeLinecap="round" />
+          <Circle cx={102} cy={62} r={17} fill={C.gold} />
+          <Circle cx={102} cy={62} r={17} fill="none" stroke={C.goldDeep} strokeWidth={2} opacity={0.5} />
+          <Circle cx={96} cy={56} r={5} fill={C.goldLight} />
+        </G>
+      );
+    case 'bucket':
+      return (
+        <G>
+          <Path d="M66 80 L72 40 Q100 30 128 40 L134 80Z" fill={C.green} />
+          <Path d="M42 92 Q52 72 66 76 Q100 86 134 76 Q148 72 158 92 Q100 106 42 92Z" fill={C.greenDeep} />
+          <Path d="M68 70 Q100 79 132 70" stroke={C.white} strokeWidth={2.5} opacity={0.45} fill="none" strokeDasharray="5 5" strokeLinecap="round" />
+          <Path d="M80 46 C84 42 90 40 96 39" stroke={C.white} strokeWidth={4} opacity={0.35} fill="none" strokeLinecap="round" />
+        </G>
+      );
+    case 'propeller':
+      return (
+        <G>
+          <Path d="M58 84 C58 44 142 44 142 84Z" fill={C.blue} />
+          <Path d="M100 46 C82 52 76 70 76 84 L100 84Z" fill={C.red} />
+          <Path d="M100 46 C118 52 124 70 124 84 L100 84Z" fill={C.gold} />
+          <Rect x={54} y={80} width={92} height={10} rx={5} fill={C.blueDeep} />
+          <Rect x={98} y={28} width={4} height={18} rx={2} fill={C.ink} />
+          <Ellipse cx={82} cy={28} rx={17} ry={5.5} fill={C.red} />
+          <Ellipse cx={118} cy={28} rx={17} ry={5.5} fill={C.gold} />
+          <Circle cx={100} cy={28} r={5} fill={C.ink} />
+        </G>
+      );
+    case 'cowboy':
+      return (
+        <G>
+          <Path d="M28 82 Q46 98 100 92 Q154 98 172 82 Q158 68 136 78 Q100 86 64 78 Q42 68 28 82Z" fill={C.brown} />
+          <Path d="M66 80 C62 44 80 32 92 42 Q100 48 108 42 C120 32 138 44 134 80 Q100 88 66 80Z" fill={C.tan} />
+          <Path d="M66 72 Q100 80 134 72 L134 80 Q100 88 66 80Z" fill={C.ink} />
+          <Path d="M76 52 C78 46 84 44 88 46" stroke={C.white} strokeWidth={3.5} opacity={0.3} fill="none" strokeLinecap="round" />
+        </G>
+      );
+    case 'cherries':
+      return (
+        <G transform="translate(126 62) rotate(10)">
+          <Path d="M10 -36 Q-6 -24 -8 -8 M10 -36 Q20 -22 17 -4" stroke={C.greenDeep} strokeWidth={3} fill="none" strokeLinecap="round" />
+          <Path d="M10 -36 Q24 -46 32 -34 Q20 -28 10 -36Z" fill={C.green} />
+          <Circle cx={-8} cy={2} r={11} fill={C.red} />
+          <Circle cx={17} cy={6} r={11} fill={C.red} />
+          <Circle cx={-12} cy={-2} r={3} fill={C.white} opacity={0.6} />
+          <Circle cx={13} cy={2} r={3} fill={C.white} opacity={0.6} />
         </G>
       );
     case 'bunny':

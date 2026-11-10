@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { addBites, feed, FOOD, moveToTop, newDayCheck, newId, removeBite, reorder, rewardStart, splitBite, toggleDaily, type NewBite } from '@/features/bites/logic';
 import { setTime, setWhen, type When } from '@/features/bites/when';
 import { startTimer } from '@/features/focus/timer';
-import { hasPack, spendForPack, type PackId } from '@/features/plus/catalog';
+import { hasPlus, spendForPlus } from '@/features/plus/catalog';
 import { mmkvStateStorage } from '@/lib/storage';
 
 import { mergeDefaults, migrate } from './migrations';
@@ -29,7 +29,7 @@ type Actions = {
   /** Plus: grant a pack (store purchase on iOS) */
   unlock: (id: string) => void;
   /** Android: buy a pack with sparks; false if not enough */
-  buyPackWithSparks: (id: PackId) => boolean;
+  buyPlusWithSparks: () => boolean;
   resetAll: () => void;
   importState: (data: PersistedState) => void;
   onAppActive: (now?: Date) => void;
@@ -83,12 +83,13 @@ export const useAppStore = create<AppState>()(
       patchPet: (patch) => set((s) => ({ pet: { ...s.pet, ...patch } })),
       markLevelSeen: (level) => set((s) => ({ stats: { ...s.stats, seenLevel: Math.max(s.stats.seenLevel ?? 1, level) } })),
       unlock: (id) => set((s) => (s.unlocked.includes(id) ? {} : { unlocked: [...s.unlocked, id] })),
-      buyPackWithSparks: (id) => {
+      buyPlusWithSparks: () => {
         const s = get();
-        if (hasPack(s.unlocked, id)) return true;
-        const left = spendForPack(s.stats.sparks, id);
+        if (hasPlus(s.unlocked)) return true;
+        const left = spendForPlus(s.stats.sparks);
         if (left === null) return false;
-        set({ stats: { ...s.stats, sparks: left }, unlocked: [...s.unlocked, id] });
+        // only the spendable sparks go down: stats.total (the level) is untouched
+        set({ stats: { ...s.stats, sparks: left }, unlocked: [...s.unlocked, 'plus'] });
         return true;
       },
       resetAll: () => set(freshState()),

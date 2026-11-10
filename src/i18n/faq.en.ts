@@ -35,9 +35,9 @@ export const FAQ: { q: string; a: string }[] = [
   {
     q: 'How do the widgets work?',
     a: android
-      ? 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. With Start Kit, Start begins 2 minutes in one tap.'
+      ? 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. Start begins 2 minutes in one tap, free for everyone.'
       : PLUS_VISIBLE
-        ? 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. With Start Kit, Start begins 2 minutes in one tap, and the timer shows on the lock screen.'
+        ? 'Add the widget from your home screen. It shows your next bite; Start opens it in the app. Start begins 2 minutes in one tap, free for everyone. With Plus, the timer also shows on the lock screen.'
         : 'Add the widget from your home screen. It shows your next bite; Start opens it in the app.',
   },
   {
@@ -51,7 +51,7 @@ export const FAQ: { q: string; a: string }[] = [
   android
     ? {
         q: 'Is there anything to pay for?',
-        a: 'No payments on Android. Packs are earned with sparks you get by starting bites. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.',
+        a: 'No payments on Android. Plus (the full closet, the lock-screen timer and routine packs) costs 150 sparks, which you earn by starting bites. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.',
       }
     : !PLUS_VISIBLE
       ? {
@@ -60,7 +60,7 @@ export const FAQ: { q: string; a: string }[] = [
         }
       : {
           q: 'What is Plus?',
-          a: 'Small packs you buy once, no subscription, offered only after your first week. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good. Restore purchases is at the bottom of the Plus page.',
+          a: 'One unlock you buy once: the full closet, the lock-screen timer and routine packs. No subscription, offered only after your first week. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good. Restore purchases is at the bottom of the Plus page.',
         },
   {
     q: 'Do I lose anything if I skip days?',

@@ -43,9 +43,9 @@ export const GUIDES = {
       demo: 'sparkle',
       title: 'Locked items',
       body: android
-        ? 'Most open as you level up. A few cost sparks: the price is on the item. A free new colour arrives every week.'
+        ? 'Most open as you level up. A few are part of Plus: the spark price is on the item. A free new colour arrives every week.'
         : PLUS_VISIBLE
-          ? 'Most open as you level up. A few are part of a Plus pack. A free new colour arrives every week.'
+          ? 'Most open as you level up. A few are part of Plus. A free new colour arrives every week.'
           : 'They open as you level up, and a free new colour arrives every week.',
     },
     { demo: 'shake', title: 'Pick a face', body: 'The face you choose is {pet}’s face on Home. “Auto” reacts to your day.' },
@@ -94,12 +94,12 @@ export const GUIDES = {
   ],
   plus: android
     ? [
-        { demo: 'sparkle', title: 'Earned, not bought', body: 'Packs open with sparks you earn by starting bites. No payments, no subscription.' },
+        { demo: 'sparkle', title: 'Earned, not bought', body: 'Plus opens with 150 sparks you earn by starting bites. No payments, no subscription.' },
         { demo: 'list', title: 'The basics stay free', body: 'Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.' },
         { demo: 'tap', title: 'Your level is safe', body: 'Spending sparks never lowers your level.' },
       ]
     : [
-        { demo: 'sparkle', title: 'Small extras', body: `Packs you buy once to make ${APP_NAME} more yours. No subscription.` },
+        { demo: 'sparkle', title: 'Small extras', body: `One unlock you buy once to make ${APP_NAME} more yours. No subscription.` },
         { demo: 'list', title: 'The basics stay free', body: 'Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.' },
         { demo: 'tap', title: 'New phone?', body: 'Restore purchases is at the bottom of the page.' },
       ],
@@ -124,7 +124,7 @@ export const GUIDE_NAMES: Record<GuideId, string> = {
   tip: 'The daily tip',
   reminders: 'Reminders',
   settings: 'Settings',
-  plus: android ? 'Packs and sparks' : 'Plus packs',
+  plus: android ? 'Plus and sparks' : 'Plus',
 };
 
 export const guideCopy = {

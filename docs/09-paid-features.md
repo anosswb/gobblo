@@ -1,5 +1,7 @@
 # 09 — Paid features
 
+> **2026-11-10:** One single Plus (no more Start Kit / Make It Yours / bundle). Plus = full closet + lock-screen focus timer + routine packs. Android: 150 sparks. iOS: one-time purchase, display default $4.99 (real price from the store). The widget one-tap 2-minute start is free for everyone: starting a task is the core loop. Old pack ids in `unlocked` still count as Plus.
+
 Principle (from the review research in docs/07): the core loop stays free forever, and paid features are things people WANT to show off or that make the app feel more alive. No paywalled basics like notification sounds. That exact thing got a 1★ review for Structured.
 
 ## iOS: Nomling Plus (one-time, launch $6.99, then $9.99)

@@ -2,7 +2,7 @@ import * as Linking from 'expo-linking';
 
 import { sfSymbol } from '@/components/icon';
 import { biteIcon } from '@/features/bites/bite-icon';
-import { hasPack } from '@/features/plus/catalog';
+import { hasPlus } from '@/features/plus/catalog';
 import type { PersistedState } from '@/state/schema';
 import { iosWidgetsEnabled } from '@/widgets/ios/enabled';
 import type { FocusActivityIOS as Factory, FocusActivityProps } from '@/widgets/ios/focus-activity';
@@ -14,7 +14,7 @@ const FocusActivityIOS: typeof Factory | null = iosWidgetsEnabled
   : null;
 
 /**
- * iOS: Start Kit's lock-screen timer is a Live Activity (Lock Screen + Dynamic Island).
+ * iOS: Plus's lock-screen timer is a Live Activity (Lock Screen + Dynamic Island).
  * Started, updated (pause / +5) and ended from the store, like the Android notification.
  */
 export function syncFocusLive(s: Pick<PersistedState, 'focus' | 'unlocked' | 'pet'>, now = Date.now()) {
@@ -26,7 +26,7 @@ export function syncFocusLive(s: Pick<PersistedState, 'focus' | 'unlocked' | 'pe
     return; // Live Activities off in Settings, or an older iOS
   }
   const f = s.focus;
-  if (!f || !hasPack(s.unlocked, 'startKit') || (f.pausedRemaining === null && f.endsAt <= now)) {
+  if (!f || !hasPlus(s.unlocked) || (f.pausedRemaining === null && f.endsAt <= now)) {
     running.forEach((a) => void a.end('immediate').catch(() => undefined));
     return;
   }

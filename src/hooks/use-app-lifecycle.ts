@@ -44,9 +44,9 @@ export function useAppLifecycle() {
       ) {
         void rescheduleNudges(snapshot()).catch(() => undefined);
       }
-      // lock-screen focus timer (Start Kit) follows the session: start, pause, +5, end
+      // lock-screen focus timer (Plus) follows the session: start, pause, +5, end
       if (s.focus !== prev.focus || s.unlocked !== prev.unlocked) syncFocusLive(s);
-      // home-screen widgets show the pet (name, colour, mood), the next bite, a running timer and Start Kit
+      // home-screen widgets show the pet (name, colour, mood), the next bite, a running timer
       if (
         s.bites !== prev.bites ||
         s.unlocked !== prev.unlocked ||

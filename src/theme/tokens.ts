@@ -253,6 +253,11 @@ export const roomGradients = {
   golden: ['#FFF4DC', '#F5E2BB', '#E6CB95'],
   aurora: ['#E3F4EF', '#D6E3F5', '#E2D9F1'],
   galaxy: ['#2C2E3B', '#1B1C25', '#0D0D12'],
+  // weekly surprises (features/weekly)
+  lavender: ['#EEEAF7', '#DDD6EE', '#C9C0E2'],
+  sand: ['#F7F0E3', '#EADFC9', '#D9C9A9'],
+  mist: ['#EDF1F2', '#DAE2E5', '#C2CED4'],
+  rose: ['#F9E9EC', '#F0D3DA', '#E2BAC6'],
 } as const;
 
 /** 8-pt grid. Gutter 16 = iOS inset-grouped margin on phones. */

@@ -1,34 +1,20 @@
-import type { IconName } from '@/components/icon';
-
 /**
- * Gobblo Plus (docs/13-plus-offer.md). Three packs, or all three as Plus.
- * - iOS: one-time App Store purchases (RevenueCat in Phase 6). Prices are display defaults; the
- *   real price always comes from the store.
- * - Android: every pack can be earned with sparks (no Play billing from Morocco, docs/06).
- * Never locked: anything needed to start a task (dump, 2-minute start, feed, reminders, repeat).
+ * Gobblo Plus (docs/13-plus-offer.md): ONE unlock, called Plus (2026-11-10: two packs and a bundle
+ * confused people). It holds the full closet, the lock-screen focus timer and routine packs.
+ * - iOS: one-time App Store purchase (src/lib/purchases.ts). The price shown is a display default
+ *   until the store returns the real one.
+ * - Android: earned with sparks (no Play billing from Morocco, docs/06).
+ * Never locked: anything needed to start a task (dump, 2-minute start, widget start, feed, reminders, repeat).
  */
-export type PackId = 'startKit' | 'makeItYours' | 'focus';
 
-export interface Pack {
-  id: PackId;
-  icon: IconName;
-  /** spark price on Android (~2–3 weeks of normal use, faster with optional rewarded ads) */
-  sparks: number;
-}
+/** Spark price on Android (~2–3 weeks of normal use, faster with optional rewarded ads). */
+export const PLUS_SPARKS = 150;
 
-export const PACKS: Record<PackId, Pack> = {
-  startKit: { id: 'startKit', icon: 'bolt', sparks: 60 },
-  makeItYours: { id: 'makeItYours', icon: 'palette', sparks: 150 },
-  focus: { id: 'focus', icon: 'headphones', sparks: 120 },
-};
+/** Display default for iOS until the store returns the localized price. */
+export const DISPLAY_PRICE = '$4.99';
 
-export const PACK_IDS = Object.keys(PACKS) as PackId[];
-
-/** Packs the Plus screen lists: only what is built today (Focus comes back once its extras exist). */
-export const SHOWN_PACK_IDS: PackId[] = ['startKit', 'makeItYours'];
-
-/** Display defaults for iOS until RevenueCat returns localized store prices. */
-export const DISPLAY_PRICE = { pack: '$1.99', plus: '$4.99' } as const;
+/** Old pack ids: people who unlocked one before the single Plus keep everything. */
+export const LEGACY_PACK_IDS = ['startKit', 'makeItYours', 'focus'] as const;
 
 /** The offer only appears after a week of use (panel: "I'll quit in two weeks, so let me see first"). */
 export const OFFER_AFTER_DAYS = 7;
@@ -37,12 +23,12 @@ export function canShowOffer(firstOpen: number, now = Date.now()): boolean {
   return now - firstOpen >= OFFER_AFTER_DAYS * 86_400_000;
 }
 
-export function hasPack(unlocked: readonly string[], id: PackId): boolean {
-  return unlocked.includes(id) || unlocked.includes('plus');
+/** True with 'plus' or any old pack id, so nobody loses what they already unlocked. */
+export function hasPlus(unlocked: readonly string[]): boolean {
+  return unlocked.includes('plus') || LEGACY_PACK_IDS.some((id) => unlocked.includes(id));
 }
 
-/** Android: buy a pack with sparks. Returns the new balance, or null if there aren't enough. */
-export function spendForPack(balance: number, id: PackId): number | null {
-  const cost = PACKS[id].sparks;
-  return balance >= cost ? balance - cost : null;
+/** Android: buy Plus with sparks. Returns the new balance, or null if there aren't enough. */
+export function spendForPlus(balance: number): number | null {
+  return balance >= PLUS_SPARKS ? balance - PLUS_SPARKS : null;
 }

@@ -1,18 +1,18 @@
 import * as Linking from 'expo-linking';
 
-import { hasPack } from '@/features/plus/catalog';
+import { hasPlus } from '@/features/plus/catalog';
 import type { PersistedState } from '@/state/schema';
 
 import { focusLiveAvailable, hideFocus, showFocusRunning, showFocusStill } from '../../../modules/focus-live';
 
 /**
- * Start Kit #2 (feature panel runner-up): the focus timer on the lock screen.
+ * Plus (feature panel runner-up): the focus timer on the lock screen.
  * Android: an ongoing countdown notification (modules/focus-live). Called on every focus change.
  */
 export function syncFocusLive(s: Pick<PersistedState, 'focus' | 'unlocked' | 'pet'>, now = Date.now()) {
   if (!focusLiveAvailable) return;
   const f = s.focus;
-  if (!f || !hasPack(s.unlocked, 'startKit')) {
+  if (!f || !hasPlus(s.unlocked)) {
     hideFocus();
     return;
   }

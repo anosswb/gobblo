@@ -43,7 +43,7 @@ import { FoodIcon } from '@/components/food-icon';
 const o = en.onboarding;
 type Step = 'hook' | 'quiz' | 'feed' | 'hatch' | 'name' | 'nudge';
 const DOTS: Step[] = ['hook', 'quiz', 'feed', 'name', 'nudge'];
-/** the free colours (the rest are unlocked by levels or Make It Yours, src/features/closet/items.ts) */
+/** the free colours (the rest are unlocked by levels or Plus, src/features/closet/items.ts) */
 const START_COLORS = COLORS.filter((c) => c.unlock.type === 'free');
 const ORBIT = [0, 1, 2, 3] as const;
 

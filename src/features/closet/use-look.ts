@@ -1,4 +1,4 @@
-import { hasPack } from '@/features/plus/catalog';
+import { hasPlus } from '@/features/plus/catalog';
 import { levelOf, stageOfLevel } from '@/features/progress/logic';
 import { petWeek } from '@/features/weekly/logic';
 import type { Mood } from '@/pet/pet';
@@ -16,7 +16,7 @@ export interface Look {
   face: FaceId;
   room: RoomId;
   homeMood: HomeMood;
-  makeItYours: boolean;
+  plus: boolean;
   /** pet week now (weekly surprise colours) */
   week: number;
 }
@@ -33,7 +33,7 @@ export function useLook(): Look {
   const total = useAppStore((s) => s.stats.total);
   const unlocked = useAppStore((s) => s.unlocked);
   const level = levelOf(total);
-  const miy = hasPack(unlocked, 'makeItYours');
+  const miy = hasPlus(unlocked);
   const firstOpen = useAppStore((s) => s.settings.firstOpen);
   // the pet week only changes at 4 am; read on render (Home re-renders on foreground)
   const week = petWeek(firstOpen, new Date());
@@ -45,7 +45,7 @@ export function useLook(): Look {
     face: pick(FACES, pet.face ?? 'none', level, miy, 'none'),
     room: pick(ROOMS, pet.room ?? 'auto', level, miy, 'auto'),
     homeMood: (pet.mood as Mood | 'auto' | undefined) ?? 'auto',
-    makeItYours: miy,
+    plus: miy,
     week,
   };
 }

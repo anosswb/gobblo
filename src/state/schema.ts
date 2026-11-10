@@ -169,7 +169,7 @@ export interface PersistedState {
   /** Toolkit › Daily tip: ids of tips the user saved */
   savedTips: number[];
   focus: ActiveFocus | null;
-  /** Plus packs owned ('startKit' | 'makeItYours' | 'focus', or 'plus' for all) */
+  /** Plus: 'plus' once unlocked (old saves may hold 'startKit' | 'makeItYours' | 'focus', which count as Plus) */
   unlocked: string[];
 }
 

@@ -1,7 +1,9 @@
 import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
@@ -9,49 +11,99 @@ import { toast } from '@/components/toast';
 import { LINKS } from '@/config/app';
 import { MONETIZATION } from '@/config/monetization';
 import { askNotificationPermission } from '@/features/nudges/schedule';
-import { canShowOffer, hasPack, PACKS, SHOWN_PACK_IDS, type PackId } from '@/features/plus/catalog';
+import { canShowOffer, DISPLAY_PRICE, hasPlus, PLUS_SPARKS } from '@/features/plus/catalog';
 import { ROUTINE_IDS, ROUTINES, type RoutineId } from '@/features/plus/routines';
-import { haptics } from '@/lib/haptics';
-import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
+import { haptics } from '@/lib/haptics';
+import { buyPlus, getPlusPrice, restorePlus } from '@/lib/purchases';
+import { play } from '@/lib/sound';
 import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
-import { addWidgetToHomeScreen, widgetsSupported } from '@/widgets/update';
 import { radius, space } from '@/theme/tokens';
-import { Icon } from '@/components/icon';
+import { addWidgetToHomeScreen, widgetsSupported } from '@/widgets/update';
 
 const t = en.plus;
-/** dev app + the GitHub preview APK (testers): a button to unlock everything. Never in store builds. */
+/** dev app + the GitHub preview APK (testers): a button to unlock Plus. Never in store builds. */
 const TEST_BUILD = __DEV__ || Constants.expoConfig?.extra?.variant === 'preview';
 
 /**
- * Gobblo Plus (docs/13). Opened only by the user (Settings, Closet): never a pop-up, never in
- * onboarding, never in the core loop (CLAUDE.md). Android: packs cost sparks. iOS: App Store
- * purchases arrive in Phase 6 (RevenueCat); until they work, iPhone users never reach this page
- * (PLUS_VISIBLE) and no price is shown here (hide, don't fake).
+ * Plus (docs/13): one page, one button. Opened only by the user (Settings, Closet): never a
+ * pop-up, never in onboarding, never in the core loop (CLAUDE.md). Android: costs sparks. iOS:
+ * one-time App Store purchase through src/lib/purchases.ts (the store's price replaces the
+ * display default once known).
  */
 export function PlusScreen() {
   const { colors } = useTheme();
   const unlocked = useAppStore((s) => s.unlocked);
   const sparks = useAppStore((s) => s.stats.sparks);
   const firstOpen = useAppStore((s) => s.settings.firstOpen);
-  const buyWithSparks = useAppStore((s) => s.buyPackWithSparks);
+  const buyWithSparks = useAppStore((s) => s.buyPlusWithSparks);
   const addBites = useAppStore((s) => s.addBites);
   const toggleDaily = useAppStore((s) => s.toggleDaily);
   const unlock = useAppStore((s) => s.unlock);
   const android = MONETIZATION === 'ads';
+  const owned = hasPlus(unlocked);
+  const [price, setPrice] = useState(DISPLAY_PRICE);
+  const [busy, setBusy] = useState(false);
 
-  const unlockPack = (id: PackId) => {
-    if (buyWithSparks(id)) {
-      // the lock-screen timer is a notification: ask once, right when it becomes useful
-      if (id === 'startKit') void askNotificationPermission().catch(() => false);
-      haptics.success();
-      play('spark');
-      toast(t.unlocked(t.packs[id].name));
+  useEffect(() => {
+    if (android) return;
+    let live = true;
+    void getPlusPrice().then((p) => { if (live && p) setPrice(p); }).catch(() => undefined);
+    return () => { live = false; };
+  }, [android]);
+
+  const onUnlocked = () => {
+    // the lock-screen timer is a notification: ask once, right when it becomes useful
+    void askNotificationPermission().catch(() => false);
+    haptics.success();
+    play('spark');
+    toast(t.unlocked);
+  };
+
+  const unlockWithSparks = () => {
+    if (buyWithSparks()) {
+      onUnlocked();
     } else {
       haptics.warning();
       play('nope');
-      toast(t.needSparks(sparks, PACKS[id].sparks));
+      toast(t.needSparks(sparks, PLUS_SPARKS));
+    }
+  };
+
+  const buy = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const r = await buyPlus();
+      if (r === 'bought') {
+        unlock('plus');
+        onUnlocked();
+      } else if (r === 'unavailable') {
+        toast(t.buyUnavailable);
+      }
+    } catch {
+      toast(t.buyUnavailable);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const restore = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (await restorePlus()) {
+        unlock('plus');
+        haptics.success();
+        toast(t.restored);
+      } else {
+        toast(t.restoreNone);
+      }
+    } catch {
+      toast(t.restoreNone);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -63,6 +115,8 @@ export function PlusScreen() {
     toast(t.routineAdded(t.routineNames[id], ids.length));
   };
 
+  const canSpend = sparks >= PLUS_SPARKS;
+
   return (
     <Screen back glow={false} eyebrow={t.eyebrow} title={t.title}>
       <Text variant="body" tone="ink2">{android ? t.introAndroid : t.intro}</Text>
@@ -72,78 +126,85 @@ export function PlusScreen() {
         </View>
       ) : null}
 
-      {SHOWN_PACK_IDS.map((id) => {
-        const owned = hasPack(unlocked, id);
-        const p = t.packs[id];
-        return (
-          <View key={id} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
-            <View style={styles.head}>
-              <View style={[styles.packIcon, { backgroundColor: colors.primarySoft }]}>
-                <Icon name={PACKS[id].icon} size={20} color={colors.primary} />
-              </View>
-              <Text variant="heading" style={styles.flex}>{p.name}</Text>
-              {owned ? <Text variant="bodyBold" tone="primary">{t.owned}</Text> : null}
-            </View>
-            {p.lines.map((line) => (
-              <Text key={line} variant="body" tone="ink2">• {line}</Text>
-            ))}
-
-            {id === 'startKit' && widgetsSupported ? (
-              <PressScale accessibilityRole="button" accessibilityHint={t.addWidgetHint}
-                onPress={async () => {
-                  haptics.light();
-                  const ok = await addWidgetToHomeScreen();
-                  toast(ok ? t.widgetAdded : t.widgetManual);
-                }}
-                style={[styles.btn, { backgroundColor: colors.fill }]}>
-                <Text variant="bodyBold">{t.addWidget}</Text>
-              </PressScale>
-            ) : null}
-
-            {id === 'startKit' && owned ? (
-              <View style={styles.routines}>
-                <Text variant="bodyBold">{t.routinesTitle}</Text>
-                <Text variant="caption" tone="ink2">{t.routinesSub}</Text>
-                <View style={styles.row}>
-                  {ROUTINE_IDS.map((r) => (
-                    <PressScale key={r} accessibilityRole="button" onPress={() => addRoutine(r)}
-                      style={[styles.chip, { backgroundColor: colors.fill }]}>
-                      <View style={styles.chipRow}>
-                        <Icon name={ROUTINES[r].icon} size={16} color={colors.ink} />
-                        <Text variant="bodyBold">{t.routineNames[r]}</Text>
-                      </View>
-                    </PressScale>
-                  ))}
-                </View>
-              </View>
-            ) : null}
-
-            {!owned ? (
-              android ? (
-                <PressScale accessibilityRole="button" onPress={() => unlockPack(id)}
-                  style={[styles.btn, { backgroundColor: sparks >= PACKS[id].sparks ? colors.primary : colors.fill }]}>
-                  <Text variant="bodyBold" tone={sparks >= PACKS[id].sparks ? 'onPrimary' : 'ink2'}>{t.unlockSparks(PACKS[id].sparks)}</Text>
-                </PressScale>
-              ) : null // iOS buy button: Phase 6 (RevenueCat), with the store's real price
-            ) : null}
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
+        <View style={styles.head}>
+          <View style={[styles.packIcon, { backgroundColor: colors.primarySoft }]}>
+            <Icon name="sparkle" size={20} color={colors.primary} />
           </View>
-        );
-      })}
+          <Text variant="heading" style={styles.flex}>{t.title}</Text>
+          {owned ? <Text variant="bodyBold" tone="primary">{t.owned}</Text> : null}
+        </View>
+        {t.lines.map((line) => (
+          <Text key={line} variant="body" tone="ink2">• {line}</Text>
+        ))}
 
-      {TEST_BUILD && !unlocked.includes('plus') ? (
-        // dev + preview builds only: lets Anass and testers try Start Kit before store purchases exist
-        <PressScale accessibilityRole="button" onPress={() => { unlock('plus'); void askNotificationPermission().catch(() => false); toast('Test: all packs unlocked'); }}
+        {!owned ? (
+          android ? (
+            <>
+              <PressScale accessibilityRole="button" onPress={unlockWithSparks}
+                style={[styles.btn, { backgroundColor: canSpend ? colors.primary : colors.fill }]}>
+                <Text variant="bodyBold" tone={canSpend ? 'onPrimary' : 'ink2'}>{t.unlockSparks(PLUS_SPARKS)}</Text>
+              </PressScale>
+              <Text variant="caption" tone="ink2" style={styles.center}>{t.haveSparks(sparks, PLUS_SPARKS)}</Text>
+            </>
+          ) : (
+            <PressScale accessibilityRole="button" disabled={busy} onPress={() => void buy()}
+              style={[styles.btn, { backgroundColor: colors.primary, opacity: busy ? 0.6 : 1 }]}>
+              <Text variant="bodyBold" tone="onPrimary">{t.unlockIos(price)}</Text>
+            </PressScale>
+          )
+        ) : null}
+      </View>
+
+      {widgetsSupported ? (
+        <PressScale accessibilityRole="button" accessibilityHint={t.addWidgetHint}
+          onPress={async () => {
+            haptics.light();
+            const ok = await addWidgetToHomeScreen();
+            toast(ok ? t.widgetAdded : t.widgetManual);
+          }}
           style={[styles.btn, { backgroundColor: colors.fill }]}>
-          <Text variant="caption" tone="ink2">Test: unlock all packs (test builds only)</Text>
+          <Text variant="bodyBold">{t.addWidget}</Text>
+        </PressScale>
+      ) : null}
+
+      <View style={styles.routines}>
+        <Text variant="bodyBold">{t.routinesTitle}</Text>
+        <Text variant="caption" tone="ink2">{owned ? t.routinesSub : t.routinesLocked}</Text>
+        {owned ? (
+          <View style={styles.row}>
+            {ROUTINE_IDS.map((r) => (
+              <PressScale key={r} accessibilityRole="button" onPress={() => addRoutine(r)}
+                style={[styles.chip, { backgroundColor: colors.fill }]}>
+                <View style={styles.chipRow}>
+                  <Icon name={ROUTINES[r].icon} size={16} color={colors.ink} />
+                  <Text variant="bodyBold">{t.routineNames[r]}</Text>
+                </View>
+              </PressScale>
+            ))}
+          </View>
+        ) : null}
+      </View>
+
+      {TEST_BUILD && !owned ? (
+        // dev + preview builds only: lets Anass and testers try Plus before store purchases exist
+        <PressScale accessibilityRole="button" onPress={() => { unlock('plus'); onUnlocked(); }}
+          style={[styles.btn, { backgroundColor: colors.fill }]}>
+          <Text variant="caption" tone="ink2">Test: unlock Plus (test builds only)</Text>
         </PressScale>
       ) : null}
 
       <Text variant="caption" tone="ink2" style={styles.center}>{android ? t.promiseAndroid : t.promise}</Text>
       <View style={[styles.row, styles.links]}>
-        <PressScale accessibilityRole="link" hitSlop={8} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)}>
+        {!android ? (
+          <PressScale accessibilityRole="button" hitSlop={8} style={styles.linkTap} disabled={busy} onPress={() => void restore()}>
+            <Text variant="caption" tone="primary">{t.restore}</Text>
+          </PressScale>
+        ) : null}
+        <PressScale accessibilityRole="link" hitSlop={8} style={styles.linkTap} onPress={() => void WebBrowser.openBrowserAsync(LINKS.terms)}>
           <Text variant="caption" tone="primary">{t.terms}</Text>
         </PressScale>
-        <PressScale accessibilityRole="link" hitSlop={8} onPress={() => void WebBrowser.openBrowserAsync(LINKS.privacy)}>
+        <PressScale accessibilityRole="link" hitSlop={8} style={styles.linkTap} onPress={() => void WebBrowser.openBrowserAsync(LINKS.privacy)}>
           <Text variant="caption" tone="primary">{t.privacy}</Text>
         </PressScale>
       </View>
@@ -163,5 +224,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s },
   chip: { minHeight: 44, paddingHorizontal: space.l, borderRadius: radius.button, justifyContent: 'center' },
   btn: { minHeight: 50, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', marginTop: space.s },
-  links: { justifyContent: 'center', gap: space.xl },
+  links: { justifyContent: 'center', gap: space.m },
+  linkTap: { minHeight: 44, paddingHorizontal: space.s, justifyContent: 'center' },
 });

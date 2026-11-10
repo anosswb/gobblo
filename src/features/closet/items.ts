@@ -6,7 +6,7 @@ import type { IconName } from '@/components/icon';
 /**
  * Everything the pet can wear or become, and how it unlocks (DECISIONS 2026-11-07):
  * - level: free, earned by levelling up (one reward per level, 2 → 20)
- * - pack: Gobblo Plus "Make It Yours" (iOS purchase / Android sparks)
+ * - pack: Gobblo Plus (iOS purchase / Android sparks)
  * - free: from the start
  * - week: a free weekly surprise colour, one each pet week from day 7 (features/weekly)
  * Level 20 ("Legend") is the surprise: golden form + golden crown + gold colour + golden room.

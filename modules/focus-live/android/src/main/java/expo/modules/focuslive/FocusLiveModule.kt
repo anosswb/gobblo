@@ -12,7 +12,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 /**
- * Gobblo Start Kit: the focus timer on the lock screen (Android).
+ * Gobblo Plus: the focus timer on the lock screen (Android).
  * One ongoing, silent notification with a system countdown (Chronometer), so it keeps ticking
  * even while the app is asleep. No background JS needed. Tapping it reopens Focus.
  */

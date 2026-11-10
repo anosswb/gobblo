@@ -17,7 +17,7 @@ export type FocusActivityProps = {
 };
 
 /**
- * Start Kit #2 on iOS: the focus timer on the Lock Screen and in the Dynamic Island.
+ * Plus on iOS: the focus timer on the Lock Screen and in the Dynamic Island.
  * SwiftUI counts down by itself (Text timerInterval), so no updates are needed while it runs.
  */
 const FocusActivity = (p: FocusActivityProps, env: LiveActivityEnvironment) => {

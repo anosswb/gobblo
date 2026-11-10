@@ -1,7 +1,7 @@
 import type { Size } from '@/state/schema';
 import type { IconName } from '@/components/icon';
 
-/** Start Kit routine packs: one tap adds a set of daily bites (DECISIONS: repeat itself stays free). */
+/** Plus routine packs: one tap adds a set of daily bites (DECISIONS: repeat itself stays free). */
 export type RoutineId = 'morning' | 'study' | 'sunday';
 
 export const ROUTINES: Record<RoutineId, { icon: IconName; bites: { text: string; size: Size }[] }> = {
