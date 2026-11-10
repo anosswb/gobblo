@@ -1,5 +1,4 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
@@ -45,12 +44,11 @@ import type { IconName } from '@/components/icon';
 
 const h = en.home;
 
-const dayIndex = (d: Date) => Math.floor((d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000);
 const dateLine = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
 /**
- * Home. One hero (the pet on its time-of-day stage, glass chips for level and belly), then the
- * plate as an iOS inset-grouped list, Reminders-style: the add field is the first row.
+ * Home. The pet on a short stage, then the plate right under it, so today's bites show without
+ * a scroll (docs/15 item 1). The add field is the first row of the plate.
  */
 export function HomeScreen() {
   const { colors, reduceMotion } = useTheme();
@@ -65,8 +63,8 @@ export function HomeScreen() {
   const startFocus = useAppStore((s) => s.startFocus);
 
   const { height: screenH } = useWindowDimensions();
-  // the stage shares the first screen with the plate: ~38 % of the height, 240–330 pt
-  const stageH = Math.round(Math.min(330, Math.max(240, screenH * 0.38)));
+  // the plate is the job: the stage takes about a quarter of the screen so bites show on open
+  const stageH = Math.round(Math.min(230, Math.max(180, screenH * 0.27)));
   const [openedAt] = useState(() => new Date());
   const [text, setText] = useState('');
   // the size is guessed live from the words ("write the report" → Big); a tap on the size chip overrides it
@@ -153,6 +151,7 @@ export function HomeScreen() {
 
   // a bite was eaten (focus finished): chomp, then celebrate with a sparkle burst
   const [burst, setBurst] = useState(0);
+  const [toTop, setToTop] = useState(0);
   const [askAgain, setAskAgain] = useState(false);
   const eatenBefore = useRef(stats.eaten);
   // said "Not now" in onboarding: ask once more, gently, right after a bite on day 3+
@@ -175,6 +174,7 @@ export function HomeScreen() {
   };
   useEffect(() => {
     if (stats.eaten > eatenBefore.current) {
+      setToTop((n) => n + 1);
       setReaction('chomp');
       const t = setTimeout(() => {
         setReaction('celebrating');
@@ -209,9 +209,6 @@ export function HomeScreen() {
     return () => clearTimeout(t);
   }, [away]);
   const weeklyDue = recapDue(settings.weekSeen ?? 0, settings.firstOpen, new Date());
-  const wisdom = en.wisdom[dayIndex(openedAt) % en.wisdom.length];
-  const mindful = en.mindful[dayIndex(openedAt) % en.mindful.length];
-  const belly = Math.min(1, stats.todayEaten / 4);
   const asleep = sky === 'night' && settings.autoSleep && list.length === 0;
   const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'curious' : 'happy';
   // the face chosen in the Closet wins; 'auto' reacts to the day
@@ -252,15 +249,14 @@ export function HomeScreen() {
     <Screen
       overlay={<FloatingFood emoji={floatEmoji} x={drag.x} y={drag.y} shown={drag.shown} over={drag.over} />}
       eyebrow={dateLine(openedAt)}
-      title={h.greeting(openedAt.getHours())}
+      title={h.today}
+      scrollTopKey={toTop}
       right={
         <View style={styles.headRight}>
           <View style={[styles.sparks, { backgroundColor: colors.reward }]} accessibilityLabel={`${stats.sparks} sparks`}>
             <Icon name="sparkle" size={14} weight="bold" color={colors.onReward} />
             <SlidingNumber value={stats.sparks} />
           </View>
-          <GuideHelp id="home" />
-          {/* Toolkit (breathe, calm down, unstick, sit with me, reminders, daily tip) */}
           <PressScale accessibilityRole="button" accessibilityLabel={en.tools.open} hitSlop={4} onPress={() => { haptics.select(); router.push('/tools'); }}>
             <Glass interactive radius={22} style={styles.toolBtn}>
               <Icon name="toolkit" size={20} color={colors.ink} />
@@ -278,9 +274,6 @@ export function HomeScreen() {
           </Glass>
           <Glass radius={18} shadow={false} style={styles.chip}>
             <Text variant="caption" style={styles.chipText}>{h.belly(stats.todayEaten)}</Text>
-            <View style={[styles.bellyTrack, { backgroundColor: colors.fill2 }]}>
-              <View style={[styles.bellyFill, { width: `${Math.max(10, belly * 100)}%`, backgroundColor: colors.primary }]} />
-            </View>
           </Glass>
         </View>
 
@@ -308,7 +301,7 @@ export function HomeScreen() {
           <Burst id={burst} />
           <Animated.View ref={petTarget}>
           <Pet
-            size={stageH < 290 ? 104 : 128}
+            size={stageH < 200 ? 92 : 108}
             color={look.color}
             hat={look.hat}
             face={look.face}
@@ -324,7 +317,7 @@ export function HomeScreen() {
         </View>
       </View>
 
-      {/* one line of pet wisdom (or, once, the gentle "can I nudge you?" ask) */}
+      {/* at most one card between the pet and the plate: the nudge ask, or the weekly surprise */}
       {askAgain ? (
         <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} style={[styles.note, styles.askNote, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <View style={styles.askHead}>
@@ -347,17 +340,7 @@ export function HomeScreen() {
         </Animated.View>
       ) : weeklyDue ? (
         <WeeklyCard now={new Date()} />
-      ) : (
-      <View style={[styles.note, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
-        <View style={[styles.noteIcon, { backgroundColor: colors.primarySoft }]}>
-          <Icon name="sparkle" size={16} color={colors.primary} />
-        </View>
-        <View style={styles.flex}>
-          <Text variant="caption" tone="ink2">{settings.mindfulNote ? h.mindfulTitle : h.wisdomTitle}</Text>
-          <Text variant="body">{settings.mindfulNote ? mindful : wisdom}</Text>
-        </View>
-      </View>
-      )}
+      ) : null}
 
       {/* the plate */}
       <FeedDragProvider
@@ -387,11 +370,6 @@ export function HomeScreen() {
           },
         }}>
       <View style={styles.section}>
-        <View style={styles.sectionHead}>
-          <Text variant="title2" accessibilityRole="header">{h.bites}</Text>
-          {list.length > 0 && !settings.tipDragSeen ? null : <Text variant="caption" tone="ink2">{h.hint(pet.name)}</Text>}
-        </View>
-
         {list.length > 0 && !settings.tipDragSeen ? (
           <DragGuide
             petName={pet.name}
@@ -643,10 +621,8 @@ const styles = StyleSheet.create({
   sparks: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.m, height: 32, borderRadius: radius.chip, marginBottom: space.xs },
   stage: { borderRadius: radius.scene, overflow: 'hidden' },
   stageTop: { flexDirection: 'row', justifyContent: 'space-between', padding: space.m, gap: space.s },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: space.s, paddingHorizontal: space.m, height: 36 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: space.s, paddingHorizontal: space.m, height: 32 },
   chipText: { fontWeight: '600' },
-  bellyTrack: { width: 44, height: 6, borderRadius: 3, overflow: 'hidden' },
-  bellyFill: { height: '100%', borderRadius: 3 },
   bubbleWrap: { position: 'absolute', top: 64, start: space.xl, end: space.xl, alignItems: 'center' },
   bubble: { paddingHorizontal: space.l, paddingVertical: space.m },
   pet: { position: 'absolute', bottom: 10, start: 0, end: 0, alignItems: 'center' },
@@ -657,7 +633,6 @@ const styles = StyleSheet.create({
   askBtn: { flex: 1, minHeight: 44, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   noteIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   section: { gap: space.m },
-  sectionHead: { gap: 2, paddingHorizontal: space.xs },
   list: { borderRadius: radius.card, overflow: 'hidden' },
   addRow: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingHorizontal: space.m, minHeight: 64 },
   input: { flex: 1, minHeight: 44, fontSize: typeScale.body },
@@ -670,7 +645,6 @@ const styles = StyleSheet.create({
   laterGroup: { gap: space.xs },
   addBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
-  foodEmoji: { fontSize: 22, lineHeight: 28 },
   empty: { alignItems: 'center', gap: space.s, padding: space.xl, borderTopWidth: StyleSheet.hairlineWidth },
   cta: { marginTop: space.s, minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   footer: { paddingHorizontal: space.l },

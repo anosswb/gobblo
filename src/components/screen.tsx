@@ -1,7 +1,7 @@
 import { BlurView } from 'expo-blur';
-import type { PropsWithChildren, ReactNode } from 'react';
+import { useEffect, type PropsWithChildren, type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedRef, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Backdrop } from '@/components/backdrop';
@@ -27,6 +27,7 @@ export function Screen({
   back = false,
   overlay,
   glow = true,
+  scrollTopKey,
   children,
 }: PropsWithChildren<{
   title?: string;
@@ -40,10 +41,16 @@ export function Screen({
   overlay?: ReactNode;
   /** the soft background glow (off on Plus: Anass, text was hard to read over it) */
   glow?: boolean;
+  /** bump it to bring the top of the page back into view (Home: the pet is about to eat) */
+  scrollTopKey?: number;
 }>) {
-  const { colors, scheme } = useTheme();
+  const { colors, scheme, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
   const y = useSharedValue(0);
+  const scroller = useAnimatedRef<Animated.ScrollView>();
+  useEffect(() => {
+    if (scrollTopKey) scroller.current?.scrollTo({ y: 0, animated: !reduceMotion });
+  }, [scrollTopKey, scroller, reduceMotion]);
   const onScroll = useAnimatedScrollHandler((e) => {
     y.set(e.contentOffset.y);
   });
@@ -60,6 +67,7 @@ export function Screen({
     <View style={[styles.fill, { backgroundColor: colors.bg }]}>
       <Backdrop glow={glow} />
       <Animated.ScrollView
+        ref={scroller}
         onScroll={onScroll}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
@@ -73,7 +81,7 @@ export function Screen({
                   {eyebrow}
                 </Text>
               ) : null}
-              <Text variant="title" accessibilityRole="header">
+              <Text variant="title" accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
                 {title}
               </Text>
             </View>

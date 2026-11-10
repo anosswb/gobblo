@@ -84,7 +84,7 @@ export function BiteRow({
                 <Text variant="body" numberOfLines={2}>{bite.text}</Text>
                 <Text variant="caption" tone="ink2">
                   {meta ? <Text variant="caption" tone="primary" style={styles.meta}>{meta} · </Text> : null}
-                  {food.label} · ~{food.min} min · +{food.sparks} ✦
+                  {h.about(food.min)}
                 </Text>
               </View>
               {bite.daily ? (
@@ -92,7 +92,9 @@ export function BiteRow({
                   <Icon name="repeat" size={13} weight="bold" color={colors.primary} />
                 </View>
               ) : null}
-              <Icon name="chevron" size={13} weight="bold" color={colors.ink3} />
+              <View style={[styles.go, { backgroundColor: colors.fill }]}>
+                <Icon name="play" size={12} weight="bold" color={colors.ink2} />
+              </View>
             </View>
           </View>
         )}
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
   bite: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingStart: space.m },
   body: { flex: 1, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', gap: space.s, minHeight: 64, paddingVertical: space.s + 2, paddingEnd: space.l },
   food: { width: 40, height: 40, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
-  foodEmoji: { fontSize: 22, lineHeight: 28 },
+  go: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   daily: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
   action: { width: ACTION_W, justifyContent: 'center' },
   actionInner: { width: ACTION_W, alignItems: 'center', gap: 2 },
