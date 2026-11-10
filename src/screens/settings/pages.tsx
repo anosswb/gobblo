@@ -21,6 +21,8 @@ import { canUseBiometrics, unlock } from '@/lib/lock';
 import { play, previewNudgeSound, startLoop, stopLoop } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { FAQ } from '@/i18n/faq.en';
+import { GUIDES, GUIDE_NAMES, guideCopy, type GuideId } from '@/i18n/guides.en';
+import { PageGuide } from '@/components/guide/page-guide';
 import { duration } from '@/theme/motion';
 import { useAppStore } from '@/state/app-store';
 import type { Accent, FocusSound, NudgeSound, NudgeTime, Settings } from '@/state/schema';
@@ -201,8 +203,18 @@ function Focus() {
 /** FAQ: tap a question to open its answer (one open at a time keeps it short). */
 function Faq() {
   const { colors, reduceMotion } = useTheme();
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
+  const [guide, setGuide] = useState<GuideId | null>(null);
+  const ids = Object.keys(GUIDES) as GuideId[];
   return (
+    <>
+    <Section title={guideCopy.howSection}>
+      {ids.map((gid, i) => (
+        <Row key={gid} label={GUIDE_NAMES[gid]} last={i === ids.length - 1} onPress={() => { haptics.select(); setGuide(gid); }} />
+      ))}
+    </Section>
+    {guide ? <PageGuide id={guide} visible onClose={() => setGuide(null)} /> : null}
+    <Text variant="caption" tone="ink2" style={styles.faqHead} accessibilityRole="header">{guideCopy.faqSection}</Text>
     <View style={[styles.faq, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
       {FAQ.map((item, i) => {
         const on = open === i;
@@ -225,6 +237,7 @@ function Faq() {
         );
       })}
     </View>
+    </>
   );
 }
 
@@ -352,6 +365,7 @@ function About() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   faq: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
+  faqHead: { paddingHorizontal: space.l, marginBottom: space.s },
   faqSep: { borderTopWidth: StyleSheet.hairlineWidth },
   faqQ: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 52, paddingHorizontal: space.l, paddingVertical: space.m },
   faqA: { paddingHorizontal: space.l, paddingBottom: space.l },

@@ -56,7 +56,7 @@ export const GUIDES = {
   ],
   tools: [
     { demo: 'list', title: 'Tools for hard moments', body: 'Small helpers for when starting feels impossible. All free, no limits.' },
-    { demo: 'tap', title: 'Pick by feeling', body: 'Stuck? Unstick me. Wound up? Breathe or Calm down. Working alone? Sit with me.' },
+    { demo: 'tap', title: 'Pick by feeling', body: 'Stuck? Unstick me. Wound up? Calm. Working alone? Sit with me, at the top.' },
   ],
   breathe: [
     { demo: 'breathe', title: 'Breathe in', body: 'Breathe in while {pet} grows.' },
@@ -107,7 +107,29 @@ export const GUIDES = {
 
 export type GuideId = keyof typeof GUIDES;
 
+/** Short names for the guide list in Settings > Questions & answers. */
+export const GUIDE_NAMES: Record<GuideId, string> = {
+  home: 'Your plate and feeding',
+  dump: 'Brain dump',
+  focus: 'Focus timer',
+  me: 'Your progress',
+  road: 'The road to level 20',
+  closet: 'Dressing your pet',
+  spin: 'The spin',
+  tools: 'The toolbox',
+  breathe: 'Breathe',
+  calm: 'Calm down',
+  unstick: 'Unstick me',
+  sit: 'Sit with me',
+  tip: 'The daily tip',
+  reminders: 'Reminders',
+  settings: 'Settings',
+  plus: android ? 'Packs and sparks' : 'Plus packs',
+};
+
 export const guideCopy = {
+  howSection: 'How things work',
+  faqSection: 'Common questions',
   help: 'How this page works',
   next: 'Next',
   back: 'Back',
