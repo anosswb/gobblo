@@ -52,6 +52,8 @@ export const PAGE_TILE: Record<PageId, { icon: IconName; color: TileColor }> = {
 
 const hourLabel = (h: number, h24: boolean) => (h24 ? `${String(h).padStart(2, '0')}:00` : `${h % 12 || 12} ${h < 12 ? 'am' : 'pm'}`);
 
+const RETIRED_GUIDES: string[] = ['tip', 'breathe', 'sit'];
+
 /** One Settings page (the main list pushes here). Same controls as before, one topic per page. */
 export function SettingsPage({ id }: { id: PageId }) {
   return (
@@ -188,7 +190,8 @@ function Faq() {
   const { colors, reduceMotion } = useTheme();
   const [open, setOpen] = useState<number | null>(null);
   const [guide, setGuide] = useState<GuideId | null>(null);
-  const ids = Object.keys(GUIDES) as GuideId[];
+  // guides for pages that were merged away (docs/15) are not listed
+  const ids = (Object.keys(GUIDES) as GuideId[]).filter((g) => !RETIRED_GUIDES.includes(g));
   return (
     <>
     <Section title={guideCopy.howSection}>

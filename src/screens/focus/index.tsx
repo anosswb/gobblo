@@ -221,7 +221,7 @@ export function FocusScreen() {
             </Text>
           </TimerRingSlot>
           <Text variant="subhead" tone="roomInk2">
-            {ended ? f.timeUp : f.endsAt(formatEndsAt(paused ? now + left : t.endsAt, settings.clock24h))}
+            {ended ? f.timeUp : paused ? f.pausedNow : f.endsAt(formatEndsAt(t.endsAt, settings.clock24h))}
           </Text>
         </View>
 

@@ -68,7 +68,7 @@ export function WeeklyCard({ now }: { now: Date }) {
             accessible={false}
             style={styles.swatchBox}>
             {drop.slot === 'hat' ? (
-              <Pet size={44} color={look.color} hat={drop.id as HatId} face={look.face} stage={look.stage} mood="happy" still />
+              <Pet size={40} color={look.color} hat={drop.id as HatId} face={look.face} stage={look.stage} mood="happy" still />
             ) : drop.slot === 'room' ? (
               <LinearGradient colors={roomGradients[drop.id as Exclude<RoomId, 'auto'>]} style={[styles.swatch, { borderColor: colors.card }]} />
             ) : (
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   icon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   gift: { flexDirection: 'row', alignItems: 'center', gap: space.m, padding: space.m, borderRadius: radius.row },
-  swatchBox: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
+  swatchBox: { width: 76, height: 80, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   swatch: { width: 44, height: 44, borderRadius: 22, borderWidth: 3, overflow: 'hidden' },
   row: { flexDirection: 'row', gap: space.s },
   btn: { flex: 1, minHeight: 44, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
