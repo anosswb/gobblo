@@ -670,7 +670,6 @@ export function HomeScreen() {
           haptics.medium();
           play('spark');
           router.push('/focus');
-          setTimeout(() => toast(en.focus.started), 450);
         }}
       />
     </Screen>

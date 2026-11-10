@@ -7,7 +7,6 @@ import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
-import { toast } from '@/components/toast';
 import { plate } from '@/features/bites/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -66,7 +65,6 @@ export function SpinScreen() {
     haptics.medium();
     play('spark');
     router.push('/focus');
-    setTimeout(() => toast(en.focus.started), 450);
   };
 
   return (

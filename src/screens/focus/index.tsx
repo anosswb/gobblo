@@ -71,7 +71,10 @@ export function FocusScreen() {
   const [now, setNow] = useState(() => Date.now());
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [confirmRestart, setConfirmRestart] = useState(false);
-  const [line, setLine] = useState<string>(() => (focus?.mode === '2min' ? f.two : f.working(pet.name)));
+  const baseLine = focus?.mode === '2min' ? f.two : f.working(pet.name);
+  // a fresh start (not a reload or a resume) opens with the "you started" line for a few seconds
+  const [freshStart] = useState(() => !!focus && Date.now() - focus.startedAt < 5000);
+  const [line, setLine] = useState<string>(() => (freshStart ? f.started : baseLine));
   const endedChime = useRef(false);
   // finishing clears the session, which also renders <NoSession>: leave the screen only once
   const leaving = useRef(false);
@@ -85,6 +88,13 @@ export function FocusScreen() {
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (!freshStart) return;
+    const id = setTimeout(() => setLine((cur) => (cur === f.started ? baseLine : cur)), 4000);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ambient sound for the whole session
@@ -182,7 +192,7 @@ export function FocusScreen() {
   };
 
   const swapLine = (l: string) => setLine(l);
-  const petMood: Mood = ended ? 'celebrating' : paused ? 'calm' : focus.drifts > 0 && line !== f.working(pet.name) && line !== f.two ? 'curious' : 'focused';
+  const petMood: Mood = ended ? 'celebrating' : paused ? 'calm' : focus.drifts > 0 && line !== f.working(pet.name) && line !== f.two && line !== f.started ? 'curious' : 'focused';
   const textIn = reduceMotion ? FadeIn.duration(duration.quick) : textSwapIn;
 
   return (
