@@ -67,3 +67,9 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 
 ## Definition of done (per screen)
 States designed: loading, empty, error, success. Light + dark checked. Works at small (iPhone SE / 360dp Android) and big screens. Haptics + sound on key actions (respecting the sound toggle). Reduce Motion fallback. No layout jump on keyboard open. Back gesture works (Android back button too).
+
+## Current phase (Anass, 2026-11-10): design until he says so
+- **Do NOT ask Anass to buy or open the Apple Developer ($99) or Google Play Console ($25) accounts, or anything that costs money.** He pays them around 1 December, and he will say when. Until then, don't bring it up.
+- The ~20 days until then are for design and improvement: look, mascot, sounds, UX, money code with test IDs, analytics prep.
+- **Models:** Fable plans and manages at medium effort (high only when truly needed). Tests, checks and mechanical jobs go to Sonnet or Opus at medium effort, not Fable.
+- The name "Gobblo" is free to use (no trademark found), and the domain gobblo.app is available. Anass will take it.
