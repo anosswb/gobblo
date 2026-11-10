@@ -25,7 +25,7 @@ export const ADS = {
 export const AD_IDS = ids;
 
 /**
- * Real ad units only in a store build. The dev app and the preview APK always show Google's
- * test ads: tapping your own real ads can get an AdMob account closed.
+ * Real ad units only in a store build (EAS profile "production", set in app.config.ts). The dev
+ * app and every test APK always show Google's test ads: tapping your own real ads can get an AdMob account closed.
  */
-export const USE_REAL_ADS = !__DEV__ && Constants.expoConfig?.extra?.variant !== 'preview';
+export const USE_REAL_ADS = !__DEV__ && Constants.expoConfig?.extra?.realAds === true;
