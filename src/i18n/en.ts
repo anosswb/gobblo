@@ -1,4 +1,3 @@
-import { APP_NAME } from '@/config/app';
 
 /** All UI strings live here (fr/es/ar later; use start/end styles, never left/right). */
 export const en = {
