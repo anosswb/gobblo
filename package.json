@@ -49,8 +49,10 @@
     "react-native": "0.88.1",
     "react-native-android-widget": "^0.26.0",
     "react-native-gesture-handler": "~3.3.0",
+    "react-native-google-mobile-ads": "^17.4.0",
     "react-native-mmkv": "^4.3.2",
     "react-native-nitro-modules": "^0.37.2",
+    "react-native-purchases": "^11.0.1",
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
@@ -87,5 +89,19 @@
       "/reference/",
       "/research/"
     ]
+  },
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "exclude": [
+          "react-native-google-mobile-ads"
+        ]
+      },
+      "android": {
+        "exclude": [
+          "react-native-purchases"
+        ]
+      }
+    }
   }
 }

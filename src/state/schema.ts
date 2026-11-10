@@ -62,6 +62,8 @@ export interface Pet {
 }
 
 export interface Stats {
+  /** rewarded videos watched on one pet day (features/plus/ad-reward); optional, no migration */
+  adSparks?: { day: string; count: number };
   sparks: number;
   total: number;
   eaten: number;
@@ -157,6 +159,8 @@ export interface Settings {
   firstOpen: number;
   /** app version we already asked for a store rating in (features/rating); optional, no migration */
   ratingAskedVersion?: string;
+  /** Android: show the optional "watch a video for sparks" card (unset = on) */
+  adOffers?: boolean;
 }
 
 export interface PersistedState {

@@ -1,3 +1,5 @@
+import { useAppStore } from '@/state/app-store';
+import { syncPlus } from '@/lib/purchases';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, useFonts } from '@expo-google-fonts/nunito';
 import { Stack } from 'expo-router';
@@ -35,6 +37,13 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded || error) void SplashScreen.hideAsync();
   }, [loaded, error]);
+
+  // iPhone: Plus bought on this Apple account (new phone, reinstall) comes back by itself
+  useEffect(() => {
+    void syncPlus().then((owned) => {
+      if (owned) useAppStore.getState().unlock('plus');
+    });
+  }, []);
 
   if (!loaded && !error) return null;
 

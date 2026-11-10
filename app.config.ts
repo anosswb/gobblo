@@ -1,5 +1,6 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
+import adIds from './src/config/ad-ids.json';
 import identity from './src/config/app-identity.json';
 
 const { name: BASE_NAME, id: BASE_ID, scheme: BASE_SCHEME } = identity;
@@ -68,6 +69,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-splash-screen', { backgroundColor: '#F2F2F7', image: './assets/images/splash-icon.png', imageWidth: 120, dark: { backgroundColor: '#000000' } }],
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
     './plugins/with-gradle-memory',
+    // Android rewarded ads. Your AdMob app id from src/config/ad-ids.json, else Google's public test app id.
+    // iPhone: the library is not linked at all (package.json expo.autolinking.ios.exclude).
+    ['react-native-google-mobile-ads', { androidAppId: adIds.android.appId || 'ca-app-pub-3940256099942544~3347511713' }],
     // iOS widget + Live Activity (Start Kit). Left out for free-Apple-ID installs (no App Groups).
     // Android keeps react-native-android-widget.
     ...(freeSigning

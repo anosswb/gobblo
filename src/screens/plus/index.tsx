@@ -9,6 +9,7 @@ import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { LINKS } from '@/config/app';
+import { ADS } from '@/config/ads';
 import { MONETIZATION } from '@/config/monetization';
 import { askNotificationPermission } from '@/features/nudges/schedule';
 import { canShowOffer, DISPLAY_PRICE, hasPlus, PLUS_SPARKS } from '@/features/plus/catalog';
@@ -21,6 +22,8 @@ import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
 import { addWidgetToHomeScreen, widgetsSupported } from '@/widgets/update';
+
+import { VideoTreat } from './video-treat';
 
 const t = en.plus;
 /** dev app + the GitHub preview APK (testers): a button to unlock Plus. Never in store builds. */
@@ -37,6 +40,7 @@ export function PlusScreen() {
   const unlocked = useAppStore((s) => s.unlocked);
   const sparks = useAppStore((s) => s.stats.sparks);
   const firstOpen = useAppStore((s) => s.settings.firstOpen);
+  const adOffers = useAppStore((s) => s.settings.adOffers);
   const buyWithSparks = useAppStore((s) => s.buyPlusWithSparks);
   const addBites = useAppStore((s) => s.addBites);
   const toggleDaily = useAppStore((s) => s.toggleDaily);
@@ -155,6 +159,9 @@ export function PlusScreen() {
           )
         ) : null}
       </View>
+
+      {/* the only ad in the app: optional, Android, hidden once Plus is yours (sparks have no other use) */}
+      {android && !owned && ADS.enabled && adOffers !== false ? <VideoTreat /> : null}
 
       {widgetsSupported ? (
         <PressScale accessibilityRole="button" accessibilityHint={t.addWidgetHint}

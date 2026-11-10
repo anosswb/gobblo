@@ -1,6 +1,6 @@
 /**
- * iOS Plus purchase. Stubs for now: a later task wires RevenueCat here. The Plus screen only
- * talks to these three functions, so nothing else changes then.
+ * Plus purchase. This file is the default (Android, web, tests): no purchases at all.
+ * iPhone uses purchases.ios.ts (RevenueCat). Same functions in both.
  */
 export type BuyResult = 'bought' | 'cancelled' | 'unavailable';
 
@@ -15,5 +15,10 @@ export async function buyPlus(): Promise<BuyResult> {
 
 /** True if a Plus purchase was found and restored. */
 export async function restorePlus(): Promise<boolean> {
+  return false;
+}
+
+/** On app start: true when this store account already owns Plus. */
+export async function syncPlus(): Promise<boolean> {
   return false;
 }

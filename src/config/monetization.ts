@@ -12,9 +12,10 @@ export const MONETIZATION: Monetization = Platform.select<Monetization>({
 /**
  * iOS App Store purchases are wired and tested (RevenueCat, Phase 6). Until then, iPhone users
  * never see Plus: no "coming soon" prices, no Plus badges, no Plus row (Anass, 2026-11-09:
- * hide, don't fake). Flip to true only once a real purchase and Restore work on a device.
+ * hide, don't fake). The code is wired (src/lib/purchases.ios.ts); it turns on with the build
+ * variable EXPO_PUBLIC_PURCHASES_LIVE=1, set only once a real purchase and Restore work on a device.
  */
-export const PURCHASES_LIVE = false;
+export const PURCHASES_LIVE = process.env.EXPO_PUBLIC_PURCHASES_LIVE === '1';
 
 /**
  * Plus is shown only where it really works: Android packs are earned with sparks (no payment

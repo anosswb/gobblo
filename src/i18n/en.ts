@@ -190,6 +190,18 @@ export const en = {
     /** iOS: real purchase (Apple handles refunds) */
     promise: 'One-time. No subscription, no trial, ever: Plus is yours forever. Refunds go through Apple and we never fight them.',
     /** Android: no purchases at all (Google Play can't sell from Morocco), Plus is earned */
+    /** Android only: the optional rewarded video ("treat your pet"). Happy pet, never begging. */
+    video: {
+      title: (pet: string) => `Treat ${pet}?`,
+      ask: (pet: string, n: number) => `Watch one short video and ${pet} gets ${n} ✦. Only if you feel like it.`,
+      watch: (n: number) => `Watch a video · +${n} ✦`,
+      loading: 'Finding a video…',
+      thanks: (n: number) => `Yum! +${n} ✦. Thank you.`,
+      later: 'No worries. Maybe later.',
+      none: 'No video right now. Try again in a bit.',
+      full: 'I’m full for today. See you tomorrow.',
+      left: (left: number, max: number) => (left <= 0 ? 'A new plate of videos tomorrow.' : `${left} of ${max} left today. Sparks from videos don’t change your level.`),
+    },
     promiseAndroid: 'Earned with sparks ✦, never bought. No payments, no subscription. Spending sparks never lowers your level. Once unlocked, it’s yours forever.',
     restore: 'Restore purchases',
     terms: 'Terms of use',
@@ -443,6 +455,9 @@ export const en = {
     privacy: 'Privacy & data',
     lock: 'Lock with Face ID / fingerprint',
     lockHint: 'Asks when you open the app',
+    adOffers: 'Bonus video offers',
+    adOffersHint: 'Shows the optional “watch a video for sparks” card on the Plus page. No other ads exist.',
+    privacyOptions: 'Ad privacy options',
     lockUnavailable: 'Set up Face ID or a fingerprint on your phone first',
     exportBackup: 'Export backup',
     exportHint: 'A file with everything. Save it anywhere',

@@ -1,8 +1,10 @@
+import { ADS } from '@/config/ads';
+import { privacyOptionsRequired, showPrivacyOptions } from '@/lib/ads';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { Icon, type IconName } from '@/components/icon';
@@ -288,6 +290,12 @@ function Privacy() {
   useEffect(() => {
     void canUseBiometrics().then(setBioOk);
   }, []);
+  // Android only: the video offer switch, and Google's consent form where the law asks for it
+  const android = Platform.OS === 'android' && ADS.enabled;
+  const [adPrivacy, setAdPrivacy] = useState(false);
+  useEffect(() => {
+    if (android) void privacyOptionsRequired().then(setAdPrivacy);
+  }, [android]);
   useEffect(() => {
     if (!armed) return;
     const id = setTimeout(() => setArmed(false), 3000);
@@ -301,6 +309,14 @@ function Privacy() {
             onChange={async (v) => { if (await unlock()) update({ biometricLock: v }); }} />
         } />
       </Section>
+      {android ? (
+        <Section footer={t.adOffersHint}>
+          <Row leading={<IconTile name="play" color="orange" />} last={!adPrivacy} label={t.adOffers} right={
+            <Toggle accessibilityLabel={t.adOffers} value={s.adOffers !== false} onChange={(v) => update({ adOffers: v })} />
+          } />
+          {adPrivacy ? <Row leading={<IconTile name="lock" color="gray" />} last label={t.privacyOptions} onPress={() => void showPrivacyOptions()} /> : null}
+        </Section>
+      ) : null}
       <Section title={t.backup} footer={t.dataLocal}>
         <Row leading={<IconTile name="share" color="blue" />} label={t.exportBackup} hint={t.exportHint} onPress={() => void exportBackup().catch(() => toast('Couldn’t export. Try again?'))} />
         <Row leading={<IconTile name="download" color="blue" />} last label={t.importBackup} hint={t.importHint} onPress={async () => { const r = await importBackup(); if (r.message) toast(r.message); }} />
