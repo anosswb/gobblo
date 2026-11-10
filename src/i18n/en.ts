@@ -379,6 +379,8 @@ export const en = {
   settings: {
     title: 'Settings',
     theme: 'Theme',
+    palettes: { ink: 'Ink', blush: 'Blush', cotton: 'Cotton', sage: 'Sage', graphite: 'Graphite' },
+    mode: 'Light or dark',
     system: 'System',
     light: 'Light',
     dark: 'Dark',

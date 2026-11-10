@@ -103,7 +103,7 @@ export function IconTile({ name, color }: { name: IconName; color: TileColor }) 
   const { colors } = useTheme();
   return (
     <View style={[styles.tile, { backgroundColor: tiles[color] }]}>
-      <Icon name={name} size={16} color={colors.onPrimary} />
+      <Icon name={name} size={16} color={colors.onTile} />
     </View>
   );
 }

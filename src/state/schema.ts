@@ -1,4 +1,4 @@
-import type { PetColor } from '@/theme/tokens';
+import type { Palette, PetColor } from '@/theme/tokens';
 
 /**
  * Persisted data model (docs/01 + DECISIONS.md). Bump SCHEMA_VERSION and add a step
@@ -118,6 +118,9 @@ export interface ActiveFocus {
 
 export interface Settings {
   theme: ThemePreference;
+  /** colour theme (docs/16 #1) */
+  palette: Palette;
+  /** old tint picker: kept in saves, no longer used for colour (replaced by `palette`) */
   accent: Accent;
   sound: boolean;
   haptics: HapticLevel;
@@ -211,6 +214,7 @@ export function freshState(now = Date.now()): PersistedState {
     unlocked: [],
     settings: {
       theme: 'system',
+      palette: 'ink',
       accent: 'berry',
       sound: true,
       haptics: 'soft',

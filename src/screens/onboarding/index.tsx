@@ -275,7 +275,7 @@ export function OnboardingScreen() {
                       play('tick');
                     }}
                     style={[styles.dice, { backgroundColor: colors.primarySoft }]}>
-                    <Icon name="spin" size={22} color={colors.primary} />
+                    <Icon name="spin" size={22} color={colors.primaryInk} />
                   </PressScale>
                 </View>
                 <Chips<PetColor>
@@ -299,7 +299,7 @@ export function OnboardingScreen() {
             <Animated.View key="nudge" entering={enter} exiting={exit} style={styles.page}>
               <View style={styles.hero}>
                 <View style={[styles.bell, { backgroundColor: colors.card }]}>
-                  <Icon name="bell" size={30} color={colors.primary} />
+                  <Icon name="bell" size={30} color={colors.primaryInk} />
                 </View>
                 <Pet size={130} color={color} mood="curious" />
               </View>

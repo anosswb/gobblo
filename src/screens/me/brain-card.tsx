@@ -78,7 +78,7 @@ export function BrainCard() {
         accessibilityLabel={en.me.brain.share}
         onPress={() => void share()}
         style={[styles.share, { backgroundColor: colors.primarySoft }]}>
-        <Icon name="share" size={18} color={colors.primary} />
+        <Icon name="share" size={18} color={colors.primaryInk} />
         <Text variant="bodyBold" tone="primary">
           {en.me.brain.share}
         </Text>

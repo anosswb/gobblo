@@ -77,7 +77,7 @@ function Still({ kind }: { kind: DemoKind }) {
   if (kind === 'timer') return <Ring progress={0.6} />;
   return (
     <View style={[styles.tile, styles.left, { backgroundColor: colors.card }]}>
-      <Icon name={PROP[kind]} size={20} color={kind === 'sparkle' ? colors.primary : colors.ink} />
+      <Icon name={PROP[kind]} size={20} color={kind === 'sparkle' ? colors.primaryInk : colors.ink} />
     </View>
   );
 }
@@ -179,7 +179,7 @@ function Spark({ dx, i, p }: { dx: number; i: number; p: SharedValue<number> }) 
   });
   return (
     <Animated.View style={[styles.spark, { marginStart: dx }, style]}>
-      <Icon name="sparkle" size={16} color={colors.primary} />
+      <Icon name="sparkle" size={16} color={colors.primaryInk} />
     </Animated.View>
   );
 }
@@ -198,7 +198,7 @@ function Tap({ p, icon }: { p: SharedValue<number>; icon: IconName }) {
   return (
     <View style={styles.left}>
       <Animated.View style={[styles.tile, { backgroundColor: colors.card }, tile]}>
-        <Icon name={icon} size={20} color={colors.primary} />
+        <Icon name={icon} size={20} color={colors.primaryInk} />
       </Animated.View>
       <Animated.View style={[styles.abs, hand]} pointerEvents="none">
         <Icon name="hand" size={24} color={colors.ink} />

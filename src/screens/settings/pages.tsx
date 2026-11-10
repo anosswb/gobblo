@@ -8,6 +8,7 @@ import { Linking, Platform, Pressable, StyleSheet, TextInput, View } from 'react
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { Icon, type IconName } from '@/components/icon';
+import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { Chips, IconTile, Row, Section, Stepper } from '@/components/settings-parts';
@@ -29,7 +30,7 @@ import { duration } from '@/theme/motion';
 import { useAppStore } from '@/state/app-store';
 import type { FocusSound, NudgeSound, NudgeTime, Settings } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
-import { fonts, petColors, radius, space, typeScale, type PetColor, type TileColor } from '@/theme/tokens';
+import { fonts, palettes, PALETTES, petColors, radius, space, typeScale, type Palette, type PetColor, type TileColor } from '@/theme/tokens';
 
 const t = en.settings;
 
@@ -83,8 +84,11 @@ function Look() {
   return (
     <>
       <Section title={t.theme}>
-        <Row last stacked hideLabel label={t.theme} right={
-          <Segmented accessibilityLabel={t.theme} value={s.theme} onChange={set('theme')}
+        <Row last stacked hideLabel label={t.theme} right={<PalettePicker value={s.palette} onChange={set('palette')} />} />
+      </Section>
+      <Section title={t.mode}>
+        <Row last stacked hideLabel label={t.mode} right={
+          <Segmented accessibilityLabel={t.mode} value={s.theme} onChange={set('theme')}
             options={[{ value: 'system', label: t.system }, { value: 'light', label: t.light }, { value: 'dark', label: t.dark }]} />
         } />
       </Section>
@@ -92,6 +96,45 @@ function Look() {
         <Row leading={<IconTile name="motion" color="indigo" />} last label={t.reduceMotion} hint={t.reduceMotionHint} right={<Toggle accessibilityLabel={t.reduceMotion} value={s.reduceMotion} onChange={set('reduceMotion')} />} />
       </Section>
     </>
+  );
+}
+
+/** 5 round two-tone swatches (that palette's background + main colour, in the current mode). */
+function PalettePicker({ value, onChange }: { value: Palette; onChange: (p: Palette) => void }) {
+  const { colors, scheme } = useTheme();
+  return (
+    <View style={styles.palettes} accessibilityRole="radiogroup" accessibilityLabel={t.theme}>
+      {PALETTES.map((p) => {
+        const on = p === value;
+        const look = palettes[p][scheme];
+        return (
+          <PressScale
+            key={p}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: on }}
+            accessibilityLabel={t.palettes[p]}
+            onPress={() => {
+              if (on) return;
+              haptics.light();
+              onChange(p);
+            }}
+            style={styles.palette}>
+            <View style={[styles.paletteRing, { borderColor: on ? colors.ink : 'transparent' }]}>
+              <View style={[styles.paletteDot, { borderColor: colors.line }]}>
+                <View style={[styles.paletteHalf, { backgroundColor: look.bg }]} />
+                <View style={[styles.paletteHalf, { backgroundColor: look.primary }]} />
+              </View>
+              {on ? (
+                <View style={[styles.paletteCheck, { backgroundColor: colors.ink, borderColor: colors.bg }]}>
+                  <Icon name="check" size={10} weight="bold" color={colors.bg} />
+                </View>
+              ) : null}
+            </View>
+            <Text variant="label" tone={on ? 'ink' : 'ink2'} numberOfLines={1}>{t.palettes[p]}</Text>
+          </PressScale>
+        );
+      })}
+    </View>
   );
 }
 
@@ -354,8 +397,15 @@ function About() {
   );
 }
 
+const SWATCH = 44;
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  palettes: { flexDirection: 'row', justifyContent: 'space-between', gap: space.xs },
+  palette: { alignItems: 'center', gap: space.xs, minWidth: SWATCH },
+  paletteRing: { width: SWATCH, height: SWATCH, borderRadius: SWATCH / 2, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  paletteDot: { width: SWATCH - 10, height: SWATCH - 10, borderRadius: (SWATCH - 10) / 2, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden', flexDirection: 'row' },
+  paletteHalf: { flex: 1 },
+  paletteCheck: { position: 'absolute', right: -2, bottom: -2, width: 18, height: 18, borderRadius: 9, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   faq: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
   faqHead: { paddingHorizontal: space.l, marginBottom: space.s },
   faqSep: { borderTopWidth: StyleSheet.hairlineWidth },

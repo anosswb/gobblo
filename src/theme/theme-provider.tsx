@@ -6,7 +6,7 @@ import { useReducedMotion } from 'react-native-reanimated';
 import { useAppStore } from '@/state/app-store';
 import type { ThemePreference } from '@/state/schema';
 
-import { accents, dark, light, type ColorTokens } from './tokens';
+import { looksOf, type ColorTokens } from './tokens';
 
 type Theme = {
   scheme: 'light' | 'dark';
@@ -22,21 +22,18 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const system = useColorScheme();
   const preference = useAppStore((s) => s.settings.theme);
   const appReduceMotion = useAppStore((s) => s.settings.reduceMotion);
-  const accent = useAppStore((s) => s.settings.accent);
+  const palette = useAppStore((s) => s.settings.palette);
   const systemReduceMotion = useReducedMotion();
 
   const value = useMemo<Theme>(() => {
     const scheme = preference === 'system' ? (system === 'dark' ? 'dark' : 'light') : preference;
-    const [primary, primaryDeep] = (accents[accent] ?? accents.cobalt)[scheme];
-    const base = scheme === 'dark' ? dark : light;
     return {
       scheme,
-      // the soft tint (selected rows, chips) follows the accent too
-      colors: { ...base, primary, primaryDeep, primarySoft: `${primary}${scheme === 'dark' ? '2E' : '1F'}` },
+      colors: looksOf(palette)[scheme],
       preference,
       reduceMotion: systemReduceMotion || appReduceMotion,
     };
-  }, [preference, system, systemReduceMotion, appReduceMotion, accent]);
+  }, [preference, system, systemReduceMotion, appReduceMotion, palette]);
 
   const navTheme = useMemo(() => {
     const base = value.scheme === 'dark' ? DarkTheme : DefaultTheme;

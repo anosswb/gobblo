@@ -16,7 +16,7 @@ export function DayField({ day, min, onChange, label }: DayFieldProps) {
         range={{ start: toDate(min), end: toDate(maxDay(min)) }}
         displayedComponents={['date']}
         onDateChange={(d) => onChange(toKey(d))}
-        modifiers={[datePickerStyle('graphical'), tint(colors.primary)]}
+        modifiers={[datePickerStyle('graphical'), tint(colors.primaryInk)]}
       />
     </Host>
   );

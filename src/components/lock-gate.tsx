@@ -48,7 +48,7 @@ export function LockGate({ children }: PropsWithChildren) {
       {enabled && locked && (
         <Animated.View exiting={FadeOut.duration(duration.fast)} style={[StyleSheet.absoluteFill, styles.wrap, { backgroundColor: colors.bg }]}>
           <View style={[styles.badge, { backgroundColor: colors.primarySoft }]}>
-            <LockSimple size={36} weight="fill" color={colors.primary} />
+            <LockSimple size={36} weight="fill" color={colors.primaryInk} />
           </View>
           <Text variant="heading">Your bites are locked</Text>
           <PressScale

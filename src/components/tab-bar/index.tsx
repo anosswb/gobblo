@@ -83,7 +83,7 @@ type TabButtonProps = TabTriggerSlotProps & { def: TabDef };
 
 function TabButton({ def, isFocused, onPress, ref, ...rest }: TabButtonProps) {
   const { colors } = useTheme();
-  const tint = isFocused ? colors.primary : colors.ink;
+  const tint = isFocused ? colors.primaryInk : colors.ink;
   return (
     <Pressable
       {...rest}

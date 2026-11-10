@@ -26,7 +26,7 @@ export function DayField({ day, min, onChange, label }: DayFieldProps) {
           setOpen(true);
         }}
         style={[styles.button, { backgroundColor: colors.primarySoft }]}>
-        <Icon name="calendar" size={16} color={colors.primary} />
+        <Icon name="calendar" size={16} color={colors.primaryInk} />
         <Text variant="bodyBold" tone="primary">{dayLabel(day)}</Text>
       </PressScale>
       {open ? (
@@ -34,7 +34,7 @@ export function DayField({ day, min, onChange, label }: DayFieldProps) {
           <DatePickerDialog
             initialDate={toDate(day).toISOString()}
             selectableDates={{ start: toDate(min), end: toDate(maxDay(min)) }}
-            color={colors.primary}
+            color={colors.primaryInk}
             confirmButtonLabel={en.when.pickOk}
             dismissButtonLabel={en.when.pickCancel}
             onDateSelected={(d) => {

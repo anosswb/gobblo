@@ -109,7 +109,7 @@ export default function DumpScreen() {
               </Pressable>
             ) : (
               <PressScale accessibilityRole="button" onPress={() => { setText(DUMP_EXAMPLE); haptics.select(); play('pop'); }} style={[styles.example, { backgroundColor: colors.primarySoft }]}>
-                <Icon name="sparkle" size={13} color={colors.primary} />
+                <Icon name="sparkle" size={13} color={colors.primaryInk} />
                 <Text variant="caption" tone="primary" style={styles.semi}>{d.example}</Text>
               </PressScale>
             )}

@@ -14,9 +14,10 @@ type Tone = 'ink' | 'ink2' | 'ink3' | 'primary' | 'onPrimary' | 'onReward' | 'on
 
 type Props = TextProps & { variant?: Variant; tone?: Tone };
 
+/** tone="primary" uses `primaryInk`: the readable shade of the theme colour. */
 export function Text({ variant = 'body', tone = 'ink', style, ...rest }: Props) {
   const { colors } = useTheme();
-  return <RNText maxFontSizeMultiplier={MAX_FONT_SCALE} {...rest} style={[styles[variant], { color: colors[tone] }, style]} />;
+  return <RNText maxFontSizeMultiplier={MAX_FONT_SCALE} {...rest} style={[styles[variant], { color: colors[tone === 'primary' ? 'primaryInk' : tone] }, style]} />;
 }
 
 const t = (size: number, lineHeight: number, f: TextStyle): TextStyle => ({ ...f, fontSize: size, lineHeight, letterSpacing: tracking(size) });

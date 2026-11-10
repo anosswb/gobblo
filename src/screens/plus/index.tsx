@@ -133,7 +133,7 @@ export function PlusScreen() {
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.head}>
           <View style={[styles.packIcon, { backgroundColor: colors.primarySoft }]}>
-            <Icon name="sparkle" size={20} color={colors.primary} />
+            <Icon name="sparkle" size={20} color={colors.primaryInk} />
           </View>
           <Text variant="heading" style={styles.flex}>{t.title}</Text>
           {owned ? <Text variant="bodyBold" tone="primary">{t.owned}</Text> : null}

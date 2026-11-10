@@ -38,7 +38,7 @@ export function Button({
       disabled={disabled}
       onPress={onPress}
       style={[styles.button, { backgroundColor: soft ? colors.primarySoft : colors.primary, opacity: disabled ? 0.5 : 1 }]}>
-      {icon ? <Icon name={icon} size={18} color={soft ? colors.primary : colors.onPrimary} /> : null}
+      {icon ? <Icon name={icon} size={18} color={soft ? colors.primaryInk : colors.onPrimary} /> : null}
       <Text variant="bodyBold" tone={soft ? 'primary' : 'onPrimary'}>
         {label}
       </Text>

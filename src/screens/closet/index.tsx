@@ -152,7 +152,7 @@ export function ClosetScreen() {
                 styles.cell,
                 {
                   backgroundColor: on ? colors.primarySoft : colors.card,
-                  borderColor: on ? colors.primary : colors.cardBorder,
+                  borderColor: on ? colors.primaryInk : colors.cardBorder,
                   borderWidth: on ? 2 : StyleSheet.hairlineWidth,
                   transform: [{ scale: pressed ? 0.96 : 1 }],
                 },
@@ -176,7 +176,7 @@ export function ClosetScreen() {
                 )}
                 {tile.mood === 'auto' ? (
                   <View style={styles.autoBadge}>
-                    <Icon name="sparkle" size={14} color={colors.primary} />
+                    <Icon name="sparkle" size={14} color={colors.primaryInk} />
                   </View>
                 ) : null}
               </View>

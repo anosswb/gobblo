@@ -69,7 +69,7 @@ export function Toggle({
       }}
       style={{ opacity: disabled ? 0.4 : 1 }}>
       <Animated.View style={[styles.track, track]}>
-        <Animated.View style={[styles.knob, { backgroundColor: colors.onPrimary, shadowColor: colors.focusBottom }, knob]} />
+        <Animated.View style={[styles.knob, { backgroundColor: colors.knob, shadowColor: colors.focusBottom }, knob]} />
       </Animated.View>
     </Pressable>
   );

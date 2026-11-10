@@ -15,7 +15,7 @@ export function DayField({ day, min, onChange, label }: DayFieldProps) {
   const { colors, scheme } = useTheme();
   return (
     <View style={[styles.wrap, { backgroundColor: colors.primarySoft }]}>
-      <Icon name="calendar" size={16} color={colors.primary} />
+      <Icon name="calendar" size={16} color={colors.primaryInk} />
       {createElement('input', {
         type: 'date',
         value: day,
@@ -23,7 +23,7 @@ export function DayField({ day, min, onChange, label }: DayFieldProps) {
         max: maxDay(min),
         'aria-label': label,
         onChange: (e: { target: { value: string } }) => e.target.value && onChange(e.target.value),
-        style: { border: 'none', background: 'transparent', color: colors.primary, ...font('body', '600'), fontSize: 16, colorScheme: scheme, minHeight: 44 },
+        style: { border: 'none', background: 'transparent', color: colors.primaryInk, ...font('body', '600'), fontSize: 16, colorScheme: scheme, minHeight: 44 },
       })}
     </View>
   );

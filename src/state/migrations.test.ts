@@ -60,3 +60,19 @@ describe('migration 2 -> 3', () => {
     expect(migrate(picked, 2).settings.accent).toBe('jade');
   });
 });
+
+describe('colour themes (palette)', () => {
+  it('an old save without a palette loads with Ink and keeps its old accent', () => {
+    const old = { ...freshState(), settings: { theme: 'dark', accent: 'jade' } };
+    const s = migrate(old, SCHEMA_VERSION);
+    expect(s.settings.palette).toBe('ink');
+    expect(s.settings.accent).toBe('jade');
+    expect(s.settings.theme).toBe('dark');
+    expect(migrate({ settings: { accent: 'cobalt' } }, 0).settings.palette).toBe('ink');
+  });
+
+  it('keeps a chosen palette', () => {
+    const saved = { ...freshState(), settings: { ...freshState().settings, palette: 'sage' } };
+    expect(migrate(saved, SCHEMA_VERSION).settings.palette).toBe('sage');
+  });
+});

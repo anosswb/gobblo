@@ -102,7 +102,7 @@ function Card({ level, onDone }: { level: number; onDone: () => void }) {
                   {reward.items.map((i: Item) => (
                     <View key={i.id} style={styles.rewardRow}>
                       <View style={[styles.rewardIcon, { backgroundColor: colors.primarySoft }]}>
-                        <Icon name={SLOT_ICON[i.slot]} size={16} color={colors.primary} />
+                        <Icon name={SLOT_ICON[i.slot]} size={16} color={colors.primaryInk} />
                       </View>
                       <Text variant="heading">{i.name}</Text>
                     </View>

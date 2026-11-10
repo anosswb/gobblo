@@ -1,10 +1,11 @@
 import { Platform, type TextStyle } from 'react-native';
 
+import { alpha, mix } from './color';
+
 /**
- * Colour tokens, "Apple" direction (DECISIONS.md, 2026-11-06).
- * Built on the iOS system palette: grouped grey background, white cards, pure black in dark
- * mode with elevated greys, label / secondaryLabel / tertiaryLabel inks, hairline separators.
- * One tint colour (the pet's pink), lime only for rewards. Dark is designed, not inverted.
+ * Colour tokens. Apple structure (label / secondaryLabel / tertiaryLabel inks, hairline
+ * separators, opaque cards), coloured by one of 5 palettes (`palettes` below, docs/16 #1),
+ * each with a designed light and dark look. Dark is near-black with a tiny tint, never fog.
  * Components must only use these tokens. No hex values in components.
  */
 export type ColorTokens = {
@@ -47,6 +48,8 @@ export type ColorTokens = {
   /** the tint */
   primary: string;
   primaryDeep: string;
+  /** primary used as text or an icon colour (a darker shade when primary is a pastel) */
+  primaryInk: string;
   /** tint at ~12 %: selected rows, soft buttons */
   primarySoft: string;
   onPrimary: string;
@@ -78,6 +81,10 @@ export type ColorTokens = {
   roomGlass: string;
   /** dark theme: dims bright scenes */
   sceneDim: string;
+  /** glyph on an iOS Settings icon tile (always white) */
+  onTile: string;
+  /** switch knob (always white, like iOS) */
+  knob: string;
 };
 
 const shared = {
@@ -92,101 +99,121 @@ const shared = {
   focusScrim: 'rgba(5,5,6,0.55)',
   onLightScene: '#0B0B0D',
   sceneDim: 'rgba(0,0,0,0.18)',
-  onPrimary: '#FFFFFF',
+  onTile: '#FFFFFF',
+  knob: '#FFFFFF',
 } as const;
 
-export const light: ColorTokens = {
-  ...shared,
-  roomTop: '#FFFFFF',
-  roomMid: '#F5F5F7',
-  roomBottom: '#ECECF0',
-  roomInk: '#0B0B0D',
-  roomInk2: 'rgba(60,60,67,0.62)',
-  roomGlass: 'rgba(0,0,0,0.05)',
-  // Apple neutral light: soft grey canvas, solid white cards, hairline edges, no colour glows
-  bg: '#F5F5F7',
-  bgTop: '#FBFBFC',
-  bgBottom: '#EFEFF2',
-  glowA: 'rgba(255,255,255,0.9)',
-  glowB: 'rgba(255,255,255,0)',
-  card: '#FFFFFF',
-  cardSolid: '#FFFFFF',
-  cardBorder: 'rgba(0,0,0,0.06)',
-  cardAlt: '#F2F2F5',
-  fill: 'rgba(118,118,128,0.10)',
-  fill2: 'rgba(118,118,128,0.18)',
-  thumb: '#FFFFFF',
-  glass: 'rgba(255,255,255,0.78)',
-  glassBorder: 'rgba(255,255,255,0.92)',
-  glassEdge: 'rgba(0,0,0,0.08)',
-  scrim: 'rgba(0,0,0,0.28)',
-  ink: '#0B0B0D',
-  ink2: 'rgba(60,60,67,0.64)',
-  ink3: 'rgba(60,60,67,0.32)',
-  line: 'rgba(0,0,0,0.08)',
-  primary: '#E5307D',
-  primaryDeep: '#B81E5E',
-  primarySoft: 'rgba(229,48,125,0.10)',
-  // the main "do it" button: ink on light, like Apple's primary black buttons
-  reward: '#0B0B0D',
-  rewardDeep: '#000000',
-  onReward: '#FFFFFF',
-  success: '#34C759',
-  pink: '#FF4F96',
-  danger: '#FF3B30',
-  shadow: 'rgba(0,0,0,0.06)',
-  tabBar: 'rgba(255,255,255,0.86)',
+/** Colour themes (docs/16 #1): 5 palettes × light + dark = 10 looks. All free. */
+export type Palette = 'ink' | 'blush' | 'cotton' | 'sage' | 'graphite';
+export const PALETTES: readonly Palette[] = ['ink', 'blush', 'cotton', 'sage', 'graphite'];
+
+/** The few colours a look is built from; everything else is derived in `makeLook`. */
+type Seed = {
+  bg: string;
+  /** cards and rows (opaque) */
+  card: string;
+  ink: string;
+  primary: string;
+  onPrimary: string;
+  /** primary as text / icon colour; defaults to `primary` (pastel primaries need a darker shade) */
+  primaryInk?: string;
+  /** soft tint for chips, selected rows, soft buttons; defaults to primary at low opacity */
+  soft?: string;
 };
 
-export const dark: ColorTokens = {
-  ...shared,
-  roomTop: '#1C1C1F',
-  roomMid: '#111113',
-  roomBottom: '#050506',
-  roomInk: '#FFFFFF',
-  roomInk2: 'rgba(235,235,245,0.6)',
-  roomGlass: 'rgba(255,255,255,0.08)',
-  // Apple neutral dark: near-black, graphite cards, white hairlines, one soft top light. No pink/purple.
-  bg: '#0A0A0B',
-  bgTop: '#151517',
-  bgBottom: '#050506',
-  glowA: 'rgba(255,255,255,0.05)',
-  glowB: 'rgba(255,255,255,0)',
-  card: 'rgba(255,255,255,0.055)',
-  cardSolid: '#161618',
-  cardBorder: 'rgba(255,255,255,0.08)',
-  cardAlt: 'rgba(255,255,255,0.06)',
-  fill: 'rgba(255,255,255,0.08)',
-  fill2: 'rgba(255,255,255,0.14)',
-  thumb: '#636366',
-  glass: 'rgba(30,30,32,0.72)',
-  glassBorder: 'rgba(255,255,255,0.14)',
-  glassEdge: 'rgba(0,0,0,0.5)',
-  scrim: 'rgba(0,0,0,0.55)',
-  ink: '#F5F5F7',
-  ink2: 'rgba(235,235,245,0.6)',
-  ink3: 'rgba(235,235,245,0.3)',
-  line: 'rgba(255,255,255,0.08)',
-  primary: '#FF4F96',
-  primaryDeep: '#D02D70',
-  primarySoft: 'rgba(255,79,150,0.16)',
-  reward: '#F5F5F7',
-  rewardDeep: '#D1D1D6',
-  onReward: '#0B0B0D',
-  success: '#30D158',
-  pink: '#FF6FA8',
-  danger: '#FF453A',
-  shadow: 'rgba(0,0,0,0.6)',
-  tabBar: 'rgba(22,22,24,0.86)',
+const WHITE = '#FFFFFF';
+const BLACK = '#000000';
+
+function makeLook(scheme: 'light' | 'dark', s: Seed): ColorTokens {
+  const isDark = scheme === 'dark';
+  const primaryInk = s.primaryInk ?? s.primary;
+  const status = isDark
+    ? { success: '#30D158', pink: '#FF6FA8', danger: '#FF453A' }
+    : { success: '#34C759', pink: '#FF4F96', danger: '#FF3B30' };
+  return {
+    ...shared,
+    ...status,
+    // backdrop: a very soft vertical tone (nearly flat in dark), no glows
+    bg: s.bg,
+    bgTop: isDark ? mix(s.bg, s.ink, 0.025) : mix(s.bg, WHITE, 0.6),
+    bgBottom: isDark ? mix(s.bg, BLACK, 0.4) : mix(s.bg, s.ink, 0.03),
+    glowA: isDark ? alpha(s.ink, 0.05) : alpha(WHITE, 0.9),
+    glowB: alpha(WHITE, 0),
+    card: s.card,
+    cardSolid: s.card,
+    cardBorder: alpha(s.ink, isDark ? 0.09 : 0.07),
+    cardAlt: mix(s.card, s.ink, isDark ? 0.06 : 0.04),
+    fill: alpha(s.ink, isDark ? 0.09 : 0.07),
+    fill2: alpha(s.ink, isDark ? 0.15 : 0.13),
+    thumb: isDark ? mix(s.card, s.ink, 0.3) : WHITE,
+    glass: alpha(s.card, isDark ? 0.78 : 0.82),
+    glassBorder: isDark ? alpha(s.ink, 0.14) : alpha(WHITE, 0.92),
+    glassEdge: isDark ? alpha(BLACK, 0.5) : alpha(s.ink, 0.08),
+    scrim: isDark ? alpha(BLACK, 0.6) : alpha(s.ink, 0.28),
+    ink: s.ink,
+    ink2: alpha(s.ink, isDark ? 0.68 : 0.7),
+    ink3: alpha(s.ink, 0.5),
+    line: alpha(s.ink, isDark ? 0.1 : 0.09),
+    primary: s.primary,
+    primaryDeep: mix(s.primary, BLACK, isDark ? 0.2 : 0.18),
+    primaryInk,
+    primarySoft: s.soft ?? alpha(s.primary, isDark ? 0.16 : 0.1),
+    onPrimary: s.onPrimary,
+    // the main "do it" button: ink on the page (black on light, light on dark)
+    reward: s.ink,
+    rewardDeep: mix(s.ink, BLACK, isDark ? 0.15 : 0.4),
+    onReward: isDark ? s.bg : WHITE,
+    shadow: isDark ? alpha(BLACK, 0.6) : alpha(s.ink, 0.06),
+    tabBar: alpha(s.card, 0.86),
+    // the focus timer room follows the look
+    roomTop: isDark ? mix(s.bg, s.ink, 0.08) : mix(s.bg, WHITE, 0.6),
+    roomMid: isDark ? s.bg : mix(s.bg, s.ink, 0.03),
+    roomBottom: isDark ? mix(s.bg, BLACK, 0.5) : mix(s.bg, s.ink, 0.07),
+    roomInk: s.ink,
+    roomInk2: alpha(s.ink, isDark ? 0.68 : 0.7),
+    roomGlass: alpha(s.ink, isDark ? 0.08 : 0.05),
+  };
+}
+
+const seeds: Record<Palette, { light: Seed; dark: Seed }> = {
+  // deep navy on white; light blue in dark
+  ink: {
+    light: { bg: '#FFFFFF', card: '#F3F6F8', ink: '#00171F', primary: '#003459', onPrimary: WHITE },
+    dark: { bg: '#000D12', card: '#06202B', ink: '#EAF4F8', primary: '#7CC4F0', onPrimary: '#00171F' },
+  },
+  // warm pink paper, blush button with dark text
+  blush: {
+    light: { bg: '#F7EDF0', card: '#FFFCFD', ink: '#2B1A1D', primary: '#F4AFAB', onPrimary: '#3A1F22', primaryInk: '#9A3F3A', soft: '#F4CBC6' },
+    dark: { bg: '#120C0D', card: '#21171A', ink: '#F7EDF0', primary: '#F4AFAB', onPrimary: '#3A1F22', soft: alpha('#F4CBC6', 0.14) },
+  },
+  // white with pink + powder blue
+  cotton: {
+    light: { bg: '#FFFFFF', card: '#F4F8F8', ink: '#1F2A2C', primary: '#FFCAD4', onPrimary: '#3A1F27', primaryInk: '#9B2C47', soft: '#B0D0D3' },
+    dark: { bg: '#0B1112', card: '#162022', ink: '#EEF4F4', primary: '#FFCAD4', onPrimary: '#3A1F27', soft: alpha('#B0D0D3', 0.16) },
+  },
+  // off-white and forest green; soft sage in dark
+  sage: {
+    light: { bg: '#F4F6F1', card: '#FFFFFF', ink: '#16241C', primary: '#2F5D46', onPrimary: WHITE, soft: '#CFE1C9' },
+    dark: { bg: '#0A100C', card: '#141D17', ink: '#EDF3EE', primary: '#A9CFAE', onPrimary: '#10241A' },
+  },
+  // the neutral look: black on white, white on black
+  graphite: {
+    light: { bg: '#FFFFFF', card: '#F5F5F7', ink: '#0B0B0D', primary: '#111113', onPrimary: WHITE },
+    dark: { bg: '#000000', card: '#111113', ink: '#F5F5F7', primary: '#FFFFFF', onPrimary: BLACK, soft: alpha(WHITE, 0.12) },
+  },
 };
 
-/** Tint choices (docs/12 #14), all iOS system colours. Free on both stores. */
-export const accents = {
-  berry: { light: ['#E5307D', '#B81E5E'], dark: ['#FF4F96', '#D02D70'], label: 'Pink' },
-  cobalt: { light: ['#007AFF', '#0062CC'], dark: ['#0A84FF', '#0066CC'], label: 'Blue' },
-  jade: { light: ['#248A3D', '#1B6B2F'], dark: ['#30D158', '#24A148'], label: 'Green' },
-  sunset: { light: ['#C93400', '#A32A00'], dark: ['#FF9F0A', '#CC7F08'], label: 'Orange' },
-} as const;
+export const palettes = Object.fromEntries(
+  PALETTES.map((p) => [p, { light: makeLook('light', seeds[p].light), dark: makeLook('dark', seeds[p].dark) }]),
+) as Record<Palette, { light: ColorTokens; dark: ColorTokens }>;
+
+/** The palette's two looks; unknown values (a newer save, a broken backup) fall back to Ink. */
+export const looksOf = (p: string | undefined) =>
+  p && Object.prototype.hasOwnProperty.call(palettes, p) ? palettes[p as Palette] : palettes.ink;
+
+/** The default look (Ink). */
+export const light = palettes.ink.light;
+export const dark = palettes.ink.dark;
 
 /** iOS Settings-style icon tiles (system colours, same in both schemes; the glyph is white). */
 export const tiles = {
