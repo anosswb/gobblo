@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
-import { ADS } from '@/config/ads';
+import { ADS, USE_REAL_ADS } from '@/config/ads';
 import { useLook } from '@/features/closet/use-look';
 import { adsLeftToday, afterAd } from '@/features/plus/ad-reward';
 import { en } from '@/i18n/en';
-import { showRewarded } from '@/lib/ads';
+import { lastAdError, preloadRewarded, showRewarded } from '@/lib/ads';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { Burst } from '@/pet/burst';
@@ -36,13 +36,21 @@ export function VideoTreat() {
   const [burst, setBurst] = useState(0);
   const left = adsLeftToday(adSparks, dayKey(), ADS.maxPerDay);
   const full = left <= 0;
+  const [reason, setReason] = useState<string | null>(null);
+
+  // get one video ready in the background, only when an offer can be shown
+  useEffect(() => {
+    if (ADS.enabled && left > 0) preloadRewarded();
+  }, [left]);
 
   const watch = async () => {
     if (phase === 'loading' || full) return;
     setPhase('loading');
+    setReason(null);
     haptics.light();
     const r = await showRewarded().catch(() => 'unavailable' as const);
     if (r !== 'earned') {
+      if (r === 'unavailable' && !USE_REAL_ADS) setReason(lastAdError());
       setPhase(r === 'closed' ? 'later' : 'none');
       return;
     }
@@ -70,6 +78,9 @@ export function VideoTreat() {
         <View style={styles.flex}>
           <Text variant="bodyBold">{v.title(petName)}</Text>
           <Text variant="subhead" tone="ink2" accessibilityLiveRegion="polite">{line}</Text>
+          {phase === 'none' && reason && !USE_REAL_ADS ? (
+            <Text variant="caption" tone="ink2" selectable>{reason}</Text>
+          ) : null}
         </View>
       </View>
       <PressScale

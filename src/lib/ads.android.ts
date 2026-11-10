@@ -1,4 +1,5 @@
 import { ADS, AD_IDS, USE_REAL_ADS } from '@/config/ads';
+import { adErrorCode, canContinueAfterConsentError, joinReasons, shortError } from '@/features/plus/ad-reason';
 
 /**
  * Rewarded ads on Android (react-native-google-mobile-ads). Everything is lazy and defensive:
@@ -23,15 +24,39 @@ function load(): Lib | null {
   return lib;
 }
 
+let consentNote: string | null = null;
+let failure: string | null = null;
+
+/** Why the last ad did not show (short codes). For non-store builds only. */
+export function lastAdError(): string | null {
+  return joinReasons(consentNote, failure);
+}
+
 let ready: Promise<boolean> | null = null;
 function prepare(m: Lib): Promise<boolean> {
   ready ??= (async () => {
+    let canRequest = true;
     try {
       const info = await m.AdsConsent.gatherConsent();
-      if (!info.canRequestAds) return false;
+      canRequest = info.canRequestAds;
+      if (!canRequest) failure = 'consent-denied';
+    } catch (e) {
+      // Google's advice: do not stop. Use what the last consent info says.
+      consentNote = `consent-error:${shortError(e)}`;
+      try {
+        const info = await m.AdsConsent.getConsentInfo();
+        canRequest = canContinueAfterConsentError(info.status);
+        if (!canRequest) failure = 'consent-denied';
+      } catch {
+        canRequest = true;
+      }
+    }
+    if (!canRequest) return false;
+    try {
       await m.default().initialize();
       return true;
-    } catch {
+    } catch (e) {
+      failure = `init-error:${shortError(e)}`;
       return false;
     }
   })().then((ok) => {
@@ -41,40 +66,116 @@ function prepare(m: Lib): Promise<boolean> {
   return ready;
 }
 
-/** Loads and shows one rewarded video. 'earned' only when Google says the reward was earned. */
+type Ad = ReturnType<Lib['RewardedAd']['createForAdRequest']>;
+type Loaded = { ad: Ad } | { error: string };
+
+function loadOnce(m: Lib, unit: string): Promise<Loaded> {
+  return new Promise<Loaded>((resolve) => {
+    const offs: (() => void)[] = [];
+    let done = false;
+    const end = (r: Loaded) => {
+      if (done) return;
+      done = true;
+      clearTimeout(limit);
+      offs.forEach((off) => off());
+      resolve(r);
+    };
+    // only the loading has a time limit; once the video is on screen it ends by itself
+    const limit = setTimeout(() => end({ error: 'load-timeout' }), 15_000);
+    try {
+      const ad = m.RewardedAd.createForAdRequest(unit);
+      offs.push(
+        ad.addAdEventListener(m.RewardedAdEventType.LOADED, () => end({ ad })),
+        ad.addAdEventListener(m.AdEventType.ERROR, (e: unknown) => end({ error: `load-error:${adErrorCode(e)}` })),
+      );
+      ad.load();
+    } catch (e) {
+      end({ error: `load-error:${shortError(e)}` });
+    }
+  });
+}
+
+/** One automatic retry after a load error (not after a timeout). */
+async function loadWithRetry(m: Lib): Promise<Loaded> {
+  const unit = USE_REAL_ADS && AD_IDS.android.rewardedId ? AD_IDS.android.rewardedId : m.TestIds.REWARDED;
+  const first = await loadOnce(m, unit);
+  if ('ad' in first || first.error === 'load-timeout') return first;
+  return loadOnce(m, unit);
+}
+
+let cached: Ad | null = null;
+let loading: Promise<boolean> | null = null;
+
+/** Loads one rewarded ad in the background and keeps it for the next "Watch" tap. */
+export function preloadRewarded(): void {
+  if (!ADS.enabled || cached || loading) return;
+  const m = load();
+  if (!m) return;
+  loading = (async () => {
+    if (!(await prepare(m))) return false;
+    const r = await loadWithRetry(m);
+    if ('ad' in r) {
+      cached = r.ad;
+      return true;
+    }
+    failure = r.error;
+    return false;
+  })()
+    .catch(() => false)
+    .finally(() => {
+      loading = null;
+    });
+}
+
+/** Shows one rewarded video (the preloaded one if there is one). 'earned' only when Google says the reward was earned. */
 export async function showRewarded(): Promise<AdResult> {
+  failure = null;
   if (!ADS.enabled) return 'unavailable';
   const m = load();
-  if (!m || !(await prepare(m))) return 'unavailable';
-  const unit = USE_REAL_ADS && AD_IDS.android.rewardedId ? AD_IDS.android.rewardedId : m.TestIds.REWARDED;
+  if (!m) {
+    failure = 'no-module';
+    return 'unavailable';
+  }
+  if (loading) await loading;
+  let ad = cached;
+  cached = null; // an ad is used once: shown or failed, it is dropped
+  if (!ad) {
+    if (!(await prepare(m))) return 'unavailable';
+    const r = await loadWithRetry(m);
+    if (!('ad' in r)) {
+      failure = r.error;
+      return 'unavailable';
+    }
+    ad = r.ad;
+  }
+  const ready = ad;
   return new Promise<AdResult>((resolve) => {
     let earned = false;
     let done = false;
     const offs: (() => void)[] = [];
-    // only the loading has a time limit; once the video is on screen it ends by itself
-    const loadLimit = setTimeout(() => finish('unavailable'), 15_000);
-    function finish(r: AdResult) {
+    const finish = (r: AdResult) => {
       if (done) return;
       done = true;
-      clearTimeout(loadLimit);
       offs.forEach((off) => off());
       resolve(r);
-    }
+    };
     try {
-      const ad = m.RewardedAd.createForAdRequest(unit);
       offs.push(
-        ad.addAdEventListener(m.RewardedAdEventType.LOADED, () => {
-          clearTimeout(loadLimit);
-          ad.show().catch(() => finish('unavailable'));
-        }),
-        ad.addAdEventListener(m.RewardedAdEventType.EARNED_REWARD, () => {
+        ready.addAdEventListener(m.RewardedAdEventType.EARNED_REWARD, () => {
           earned = true;
         }),
-        ad.addAdEventListener(m.AdEventType.CLOSED, () => finish(earned ? 'earned' : 'closed')),
-        ad.addAdEventListener(m.AdEventType.ERROR, () => finish('unavailable')),
+        ready.addAdEventListener(m.AdEventType.CLOSED, () => finish(earned ? 'earned' : 'closed')),
+        ready.addAdEventListener(m.AdEventType.ERROR, (e: unknown) => {
+          failure = `show-error:${adErrorCode(e)}`;
+          finish('unavailable');
+        }),
       );
-      ad.load();
-    } catch {
+      ready.show().catch((e: unknown) => {
+        failure = `show-error:${shortError(e)}`;
+        finish('unavailable');
+      });
+    } catch (e) {
+      failure = `show-error:${shortError(e)}`;
       finish('unavailable');
     }
   });

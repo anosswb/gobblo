@@ -6,6 +6,14 @@ export type AdResult = 'earned' | 'closed' | 'unavailable';
 
 export const adsSupported = false;
 
+/** Why the last ad did not show (short codes, non-store builds only). */
+export function lastAdError(): string | null {
+  return null;
+}
+
+/** Loads one ad in the background (Android only). */
+export function preloadRewarded(): void {}
+
 export async function showRewarded(): Promise<AdResult> {
   return 'unavailable';
 }
