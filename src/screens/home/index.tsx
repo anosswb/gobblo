@@ -23,6 +23,7 @@ import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { Burst, SparkGain } from '@/pet/burst';
+import { maybeAskRating } from '@/lib/rating';
 import { Evolution } from '@/pet/evolution';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
@@ -128,6 +129,10 @@ export function HomeScreen() {
   // evolution scene first, then the card.
   const [evolveTo, setEvolveTo] = useState<{ stage: number; level: number } | null>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
+  const celebrating = useRef(false);
+  useEffect(() => {
+    celebrating.current = evolveTo !== null || levelUp !== null;
+  }, [evolveTo, levelUp]);
   const evolveIfNew = () => {
     const st = useAppStore.getState();
     const lv = levelOf(st.stats.total);
@@ -199,12 +204,17 @@ export function HomeScreen() {
       const t3 = setTimeout(() => {
         if (useAppStore.getState().settings.goodThingsJar) toast(h.goodThingAsk, { label: en.focus.goodThing, onPress: () => router.push('/me') });
       }, 3200);
+      // store rating (rules in features/rating): after the moment is over, never over a celebration
+      const t4 = setTimeout(() => {
+        if (!celebrating.current) void maybeAskRating();
+      }, 4500);
       eatenBefore.current = stats.eaten;
       sparksBefore.current = stats.sparks;
       return () => {
         clearTimeout(t);
         clearTimeout(t2);
         clearTimeout(t3);
+        clearTimeout(t4);
       };
     }
     eatenBefore.current = stats.eaten;

@@ -155,7 +155,8 @@ export interface Settings {
   /** last pet week whose weekly card was closed (features/weekly) */
   weekSeen: number;
   firstOpen: number;
-  reviewAskedVersion?: string;
+  /** app version we already asked for a store rating in (features/rating); optional, no migration */
+  ratingAskedVersion?: string;
 }
 
 export interface PersistedState {
