@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -99,7 +98,7 @@ export function ClosetScreen() {
   const onDarkStage = stageIsDark(show.room, sky, scheme);
 
   return (
-    <Screen eyebrow={t.eyebrow(look.level, STAGES[look.stage].name)} title={t.title} right={<GuideHelp id="closet" />}>
+    <Screen eyebrow={t.eyebrow(look.level, STAGES[look.stage].name)} title={t.title}>
       {/* the big preview */}
       <View style={[styles.hero, { borderColor: colors.cardBorder }]}>
         <StageBackdrop room={show.room} sky={sky} glowY={64} />

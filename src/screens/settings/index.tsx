@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { router, type Href } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
@@ -45,7 +44,7 @@ export function SettingsScreen() {
   const nudge = s.nudge === 'off' ? t.off : capWord(s.nudge);
 
   return (
-    <Screen back title={t.title} right={<GuideHelp id="settings" />}>
+    <Screen back title={t.title}>
       {/* the pet card: who this app belongs to */}
       <PressScale accessibilityRole="button" accessibilityLabel={`${pet.name}, ${t.petCardHint}`} onPress={() => open('pet')}
         style={[styles.petCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>

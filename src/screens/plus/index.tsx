@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-import { GuideHelp } from '@/components/guide/page-guide';
 import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, View } from 'react-native';
 
@@ -65,7 +64,7 @@ export function PlusScreen() {
   };
 
   return (
-    <Screen back glow={false} eyebrow={t.eyebrow} title={t.title} right={<GuideHelp id="plus" />}>
+    <Screen back glow={false} eyebrow={t.eyebrow} title={t.title}>
       <Text variant="body" tone="ink2">{android ? t.introAndroid : t.intro}</Text>
       {!canShowOffer(firstOpen) ? (
         <View style={[styles.note, { backgroundColor: colors.fill }]}>

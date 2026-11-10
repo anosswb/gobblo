@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { StyleSheet, TextInput } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
@@ -69,7 +68,7 @@ export function RemindersScreen() {
   const exit = FadeOut.duration(duration.quick);
 
   return (
-    <Screen back title="Reminders" right={<GuideHelp id="reminders" auto />}>
+    <Screen back title="Reminders">
       <Text variant="subhead" tone="ink2" style={styles.intro}>Tell me when you have to leave, or what to remember. I’ll tap you on the shoulder.</Text>
 
       <Segmented accessibilityLabel="Kind of reminder" value={kind} onChange={(k) => { setKind(k); haptics.select(); }}

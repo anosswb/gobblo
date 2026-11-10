@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -66,7 +65,6 @@ export function MeScreen() {
       title="Progress"
       right={
         <View style={styles.headRight}>
-        <GuideHelp id="me" />
         <PressScale accessibilityRole="button" accessibilityLabel="Settings" hitSlop={4} onPress={() => router.push('/settings')}>
           <Glass interactive radius={22} style={styles.gear}>
             <Icon name="gear" size={20} color={colors.ink} />
@@ -88,7 +86,6 @@ export function MeScreen() {
         <View style={styles.rowBetween}>
           <Text variant="heading" style={styles.flexOne}>Road to 20</Text>
           <Text variant="bodyBold" tone="primary">{lp.level}/20</Text>
-          <GuideHelp id="road" size={32} />
         </View>
         <RoadTo20 level={lp.level} total={stats.total} color={look.color} />
       </View>
