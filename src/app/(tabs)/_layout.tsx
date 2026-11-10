@@ -9,7 +9,7 @@ import { useAppStore } from '@/state/app-store';
 /**
  * Like expo-router's default tab render, but hidden tabs are frozen (react-freeze): they keep
  * their state and scroll position, but stop re-rendering while you are on another tab.
- * Store updates on Home (feeding, sparks) no longer re-render Me, Closet and Spin behind it.
+ * Store updates on Home (feeding, sparks) no longer re-render Me and Closet behind it.
  */
 const renderTab: typeof defaultTabsSlotRender = (descriptor, { isFocused, loaded, detachInactiveScreens }) => {
   if (!loaded && !isFocused) return null; // lazy: never visited
@@ -35,7 +35,6 @@ export default function TabsLayout() {
       {/* Defines the routes; the visible bar is <TabBar />. */}
       <TabList style={styles.hidden}>
         <TabTrigger name="index" href="/" />
-        <TabTrigger name="spin" href="/spin" />
         <TabTrigger name="closet" href="/closet" />
         <TabTrigger name="me" href="/me" />
       </TabList>

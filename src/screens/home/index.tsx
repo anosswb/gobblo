@@ -226,6 +226,20 @@ export function HomeScreen() {
     const t = setTimeout(() => setReaction('love'), 500);
     return () => clearTimeout(t);
   }, [away]);
+  // the pet's voice: one line in the bubble when you tap it (Pet talk off = it stays quiet)
+  const [say, setSay] = useState<string | null>(null);
+  const lineAt = useRef(openedAt.getDate());
+  const speak = () => {
+    if (settings.petTalk === 'silent') return;
+    lineAt.current = (lineAt.current + 1) % en.petLines.length;
+    setSay(en.petLines[lineAt.current]);
+  };
+  useEffect(() => {
+    if (!say) return;
+    const t = setTimeout(() => setSay(null), 4500);
+    return () => clearTimeout(t);
+  }, [say]);
+  const bubble = away >= 2 ? h.comeback(away) : say;
   const weeklyDue = recapDue(settings.weekSeen ?? 0, settings.firstOpen, new Date());
   const asleep = sky === 'night' && settings.autoSleep && list.length === 0;
   const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'curious' : 'happy';
@@ -286,33 +300,42 @@ export function HomeScreen() {
       <View style={[styles.stage, { height: stageH }]}>
         <StageBackdrop room={look.room} sky={sky} />
 
-        <View style={styles.stageTop}>
-          <Glass radius={18} shadow={false} style={styles.chip}>
-            <Text variant="caption" style={styles.chipText}>{h.level(look.level, STAGES[stage].name)}</Text>
-          </Glass>
-          <Glass radius={18} shadow={false} style={styles.chip}>
-            <Text variant="caption" style={styles.chipText}>{h.belly(stats.todayEaten)}</Text>
-          </Glass>
-        </View>
-
-        {away >= 2 ? (
-          <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)} style={styles.bubbleWrap}>
+        {bubble ? (
+          <Animated.View
+            key={bubble}
+            entering={FadeIn.duration(duration.quick)}
+            exiting={FadeOut.duration(duration.quick)}
+            style={styles.stageTop}>
             <PressScale
               accessibilityRole="button"
-              accessibilityLabel={h.comeback(away)}
-              accessibilityHint={en.weekly.away}
+              accessibilityLabel={bubble}
+              accessibilityHint={away >= 2 ? en.weekly.away : undefined}
+              style={styles.flex}
               onPress={() => {
-                haptics.success();
-                play('boop');
-                setReaction('love');
-                sayHi();
+                if (away >= 2) {
+                  haptics.success();
+                  play('boop');
+                  setReaction('love');
+                  sayHi();
+                } else {
+                  setSay(null);
+                }
               }}>
-              <Glass radius={20} style={styles.bubble}>
-                <Text variant="subhead" style={styles.chipText}>{h.comeback(away)}</Text>
+              <Glass radius={18} shadow={false} style={styles.bubble}>
+                <Text variant="subhead" numberOfLines={3} style={[styles.chipText, styles.center]}>{bubble}</Text>
               </Glass>
             </PressScale>
           </Animated.View>
-        ) : null}
+        ) : (
+          <View style={styles.stageTop}>
+            <Glass radius={18} shadow={false} style={styles.chip}>
+              <Text variant="caption" style={styles.chipText}>{h.level(look.level, STAGES[stage].name)}</Text>
+            </Glass>
+            <Glass radius={18} shadow={false} style={styles.chip}>
+              <Text variant="caption" style={styles.chipText}>{h.belly(stats.todayEaten)}</Text>
+            </Glass>
+          </View>
+        )}
 
         <Animated.View pointerEvents="none" style={[styles.feedGlow, { backgroundColor: colors.reward }, glow]} />
         <View style={styles.pet}>
@@ -330,6 +353,7 @@ export function HomeScreen() {
             onPress={() => {
               play('boop');
               setReaction(asleep ? 'tired' : (['excited', 'love', 'celebrating', 'confident'] as Mood[])[Math.floor(Math.random() * 4)]);
+              if (!asleep) speak();
             }}
           />
           </Animated.View>
@@ -510,6 +534,21 @@ export function HomeScreen() {
           <Text variant="caption" tone="ink2" style={styles.footer}>{h.oneThingMore(list.length - 1)}</Text>
         ) : null}
 
+        {list.length > 1 && !settings.oneThingMode ? (
+          <PressScale
+            accessibilityRole="button"
+            accessibilityLabel={h.pick}
+            accessibilityHint={h.pickHint}
+            onPress={() => {
+              haptics.select();
+              router.push('/tools/pick');
+            }}
+            style={[styles.pick, { backgroundColor: colors.fill }]}>
+            <Icon name="spin" size={16} color={colors.ink} />
+            <Text variant="bodyBold">{h.pick}</Text>
+          </PressScale>
+        ) : null}
+
         {/* Later: Tomorrow / This week / Someday, folded away so today's plate stays small */}
         {laterCount > 0 && !settings.oneThingMode ? (
           <View style={styles.laterWrap}>
@@ -635,11 +674,11 @@ const styles = StyleSheet.create({
   toolBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: space.xs },
   sparks: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.m, height: 32, borderRadius: radius.chip, marginBottom: space.xs },
   stage: { borderRadius: radius.scene, overflow: 'hidden' },
-  stageTop: { flexDirection: 'row', justifyContent: 'space-between', padding: space.m, gap: space.s },
+  // absolute: the bubble must never push or scroll what is inside the clipped stage
+  stageTop: { position: 'absolute', top: 0, start: 0, end: 0, flexDirection: 'row', justifyContent: 'space-between', padding: space.m, gap: space.s, zIndex: 2 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: space.s, paddingHorizontal: space.m, height: 32 },
   chipText: { fontWeight: '600' },
-  bubbleWrap: { position: 'absolute', top: 64, start: space.xl, end: space.xl, alignItems: 'center' },
-  bubble: { paddingHorizontal: space.l, paddingVertical: space.m },
+  bubble: { paddingHorizontal: space.l, paddingVertical: space.s, minHeight: 32, justifyContent: 'center' },
   pet: { position: 'absolute', bottom: 10, start: 0, end: 0, alignItems: 'center' },
   note: { flexDirection: 'row', alignItems: 'center', gap: space.m, borderRadius: radius.card - 6, padding: space.l },
   askNote: { flexDirection: 'column', alignItems: 'stretch' },
@@ -663,6 +702,7 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', gap: space.s, padding: space.xl, borderTopWidth: StyleSheet.hairlineWidth },
   cta: { marginTop: space.s, minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   footer: { paddingHorizontal: space.l },
+  pick: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: space.s, minHeight: 44, paddingHorizontal: space.l, borderRadius: radius.chip },
   feedGlow: { position: 'absolute', bottom: -60, alignSelf: 'center', width: 260, height: 260, borderRadius: 130 },
   noOutline: Platform.select({ web: { outlineStyle: 'none' }, default: {} }) as object,
 });

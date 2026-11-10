@@ -15,12 +15,11 @@ import { duration, easing, spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
 
-type TabName = 'index' | 'spin' | 'closet' | 'me';
+type TabName = 'index' | 'closet' | 'me';
 type TabDef = { name: TabName; label: string; icon: IconName };
 
 const TABS: TabDef[] = [
   { name: 'index', label: en.tabs.home, icon: 'home' },
-  { name: 'spin', label: en.tabs.spin, icon: 'spin' },
   { name: 'closet', label: en.tabs.closet, icon: 'closet' },
   { name: 'me', label: en.tabs.me, icon: 'me' },
 ];
@@ -28,9 +27,8 @@ const BAR_H = 62;
 const PAD = 4;
 
 function activeIndex(pathname: string): number {
-  if (pathname.startsWith('/spin')) return 1;
-  if (pathname.startsWith('/closet')) return 2;
-  if (pathname.startsWith('/me')) return 3;
+  if (pathname.startsWith('/closet')) return 1;
+  if (pathname.startsWith('/me')) return 2;
   return 0;
 }
 
