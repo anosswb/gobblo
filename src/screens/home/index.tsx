@@ -16,7 +16,7 @@ import { recapDue } from '@/features/weekly/logic';
 import { useLook } from '@/features/closet/use-look';
 import { shouldAskNudgeAgain } from '@/features/nudges/ask-again';
 import { askNotificationPermission } from '@/features/nudges/schedule';
-import { levelOf, STAGES, stageOfLevel } from '@/features/progress/logic';
+import { levelOf, MAX_LEVEL, STAGES, stageOfLevel } from '@/features/progress/logic';
 import { skyOf, StageBackdrop } from '@/components/stage-backdrop';
 import { LevelUp } from '@/pet/level-up';
 import { haptics } from '@/lib/haptics';
@@ -126,18 +126,18 @@ export function HomeScreen() {
   // right after the chomp, or when you come back to Home after it happened elsewhere
   // a new level: the level-up card (once per level). A new evolution form plays the big
   // evolution scene first, then the card.
-  const [evolveTo, setEvolveTo] = useState<number | null>(null);
+  const [evolveTo, setEvolveTo] = useState<{ stage: number; level: number } | null>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
-  const pendingLevel = useRef<number | null>(null);
   const evolveIfNew = () => {
     const st = useAppStore.getState();
     const lv = levelOf(st.stats.total);
     const seen = st.stats.seenLevel ?? 1;
     if (lv <= seen) return;
     st.markLevelSeen(lv);
-    if (stageOfLevel(lv) > stageOfLevel(seen)) {
-      pendingLevel.current = lv;
-      setEvolveTo(stageOfLevel(lv));
+    // exactly one celebration per level: a new form plays the evolution scene (it carries the
+    // level's reward); the Legend at level 20 and every other level use the level-up card
+    if (stageOfLevel(lv) > stageOfLevel(seen) && lv < MAX_LEVEL) {
+      setEvolveTo({ stage: stageOfLevel(lv), level: lv });
     } else {
       setLevelUp(lv);
     }
@@ -557,12 +557,9 @@ export function HomeScreen() {
       </FeedDragProvider>
 
       <Evolution
-        stage={evolveTo}
-        onDone={() => {
-          setEvolveTo(null);
-          if (pendingLevel.current) setLevelUp(pendingLevel.current);
-          pendingLevel.current = null;
-        }}
+        stage={evolveTo?.stage ?? null}
+        level={evolveTo?.level ?? 1}
+        onDone={() => setEvolveTo(null)}
       />
       <LevelUp level={levelUp} onDone={() => setLevelUp(null)} />
 

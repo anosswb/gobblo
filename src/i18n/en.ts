@@ -161,14 +161,11 @@ export const en = {
     welcome: (name: string) => `${name} is here. Your first bite is on the plate.`,
   },
   evolve: {
-    kicker: (name: string) => `${name} evolved`,
-    cheer: 'Let’s go.',
-    line: [
-      'All from tiny starts. You did that.',
-      'Small bites, big chonk. Science.',
-      'It’s giving main character.',
-    ],
-    ok: 'Nice.',
+    kicker: (name: string, lv: number) => `${name} evolved · level ${lv}`,
+    unlocked: (item: string) => `New: ${item}`,
+    wear: 'Wear it',
+    later: 'Later',
+    ok: 'Nice',
   },
   spin: {
     title: 'Spin',
