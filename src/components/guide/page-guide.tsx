@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,46 +18,13 @@ import { GuideDemo } from './demo';
 
 const g = guideCopy;
 
-/** Has this page's guide been shown once? (settings.guidesSeen, like tipDragSeen) */
-export const guideSeen = (id: GuideId) => (useAppStore.getState().settings.guidesSeen ?? []).includes(id);
-
-function markSeen(id: GuideId) {
-  const st = useAppStore.getState();
-  const seen = st.settings.guidesSeen ?? [];
-  if (!seen.includes(id)) st.updateSettings({ guidesSeen: [...seen, id] });
-}
-
 /**
- * The "?" in a page header plus that page's guide. `auto` opens it by itself the first time the
- * page is opened (toolkit tools). One component for every page; only the steps differ
- * (i18n/guides.en.ts).
+ * Retired from page headers (docs/15 item 8): no "?" on pages and no guide opens by itself.
+ * A page explains itself with one line; every guide stays reachable from Settings ›
+ * Questions & answers (PageGuide below). Kept as a no-op so old call sites still compile.
  */
-export function GuideHelp({ id, auto = false, size }: { id: GuideId; auto?: boolean; size?: number }) {
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (!auto || guideSeen(id)) return;
-    const t = setTimeout(() => setOpen(true), 450);
-    return () => clearTimeout(t);
-  }, [auto, id]);
-  return (
-    <>
-      <HelpButton
-        size={size}
-        onPress={() => {
-          haptics.select();
-          setOpen(true);
-        }}
-      />
-      <PageGuide
-        id={id}
-        visible={open}
-        onClose={() => {
-          setOpen(false);
-          markSeen(id);
-        }}
-      />
-    </>
-  );
+export function GuideHelp(_props: { id: GuideId; auto?: boolean; size?: number }) {
+  return null;
 }
 
 /** 44 pt glass "?" button (matches the other header buttons). */
