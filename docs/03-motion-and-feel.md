@@ -30,7 +30,7 @@ export const ease = { out: Easing.bezier(0.2, 0.9, 0.3, 1), inOut: Easing.bezier
 
 ## transitions.dev → React Native mapping
 The skill ships **CSS** recipes. Read the matching `NN-*.md` file, keep its numbers (duration, easing, distance, blur, scale), and rebuild it like this:
-| transitions.dev recipe | where in Nomling | how in RN |
+| transitions.dev recipe | where in Gobblo | how in RN |
 |---|---|---|
 | Number pop-in (digit flip + blur + stagger) | sparks pill, stats, timer minute change | each digit is an `Animated.Text` sliding on Y with opacity; blur via Skia or skip on Android |
 | Notification badge (diagonal slide + spring) | "+3 ✦" badge, new-bite counter | translateX/Y + `withSpring(spring.pop)` |

@@ -13,7 +13,7 @@ Rule used: every feature must keep the core loop short (dump → start → feed)
 | 6 | task gamification | **v1** | Sparks, feeding, evolution, hats, spin wheel, brain type |
 | 7 | social sharing | **v1** | Brain card image + weekly recap card → share sheet (TikTok/Instagram). Watermark = free marketing |
 | 8 | habit streaks | **v1 (changed)** | Classic streaks cause shame (docs/07). We do **"keep daily" bites** + a **weekly bites meter** that never "breaks" + comeback days that only go up |
-| 9 | collaborative team boards | **later** | Needs a server, accounts, moderation. Planned as "body double room" (friends' pets work together) in Nomling Club |
+| 9 | collaborative team boards | **later** | Needs a server, accounts, moderation. Planned as "body double room" (friends' pets work together) in Gobblo Club |
 | 10 | good 3D elements | **v1 (changed)** | Glossy 2.5D pet in Skia (lighting, soft shadow, squish), parallax scenes with phone tilt. Real 3D models (three.js) are too heavy for mid-range Android at 60 fps |
 | 11 | interactive charts | **v1** | Me: week bar chart (bites, minutes), "your best hours" heat strip, tap a bar for details. Built with Skia (victory-native) |
 | 12 | daily mindfulness prompts | **v1.1, opt-in (changed)** | One tiny pet note on Home ("3 slow breaths, then 2 minutes?"). Off by default, never blocks starting. No therapy words |

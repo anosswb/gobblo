@@ -21,7 +21,7 @@ Every screen should shorten this loop. If a feature makes it longer, cut it.
 
 ## Screens
 ### 0. Onboarding (max 60 s, no paywall, no account)
-1. **Splash/hook**: "your brain isn't lazy. it's *hungry*." Egg wobbling, food orbiting. CTA "hatch my nomling".
+1. **Splash/hook**: "your brain isn't lazy. it's *hungry*." Egg wobbling, food orbiting. CTA "hatch my gobblo".
 2. **Quiz** (multi-select chips, skippable): what wrecks your day? starting things / time vanishes / 47 tabs in my brain / boring stuff = impossible / i forget everything / start 10 finish 0. Show one tailored line next.
 3. **Pick egg + name**: 4 colors (pink, tangerine, mint, violet), name field with a 🎲 random-name button.
 4. **Notification ask (soft)**: explain in one line, buttons "yes, gentle nudges" / "not now". Only then call the OS permission. Never on first launch before value.

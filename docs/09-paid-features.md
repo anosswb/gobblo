@@ -4,7 +4,7 @@
 
 Principle (from the review research in docs/07): the core loop stays free forever, and paid features are things people WANT to show off or that make the app feel more alive. No paywalled basics like notification sounds. That exact thing got a 1★ review for Structured.
 
-## iOS: Nomling Plus (one-time, launch $6.99, then $9.99)
+## iOS: Gobblo Plus (one-time, launch $6.99, then $9.99)
 | feature | why people pay | build size |
 |---|---|---|
 | **Pet species pack**: 4 extra species (axolotl blob, sleepy cat-bean, tiny dino, ghost), each with its own idle and eating animation | collection instinct; Finch reviewers ask for "more animals" | L |
@@ -19,7 +19,7 @@ Principle (from the review research in docs/07): the core loop stays free foreve
 
 **Pet packs** (non-consumable, $1.99–$2.99): seasonal species or hat drops (Ramadan lanterns, Halloween, winter). These give a reason to post on TikTok every month.
 
-**Later (needs a server, so a subscription makes sense): "Nomling Club" $2.99/month or $19.99/year.** Body-double rooms where friends' pets work together live, plus monthly exclusive pets. Only build it after Plus is selling.
+**Later (needs a server, so a subscription makes sense): "Gobblo Club" $2.99/month or $19.99/year.** Body-double rooms where friends' pets work together live, plus monthly exclusive pets. Only build it after Plus is selling.
 
 ## Android: ads (AdMob), same items
 - Rewarded "watch an ad" options (always optional, max 3 per day):

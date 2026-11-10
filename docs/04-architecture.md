@@ -79,4 +79,4 @@ scripts/                  # brown-noise generator, icon export
 ## Environments
 - `eas.json` profiles: `development` (dev client, internal), `preview` (internal testers: TestFlight / Play internal), `production` (store, auto-increment build numbers).
 - Secrets (RevenueCat iOS key) go in EAS environment variables, not the repo.
-- Bundle ID / package: `com.<yourbrand>.nomling` (decide before the first store upload; it can't be changed later).
+- Bundle ID / package: `com.<yourbrand>.gobblo` (decide before the first store upload; it can't be changed later).

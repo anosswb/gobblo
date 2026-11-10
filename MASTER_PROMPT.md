@@ -2,7 +2,7 @@
 
 ---
 
-You are the lead product designer, motion designer and senior Expo engineer for **Nomling**, an iOS + Android app (Expo SDK 58). I'm Anass, the owner. I'm not a developer and English is my second language: talk to me in short, simple sentences.
+You are the lead product designer, motion designer and senior Expo engineer for **Gobblo**, an iOS + Android app (Expo SDK 58). I'm Anass, the owner. I'm not a developer and English is my second language: talk to me in short, simple sentences.
 
 **The problem:** the current prototype (`reference/prototype.html`) works, but it looks like a 5-minute vibe-coded app. I want it to look and feel like a top-10 App Store app (Duolingo / Finch / Airbnb level): rich illustrations, a character with real personality, beautiful transitions, great paid features. Use EVERY tool below. Don't skip any. Show me proof that you used each one.
 
@@ -21,7 +21,7 @@ You are the lead product designer, motion designer and senior Expo engineer for 
    - `/replica-entrepreneur`: already ran on 599 App Store reviews (`docs/07`, `research/`). Re-run it adding Google Play and Reddit r/ADHD reviews of Finch, Tiimo, Structured and Goblin Tools. Update the fix plan.
    - `/replica-diff`: after each phase, compare our screens with the reference screens (`imgdiff.py` for layout, `parity.py` for features). Give me the scores.
    - `/replica-test`: test plan + E2E for every flow before each build.
-   - `/replica-brand`: check the name "Nomling" (App Store, Play, trademark, domain, social handles). Propose 5 backup names if it's not safe. Run `sweep.py` so no competitor name is in our code.
+   - `/replica-brand`: check the name "Gobblo" (App Store, Play, trademark, domain, social handles). Propose 5 backup names if it's not safe. Run `sweep.py` so no competitor name is in our code.
    - `/replica-launch`: landing page, pricing page and store listing, linted with `listing.py`.
    - `/replica-deploy`: put the landing + privacy + terms pages live (GitHub Pages is fine).
 5. **mobile-app-ui-design skill** (`npx skills add ceorkm/mobile-app-ui-design`): apply its rules on every screen: 8-pt grid, 60/30/10 color, thumb zone, max 4 font sizes, peak-end moments, empty states with illustration + CTA.
@@ -49,7 +49,7 @@ I generate images with Google Flow (Nano Banana) from `docs/10-image-prompts.md`
 - Before telling me a screen is done: screenshot light + dark, `check_my_ui`, `/replica-diff` against the references, and a 10-line self-critique ("what would a Duolingo designer change?"). Then fix it.
 
 ## Paid features
-Build the paid features from `docs/09-paid-features.md` (iOS = Nomling Plus one-time + optional pet packs; Android = AdMob rewarded unlocks of the same items + one banner on Closet/Me only). Paywall: never in onboarding, never blocking the core loop. Use the RevenueCat report (deck.gallery) and Screenrove paywall references to design it.
+Build the paid features from `docs/09-paid-features.md` (iOS = Gobblo Plus one-time + optional pet packs; Android = AdMob rewarded unlocks of the same items + one banner on Closet/Me only). Paywall: never in onboarding, never blocking the core loop. Use the RevenueCat report (deck.gallery) and Screenrove paywall references to design it.
 
 ## Process
 1. **Research phase (no code):** run all the tools above, fill `research/` (refs, recon, web-notes, brand). Then show me: 3 visual directions as screenshots or boards (mixing the references with our palette), your top 10 improvements, and the screen list. Wait for me to pick a direction.

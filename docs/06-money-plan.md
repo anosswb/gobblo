@@ -29,7 +29,7 @@ The core feeling (start → feed → confetti) is the product. Ads must never to
 **Never:** ads in onboarding, Focus, the feed animation, the evolution screen, or the brain dump. No ads that pop up while someone is starting a task (that's the user we're protecting).
 
 ## iOS Plus (one-time)
-"Nomling Plus" lifetime non-consumable (test $5.99–$7.99): extra pet species and colors, premium hats and backgrounds, extra focus sounds, later widgets and the Live Activity timer. Use RevenueCat (`react-native-purchases` + `react-native-purchases-ui`). Join the App Store Small Business Program (15% commission). No subscription in v1, because reviewers of competitors complain most about paywalls and billing (docs/07).
+"Gobblo Plus" lifetime non-consumable (test $5.99–$7.99): extra pet species and colors, premium hats and backgrounds, extra focus sounds, later widgets and the Live Activity timer. Use RevenueCat (`react-native-purchases` + `react-native-purchases-ui`). Join the App Store Small Business Program (15% commission). No subscription in v1, because reviewers of competitors complain most about paywalls and billing (docs/07).
 On Android, the same cosmetics are earned with sparks + rewarded ads, so both stores feel fair.
 
 ## Costs to start

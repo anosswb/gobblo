@@ -42,7 +42,7 @@ example
 /ios
 /android
 
-# nomling
+# gobblo
 .env
 .env.*
 !.env.example

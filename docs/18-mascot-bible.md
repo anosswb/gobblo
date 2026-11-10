@@ -39,10 +39,14 @@ Status: **direction not picked yet.** Anass makes the 12 pictures in "Round 3" o
 1. It rolls onto its back and floats.
 2. The bite lands on its belly.
 3. Tap, tap with the pebble.
-4. Chomp. Cheeks puff. A little happy spin in the water.
-5. "+2 ✦": a new small pebble pops up.
+4. Chomp. Cheeks puff.
+5. **The happy dive (Anass's idea, 10 Nov).** The bottom line of the pet's card is the water line. The otter jumps up, dives under that line with a splash and is gone. Then it shoots back out with a second splash, holding a new pebble: that is the "+2 ✦".
+   - Under water: about 1 second for a normal bite, the full 2 seconds for a big bite or a level-up (a longer wait feels like a bigger prize, and 2 seconds on every small bite would get slow).
+   - While it is under, small bubbles rise at the water line, so the card never looks empty or broken.
+   - The splash is drawn in code (drops + a ring), clipped by the card, with a soft "plop" sound and a light tap in the hand.
+   - If you feed several bites fast, it stays under and comes out once, with all the pebbles.
 
-Reduce Motion: a fade, the puffed cheeks, the number.
+Reduce Motion: no jump. A fade out, bubbles, a fade in with the puffed cheeks and the number.
 
 ## 6. Never
 

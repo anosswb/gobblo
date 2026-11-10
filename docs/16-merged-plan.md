@@ -300,7 +300,7 @@ Free plan: 5,000 errors a month.
 
 ### 4.5 Pictures of the new mascot (Google Flow, as before) — days 2 to 8
 1. I give you 3 prompt sets in `docs/10-image-prompts.md` (day 2).
-2. You make 4 pictures per direction in Flow and save them in `assets/flow/mascot/`.
+2. You make 4 pictures per direction in Flow and save them in `assets/flow/otter/`.
 3. You pick one. I ask for one round of fixes, then the model sheet (turnaround, 12 faces, 8 poses).
 
 ### 4.6 Your ears and your phone — days 6, 10, 15, 18
@@ -324,7 +324,9 @@ Not needed for the 20 days. The legal pages work without it.
 
 ---
 
-## 5. The 20 days
+## 5. The order of work
+
+> **Update 10 Nov (Anass):** no calendar. We work straight through, as fast as the usage limit allows. The "Days" and "Dates" columns below only show the **order**. Jobs that touch different files run at the same time.
 
 **Who does what**
 - **Lead (Fable, medium effort):** designs, writes the exact spec for each job, reviews screenshots, talks to Anass. No long coding.
@@ -354,7 +356,7 @@ Not needed for the 20 days. The legal pages work without it.
 | 14–15 | 24–25 | Spark shop + video in the Closet, video stays after unlock (11a). | Opus; lead sets prices | A video in the Closet gives sparks; shop has ≥ 12 items |
 | 15 | 25 | **Check-in 3:** APK: new pet, icon, shop, analytics. | Lead | Anass's list of fixes |
 | 16 | 26 | Legal pages move; CI diet; **repo goes private** (11b). | Sonnet; Anass clicks | Links in the app still open; a push uses < 5 minutes |
-| 16–17 | 26–27 | Maestro test for the core loop. Docs 02 and 11 rewritten to the real design; "Nomling" → Gobblo in docs. | Sonnet | Flow passes on the Android build |
+| 16–17 | 26–27 | Maestro test for the core loop. Docs 02 and 11 rewritten to the real design | Sonnet | Flow passes on the Android build |
 | 16–19 | 26–29 | 5 real people try the APK. Fix what stops them. | Anass + lead | 5 notes written; top 3 problems fixed |
 | 18–19 | 28–29 | Video kit: mascot model sheet + 5 short scripts + a Hyperframes starter (3, 8). | Lead writes; Sonnet sets up | One 10-second test video rendered |
 | 20 | 30 | **Design freeze.** Full check (`/release-check`), final APK, list for December (accounts, store forms, money switch). | Lead + Sonnet | All checks green; hand-over note in PROGRESS.md |

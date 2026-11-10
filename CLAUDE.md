@@ -1,8 +1,8 @@
 # CLAUDE.md — Gobblo (formerly "Nomling")
 
-> **Name update 2026-11-06:** the app is now **Gobblo** (see DECISIONS.md). Older docs still say "Nomling": read it as Gobblo. Code takes the name only from `src/config/app-identity.json` via `APP_NAME`.
+> **Name update 2026-11-06:** the app is now **Gobblo** (see DECISIONS.md). The docs were renamed on 2026-11-10; only history files (research, founder, replica, DECISIONS) still say "Nomling". Code takes the name only from `src/config/app-identity.json` via `APP_NAME`.
 
-You are building **Nomling**, an iOS + Android app made with **Expo (React Native)**.
+You are building **Gobblo**, an iOS + Android app made with **Expo (React Native)**.
 Owner: Anass (solo founder, Morocco). He is not a native English speaker: keep messages to him short and simple, and explain any step he must do by hand (accounts, payments, store forms) one step at a time.
 
 ## One-line pitch
@@ -44,7 +44,7 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 - **No WebView screens**, except opening the privacy policy/terms in the browser.
 - **Light + dark mode** everywhere, following the system by default, with a Settings override (System / Light / Dark). Every color comes from theme tokens. No hard-coded hex colors in components.
 - **Accessibility:** tap targets ≥ 44×44 pt, Dynamic Type / font scaling respected (cap at 1.4×), `accessibilityLabel` on every icon button, honor Reduce Motion (swap big motion for fades).
-- **No medical claims.** Never write "treats", "cures", "manages ADHD", "clinically proven". OK: "made for ADHD brains", "for brains that struggle to start". Add "Nomling is not a medical device" in Settings > About.
+- **No medical claims.** Never write "treats", "cures", "manages ADHD", "clinically proven". OK: "made for ADHD brains", "for brains that struggle to start". Add "Gobblo is not a medical device" in Settings > About.
 - **Notifications are local only and capped** (see spec). Gobblo's own nudges never go past the user's chosen level. The user's own times (Reminders and the time on a bite) are exempt from the cap: each one pings, but bite times still never ping in quiet hours (Anass, 2026-11-09).
 - **Paywall rules:** never inside onboarding, never blocking the core loop (add task → start → feed). Always show price, what you get, Restore Purchases, Terms and Privacy links.
 - **Rating prompt:** only via `expo-store-review`, only after the 3rd fed task AND at least 2 days after install, max once per app version. Never in the first session.

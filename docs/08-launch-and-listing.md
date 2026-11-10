@@ -5,7 +5,7 @@
 2. **Apple Developer Program** ($99/year, individual): developer.apple.com/programs. Approval can take a few days.
 3. **Google Play Console** ($25 once, personal): play.google.com/console. Identity verification can take days.
 4. **RevenueCat** (free tier): after Apple is approved.
-5. A support email (e.g. a new Gmail `nomling.app@…`), used in the stores and the privacy policy.
+5. A support email (e.g. a new Gmail `gobblo.app@…`), used in the stores and the privacy policy.
 
 ## Build pipeline (no local Xcode needed)
 - `eas build --profile development --platform ios|android` → install the dev client (iPhone: register the device with `eas device:create`; Android: install the APK).
@@ -20,13 +20,13 @@ Where to find 12 real Android users: friends, family, classmates at the Universi
 
 ## Store listing draft (`store/listing.json`, lint with replica-launch `listing.py`)
 **App Store**
-- Name (≤30): `Nomling: ADHD Task Pet`
+- Name (≤30): `Gobblo: ADHD Task Pet`
 - Subtitle (≤30): `Feed it by starting tasks`
 - Keywords (≤100, comma-separated, no spaces, no words already in the name): `focus,timer,todo,planner,habit,routine,procrastination,brain,dump,visual,body,double,motivation,cute`
 - Promotional text (≤170): `Can't start? Start for 2 minutes. Your pet works next to you, eats your tasks and evolves. Free core, no guilt, nudges you control.`
 - Description: hook line → the loop in 4 bullets → what's free → Plus (one-time) → "not a medical device" line → privacy line ("your tasks stay on your phone").
 **Google Play**
-- Title (≤30): `Nomling: ADHD Task Pet`
+- Title (≤30): `Gobblo: ADHD Task Pet`
 - Short description (≤80): `A cute pet that eats your to-do list. Start for 2 min. No guilt.`
 - Declare "Contains ads". In the description, say ads are optional rewarded videos (a selling point: "no ads in your face").
 Claude Code: count every field with `listing.py` and fix any limit or keyword waste it reports.

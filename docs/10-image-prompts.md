@@ -29,7 +29,7 @@ Use G1/G2 as the start frame in Flow (Veo) or Higgsfield:
 
 # Round 3 — The otter (2026-11-10). Replaces the jelly bean.
 
-Read `docs/18-mascot-bible.md` first. Make **4 pictures per direction** (12 in all), save them in `assets/flow/mascot/` with these IDs, then pick A, B or C. Do **not** use the old pink pet as a reference image.
+Read `docs/18-mascot-bible.md` first. Make **4 pictures per direction** (12 in all), save them in `assets/flow/otter/` with these IDs, then pick A, B or C. Do **not** use the old pink pet as a reference image.
 
 The same character in every prompt (copy it exactly):
 > a small chibi baby otter mascot, head is 60 percent of its height, round head, tiny round ears, small black dot eyes set wide apart, small rounded dark nose, big round cream cheeks with three tiny whisker dots on each, warm caramel body, cream muzzle and belly, short paws, short thick paddle tail, holding a smooth warm-yellow four-point star-shaped pebble, no shell, no clothes

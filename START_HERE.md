@@ -1,7 +1,7 @@
-# START HERE — Nomling app kit
+# START HERE — Gobblo app kit
 
 This kit is everything Claude Code needs to build your app for **iPhone + Android** with Expo.
-Name: **Nomling** (working name, "nibbl" is already taken on the App Store by another app). You can change it later.
+Name: **Gobblo** (chosen 2026-11-06, see DECISIONS.md).
 
 ---
 
@@ -17,8 +17,8 @@ npm install -g eas-cli
 eas login            # create a free account at expo.dev first
 
 # 3. Make the project folder and put this kit inside it
-mkdir -p ~/Projects/nomling && cd ~/Projects/nomling
-#   -> copy ALL files from this kit into ~/Projects/nomling (CLAUDE.md must be at the top level)
+mkdir -p ~/Projects/gobblo && cd ~/Projects/gobblo
+#   -> copy ALL files from this kit into ~/Projects/gobblo (CLAUDE.md must be at the top level)
 
 # 4. Expo plugin for Claude Code (official Expo Skills + Expo MCP server)
 claude plugin install expo@claude-plugins-official
@@ -34,7 +34,7 @@ npx skills add ceorkm/mobile-app-ui-design
 
 Then start Claude Code inside the folder:
 ```bash
-cd ~/Projects/nomling && claude
+cd ~/Projects/gobblo && claude
 ```
 And inside Claude Code, install the replica skills (the Entrepreneur and friends):
 ```

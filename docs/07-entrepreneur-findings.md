@@ -57,7 +57,7 @@ Read by hand (low ratings, small counts, but they matter):
 - Sharing with a partner (still thin): "share goals more completely with a spouse or partner" [Finch AS](https://apps.apple.com/us/app/id1528595748?see-all=reviews#review-14738408388)
 
 ## 3. What is unsolved (our positioning)
-1. **Starting is still unsolved.** Finch rewards check-ins, Tiimo and Structured are planners, and Goblin Tools breaks a task into steps but stops there. Even its fans ask to be pushed to come back: "I need a reminder to USE these tools" [Goblin AS](https://apps.apple.com/us/app/id6449003064?see-all=reviews#review-12374714317). A forum note on why systems fail: "the task paralysis has always shifted to encompass the techniques themselves" [HN](https://news.ycombinator.com/item?id=37655061). Nomling: dump, auto-break, start 2 minutes, feed. Nothing to plan.
+1. **Starting is still unsolved.** Finch rewards check-ins, Tiimo and Structured are planners, and Goblin Tools breaks a task into steps but stops there. Even its fans ask to be pushed to come back: "I need a reminder to USE these tools" [Goblin AS](https://apps.apple.com/us/app/id6449003064?see-all=reviews#review-12374714317). A forum note on why systems fail: "the task paralysis has always shifted to encompass the techniques themselves" [HN](https://news.ycombinator.com/item?id=37655061). Gobblo: dump, auto-break, start 2 minutes, feed. Nothing to plan.
 2. **NEW, Android users are second-class in ADHD planners** (36 GP reviews, 2.8★). An app that is equal on Android, with reminders that really fire, is a real gap. Morocco is mostly Android, so this matters for us too.
 3. **NEW, honest pricing for people who forget.** Trial traps, hidden subscriptions and "paid once, pay again" score 1.5–2.3★ (67 reviews combined). One-time Plus with no trial, plus a written promise, is positioning.
 4. **NEW, body doubling without video or scheduling** (HN, thin). People say it works but say the setup is friction: "I find the video aspect to be awkward" [HN](https://news.ycombinator.com/item?id=49035087) · "phoning a friend for five minutes is free and does the job" [HN](https://news.ycombinator.com/item?id=42014934). The pet working next to you during focus is a light, solo body double.
@@ -65,7 +65,7 @@ Read by hand (low ratings, small counts, but they matter):
 ## 4. ADHD support features people ask for
 Things ADHD users say help them get tasks done, in their words. Reddit was not reachable (see Limits), so this comes from store reviews and HN.
 
-| feature | what it does for them | quote (verbatim, linked) | Nomling |
+| feature | what it does for them | quote (verbatim, linked) | Gobblo |
 |---|---|---|---|
 | Break a task into tiny steps | removes "where do I start" | "breaking it into bite sized pieces" [Goblin GP](https://play.google.com/store/apps/details?id=com.goblintools&reviewId=418c2bcf-56f0-4a29-8fd0-51c7b41b4c19) · "one of my biggest struggles is not knowing where to start" [Goblin AS](https://apps.apple.com/us/app/id6449003064?see-all=reviews#review-12521357491) | bites + "make it smaller" (free) |
 | Help with task initiation | the start itself | "Helps me so much with task avoidance and task initiation." [Goblin AS](https://apps.apple.com/us/app/id6449003064?see-all=reviews#review-12283948940) | 2-minute start is the core |
@@ -96,7 +96,7 @@ Things ADHD users say help them get tasks done, in their words. Reddit was not r
 | Calendar sync: NOT in v1. Maybe read-only "today's events" later | L | backlog | sync 145, mostly bugs in competitors |
 
 ## The angle (recommended)
-> For ADHD brains who are tired of planners that nag, paywall the basics and make logging feel like homework, **Nomling** is a pet you feed by just *starting*: free core, pay-once extras that stay yours, nudges you control, same app on Android and iPhone.
+> For ADHD brains who are tired of planners that nag, paywall the basics and make logging feel like homework, **Gobblo** is a pet you feed by just *starting*: free core, pay-once extras that stay yours, nudges you control, same app on Android and iPhone.
 > Evidence: price/paywall 175 reviews, billing 45 (1.5★), paid-then-subscription 22, basic features paywalled 28, Android second-class 36, overwhelm/confusing 101, across 8 app × store sources. Direct ask from a Finch user: "needing to feed your Birb would probably help more with motivation".
 
 ## What changed vs run 1
