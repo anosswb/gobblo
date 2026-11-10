@@ -24,3 +24,38 @@ R14 — Marketing render: the glossy pink jelly bean character lying on its back
 Use G1/G2 as the start frame in Flow (Veo) or Higgsfield:
 - V1: G2: the pet types on the laptop, nods slowly to music, lamp flickers softly, steam from the cup, seamless 6 s loop.
 - V2: G1: the pet chomps the to-do list, paper confetti flies, happy wiggle, 5 s.
+
+---
+
+# Round 3 — The otter (2026-11-10). Replaces the jelly bean.
+
+Read `docs/18-mascot-bible.md` first. Make **4 pictures per direction** (12 in all), save them in `assets/flow/mascot/` with these IDs, then pick A, B or C. Do **not** use the old pink pet as a reference image.
+
+The same character in every prompt (copy it exactly):
+> a small chibi baby otter mascot, head is 60 percent of its height, round head, tiny round ears, small black dot eyes set wide apart, small rounded dark nose, big round cream cheeks with three tiny whisker dots on each, warm caramel body, cream muzzle and belly, short paws, short thick paddle tail, holding a smooth warm-yellow four-point star-shaped pebble, no shell, no clothes
+
+**Direction A — Soft toy (3D vinyl).** Best for AI videos.
+```
+A1 — [character], standing, front view, holding the star pebble with both paws, tiny smile; soft matte 3D vinyl toy render, smooth surface with no fur, soft studio light, soft shadow, plain white background, premium, minimal, no text, no watermark; 1:1
+A2 — [character], three-quarter view, tossing the star pebble in the air like a fidget, playful; soft matte 3D vinyl toy render, smooth surface with no fur, soft studio light, plain white background, no text; 1:1
+A3 — [character], floating on its back, a small paper to-do note on its belly, tapping it with the star pebble, cheeks puffed, eyes closed happy; soft matte 3D vinyl toy render, smooth surface with no fur, soft light, plain pale blue background, no text; 1:1
+A4 — App icon: close-up of [character]'s face filling 75 percent of a square, the star pebble held up next to its cheek, solid deep blue #003459 background, soft matte 3D vinyl toy render, simple and readable at small size, no text; 1:1
+```
+
+**Direction B — Flat sticker (2D).** Easiest to draw in the app and the cleanest icon.
+```
+B1 — [character], standing, front view, holding the star pebble with both paws, tiny smile; flat 2D vector illustration, bold simple shapes, no outline, soft two-tone shading only, plain white background, premium, minimal, no text, no watermark; 1:1
+B2 — [character], three-quarter view, tossing the star pebble in the air like a fidget, playful; flat 2D vector illustration, bold simple shapes, no outline, plain white background, no text; 1:1
+B3 — [character], floating on its back, a small paper to-do note on its belly, tapping it with the star pebble, cheeks puffed, eyes closed happy; flat 2D vector illustration, bold simple shapes, no outline, plain pale blue background, no text; 1:1
+B4 — App icon: close-up of [character]'s face filling 75 percent of a square, the star pebble held up next to its cheek, solid deep blue #003459 background, flat 2D vector illustration, bold simple shapes, readable at small size, no text; 1:1
+```
+
+**Direction C — Clay (stop-motion look).** Cosy, handmade, strong on TikTok.
+```
+C1 — [character], standing, front view, holding the star pebble with both paws, tiny smile; handmade clay stop-motion figure, soft fingerprints texture, matte, warm soft light, plain white background, premium, minimal, no text, no watermark; 1:1
+C2 — [character], three-quarter view, tossing the star pebble in the air like a fidget, playful; handmade clay stop-motion figure, matte, warm soft light, plain white background, no text; 1:1
+C3 — [character], floating on its back, a small paper to-do note on its belly, tapping it with the star pebble, cheeks puffed, eyes closed happy; handmade clay stop-motion figure, matte, warm soft light, plain pale blue background, no text; 1:1
+C4 — App icon: close-up of [character]'s face filling 75 percent of a square, the star pebble held up next to its cheek, solid deep blue #003459 background, handmade clay stop-motion figure, readable at small size, no text; 1:1
+```
+
+Replace `[character]` with the character text above. After the first good picture in a direction, use it as the reference image for the other three.
