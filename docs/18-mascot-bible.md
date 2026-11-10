@@ -2,7 +2,7 @@
 
 Written 2026-11-10. Anass chose the **otter** (see docs/16, section 3b). This page is the brief for every picture, video and line of pet code. Short on purpose.
 
-Status: **direction not picked yet.** Anass makes the 12 pictures in "Round 3" of `docs/10-image-prompts.md` and picks A, B or C.
+Status: **style picked (10 Nov): flat (B) in the app and for the icon, clay (C) for videos and store pictures.** References: `assets/flow/otter/B1-flat-standing.jpg`, `B4-flat-icon.jpg`, `C3-clay-floating.jpg`. The 5-point star in those pictures is replaced by our chubby 4-point spark pebble.
 
 ## 1. Who it is (5 lines)
 
