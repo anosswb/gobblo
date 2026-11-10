@@ -37,7 +37,14 @@ jobs:
         run: npm ci
 
       - name: Generate the iOS project
-        run: npx expo prebuild --platform ios --clean
+        run: npx expo prebuild --platform ios --clean --no-install
+
+      # pods in their own step: the CocoaPods spec cache on the runner can be stale
+      # (a fresh RevenueCat pod was "not found"), so refresh it and retry once
+      - name: Install pods
+        working-directory: ios
+        run: |
+          pod install --repo-update || { sleep 30; pod repo update; pod install --repo-update; }
 
       - name: Build for the iOS Simulator (no signing)
         working-directory: ios
