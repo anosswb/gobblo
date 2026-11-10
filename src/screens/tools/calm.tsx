@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -30,24 +29,25 @@ import { duration, easing } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
 
+import { BreatheBody } from './breathe';
 import { Button, Card, toolStyles } from './parts';
 
 const t = en.tools.calm;
-type Mode = 'ground' | 'shake' | 'pet';
+type Mode = 'breathe' | 'ground' | 'shake' | 'pet';
 
-/** Calm down: three short ways to come back to your body. */
+/** Calm: four short ways to come back to your body. */
 export function CalmTool() {
-  const [mode, setMode] = useState<Mode>('ground');
+  const [mode, setMode] = useState<Mode>('breathe');
   return (
-    <Screen back title={en.tools.tiles.calm.title} right={<GuideHelp id="calm" auto />}>
+    <Screen back title={en.tools.tiles.calm.title}>
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro}</Text>
       <Segmented
         accessibilityLabel={t.mode}
         value={mode}
         onChange={(m) => { setMode(m); haptics.select(); }}
-        options={[{ value: 'ground', label: t.ground }, { value: 'shake', label: t.shake }, { value: 'pet', label: t.pet }]}
+        options={[{ value: 'breathe', label: t.breathe }, { value: 'ground', label: t.ground }, { value: 'shake', label: t.shakeShort }, { value: 'pet', label: t.pet }]}
       />
-      {mode === 'ground' ? <Ground /> : mode === 'shake' ? <Shake /> : <PetMe />}
+      {mode === 'breathe' ? <BreatheBody /> : mode === 'ground' ? <Ground /> : mode === 'shake' ? <Shake /> : <PetMe />}
     </Screen>
   );
 }

@@ -4,10 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { Glass } from '@/components/glass';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { Icon } from '@/components/icon';
 import { PressScale } from '@/components/press-scale';
-import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { Text } from '@/components/text';
 import { useLook } from '@/features/closet/use-look';
@@ -96,12 +94,12 @@ function KeepAwake() {
 }
 
 /**
- * Breathe: the pet grows on the in-breath and shrinks on the out-breath. One tick a second drives
+ * Breathe (a mode inside Calm, no Screen of its own): the pet grows on the in-breath and shrinks on the out-breath. One tick a second drives
  * the phases (no setState per frame); the grow/shrink is one long Reanimated timing per phase.
  * Reduce Motion: no size change, the halo fades brighter / dimmer instead. Haptic on each phase, and a
  * soft singing-bowl cue on in / out (sound toggle respected, plus a mute on this page).
  */
-export function BreatheTool() {
+export function BreatheBody() {
   const { colors, reduceMotion } = useTheme();
   const look = useLook();
   const [patternId, setPatternId] = useState<BreathPattern['id']>('calm');
@@ -174,22 +172,18 @@ export function BreatheTool() {
   const left = running ? current.seconds - elapsed : null;
 
   return (
-    <Screen back title={en.tools.tiles.breathe.title} right={
-        <View style={styles.right}>
-          {soundOn ? (
-            <PressScale accessibilityRole="button" accessibilityLabel={muted ? t.soundOn : t.soundOff} onPress={toggleMute}>
-              <Glass interactive radius={22} style={styles.mute}>
-                <Icon name={muted ? 'mute' : 'sound'} size={20} color={colors.ink} />
-              </Glass>
-            </PressScale>
-          ) : null}
-          <GuideHelp id="breathe" auto />
-        </View>
-      }>
+    <>
       {running ? <KeepAwake /> : null}
       <Text variant="subhead" tone="ink2" style={toolStyles.intro}>{t.intro}</Text>
 
       <Card style={styles.stageCard}>
+        {soundOn ? (
+          <PressScale accessibilityRole="button" accessibilityLabel={muted ? t.soundOn : t.soundOff} onPress={toggleMute} style={styles.mute}>
+            <Glass interactive radius={22} style={styles.muteGlass}>
+              <Icon name={muted ? 'mute' : 'sound'} size={20} color={colors.ink} />
+            </Glass>
+          </PressScale>
+        ) : null}
         <View style={styles.stage} accessibilityLiveRegion="polite" accessible accessibilityLabel={left ? `${label}, ${left}` : label}>
           <Animated.View style={[styles.halo, { backgroundColor: colors.primarySoft, borderColor: colors.primary }, haloStyle]} />
           <Animated.View style={petStyle}>
@@ -217,7 +211,7 @@ export function BreatheTool() {
       {running ? <Text variant="caption" tone="ink2" style={styles.hint}>{pattern.hint}</Text> : null}
 
       {running ? <Button label={t.stop} soft onPress={stop} /> : <Button label={t.start} icon="play" onPress={start} />}
-    </Screen>
+    </>
   );
 }
 
@@ -226,6 +220,6 @@ const styles = StyleSheet.create({
   stage: { width: STAGE, height: STAGE, alignItems: 'center', justifyContent: 'center' },
   halo: { position: 'absolute', width: STAGE, height: STAGE, borderRadius: STAGE / 2, borderWidth: 2 },
   hint: { textAlign: 'center' },
-  right: { flexDirection: 'row', gap: space.s },
-  mute: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  mute: { position: 'absolute', top: space.m, end: space.m, zIndex: 1 },
+  muteGlass: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });

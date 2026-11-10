@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { GuideHelp } from '@/components/guide/page-guide';
 import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -71,7 +70,7 @@ export function SpinScreen() {
   };
 
   return (
-    <Screen eyebrow={sp.eyebrow} title={sp.title} right={<GuideHelp id="spin" />}>
+    <Screen back title={sp.title}>
       <View style={[styles.card, { backgroundColor: colors.cardSolid, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.head}>
           <Pet size={72} color={look.color} hat={look.hat} face={look.face} mood={mood} stage={stage} />
