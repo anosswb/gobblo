@@ -23,8 +23,8 @@ type Choice = { minutes: number; mode: '2min' | '15' | '25' | 'custom'; label: s
 
 /**
  * Start sheet (docs/01 §2), iOS 26 style: a floating sheet inset from the screen edges with
- * large continuous corners. One prominent action (the 2-minute trick), the other lengths as
- * quiet capsules, then the daily switch and a destructive text button. Opens on the iOS sheet
+ * large continuous corners. One prominent action (the 2-minute trick) and three other lengths.
+ * Everything else (60 min, when, daily, do first, steps, already did, remove) sits behind More. Opens on the iOS sheet
  * curve (500 ms), closes faster (350 ms). Reduce Motion: fades.
  */
 export function StartSheet({
@@ -57,18 +57,19 @@ export function StartSheet({
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
   const [whenOpen, setWhenOpen] = useState(false);
+  // one tap to start is the promise: everything that is not "start" waits behind More (docs/15 item 6)
+  const [moreOpen, setMoreOpen] = useState(false);
   const more: Choice[] = [
     { minutes: 5, mode: 'custom', label: s.five },
     { minutes: 15, mode: '15', label: s.fifteen },
     { minutes: 25, mode: '25', label: s.twentyFive },
-    // hyperfocus people asked for longer runs (panel); +5 still works on the timer
-    { minutes: 60, mode: 'custom', label: s.sixty },
   ];
   const when: When = bite ? whenOf(bite, dayKey()) : 'today';
   const day = when === 'date' ? bite?.showOn : undefined;
   const minutes = bite?.at ? clockOf(bite.at) : null;
   const close = () => {
     setWhenOpen(false);
+    setMoreOpen(false);
     onClose();
   };
 
@@ -95,7 +96,6 @@ export function StartSheet({
                 <BiteIcon text={bite.text} size={bite.size} px={30} />
               </View>
               <View style={styles.flex}>
-                <Text variant="caption" tone="ink2">{s.title}</Text>
                 <Text variant="title2" numberOfLines={2}>{bite.text}</Text>
               </View>
               <PressScale accessibilityRole="button" accessibilityLabel="Close" hitSlop={8} onPress={close} style={[styles.close, { backgroundColor: colors.fill }]}>
@@ -128,46 +128,64 @@ export function StartSheet({
               })}
             </View>
 
-            <View style={[styles.group, { backgroundColor: colors.cardAlt }]}>
-              {onWhen ? (
-                <>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: whenOpen }}
-                    accessibilityLabel={`${s.when}: ${whenText(when, day)}${minutes !== null ? `, ${clockLabel(minutes, clock24h)}` : ''}`}
-                    onPress={() => setWhenOpen((v) => !v)}
-                    style={styles.groupRow}>
-                    <Icon name="calendar" size={18} color={colors.ink2} />
-                    <Text variant="body" style={styles.flex}>{s.when}</Text>
-                    <Text variant="body" tone="ink2">{en.when.chip(whenText(when, day), minutes !== null ? clockLabel(minutes, clock24h) : undefined)}</Text>
-                    <Icon name={whenOpen ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
-                  </Pressable>
-                  {whenOpen ? (
-                    <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.whenBody}>
-                      <WhenPicker when={when} day={day} minutes={minutes} onWhen={(w, d) => onWhen(w, d)} onTime={(m) => onTime?.(m)} />
-                    </Animated.View>
-                  ) : null}
-                  <View style={[styles.sep, { backgroundColor: colors.line }]} />
-                </>
-              ) : null}
-              <View style={styles.groupRow}>
-                <Icon name="repeat" size={18} color={colors.ink2} />
-                <Text variant="body" style={styles.flex}>{s.keepDaily}</Text>
-                <Toggle value={!!bite.daily} onChange={onToggleDaily} accessibilityLabel={s.keepDaily} />
-              </View>
-            </View>
-
-            {onFirst || onSplit || onAlready ? (
-              <View style={styles.actions}>
-                {onFirst ? <SheetAction icon="toTop" label={s.first} onPress={onFirst} /> : null}
-                {onSplit ? <SheetAction icon="steps" label={s.split} onPress={onSplit} /> : null}
-                {onAlready ? <SheetAction icon="doneCheck" label={s.already} onPress={onAlready} /> : null}
-              </View>
-            ) : null}
-
-            <PressScale accessibilityRole="button" onPress={onRemove} style={styles.remove}>
-              <Text variant="bodyBold" tone="danger">{s.remove}</Text>
+            <PressScale
+              accessibilityRole="button"
+              accessibilityState={{ expanded: moreOpen }}
+              accessibilityLabel={moreOpen ? s.less : s.more}
+              onPress={() => setMoreOpen((v) => !v)}
+              style={styles.moreToggle}>
+              <Text variant="bodyBold" tone="ink2">{moreOpen ? s.less : s.more}</Text>
+              <Icon name={moreOpen ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
             </PressScale>
+
+            {moreOpen ? (
+              <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.scrollBody}>
+              <View style={[styles.group, { backgroundColor: colors.cardAlt }]}>
+                {onWhen ? (
+                  <>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: whenOpen }}
+                      accessibilityLabel={`${s.when}: ${whenText(when, day)}${minutes !== null ? `, ${clockLabel(minutes, clock24h)}` : ''}`}
+                      onPress={() => setWhenOpen((v) => !v)}
+                      style={styles.groupRow}>
+                      <Icon name="calendar" size={18} color={colors.ink2} />
+                      <Text variant="body" style={styles.flex}>{s.when}</Text>
+                      <Text variant="body" tone="ink2">{en.when.chip(whenText(when, day), minutes !== null ? clockLabel(minutes, clock24h) : undefined)}</Text>
+                      <Icon name={whenOpen ? 'chevronUp' : 'chevronDown'} size={13} weight="bold" color={colors.ink3} />
+                    </Pressable>
+                    {whenOpen ? (
+                      <Animated.View entering={FadeIn.duration(duration.quick)} style={styles.whenBody}>
+                        <WhenPicker when={when} day={day} minutes={minutes} onWhen={(w, d) => onWhen(w, d)} onTime={(m) => onTime?.(m)} />
+                      </Animated.View>
+                    ) : null}
+                    <View style={[styles.sep, { backgroundColor: colors.line }]} />
+                  </>
+                ) : null}
+                <View style={styles.groupRow}>
+                  <Icon name="repeat" size={18} color={colors.ink2} />
+                  <Text variant="body" style={styles.flex}>{s.keepDaily}</Text>
+                  <Toggle value={!!bite.daily} onChange={onToggleDaily} accessibilityLabel={s.keepDaily} />
+                </View>
+              </View>
+
+              <PressScale accessibilityRole="button" accessibilityLabel={s.sixty} onPress={() => onStart(60, 'custom')} style={[styles.more, styles.long, { backgroundColor: colors.fill }]}>
+                <Text variant="bodyBold">{s.sixty}</Text>
+              </PressScale>
+
+              {onFirst || onSplit || onAlready ? (
+                <View style={styles.actions}>
+                  {onFirst ? <SheetAction icon="toTop" label={s.first} onPress={onFirst} /> : null}
+                  {onSplit ? <SheetAction icon="steps" label={s.split} onPress={onSplit} /> : null}
+                  {onAlready ? <SheetAction icon="doneCheck" label={s.already} onPress={onAlready} /> : null}
+                </View>
+              ) : null}
+
+              <PressScale accessibilityRole="button" onPress={onRemove} style={styles.remove}>
+                <Text variant="bodyBold" tone="danger">{s.remove}</Text>
+              </PressScale>
+              </Animated.View>
+            ) : null}
             </ScrollView>
           </Animated.View>
         </View>
@@ -214,7 +232,6 @@ const styles = StyleSheet.create({
   grabber: { alignSelf: 'center', width: 36, height: 5, borderRadius: 3, marginBottom: space.s },
   head: { flexDirection: 'row', alignItems: 'center', gap: space.m, marginBottom: space.xs },
   food: { width: 52, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  emoji: { fontSize: 30, lineHeight: 36 },
   close: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   primary: { minHeight: 60, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingVertical: space.s },
   primarySub: { opacity: 0.8 },
@@ -223,4 +240,6 @@ const styles = StyleSheet.create({
   group: { borderRadius: radius.row + 6, paddingHorizontal: space.l },
   groupRow: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: space.m },
   remove: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  long: { flex: 0 },
+  moreToggle: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s },
 });

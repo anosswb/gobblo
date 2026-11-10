@@ -261,8 +261,9 @@ export const en = {
     splitServed: (n: number) => (n === 1 ? 'Done. 1 step on the plate.' : `Done. ${n} steps on the plate.`),
   },
   start: {
-    title: 'How long?',
-    trick: '2 min',
+    trick: 'Start 2 min',
+    more: 'More options',
+    less: 'Fewer options',
     trickSub: 'The trick: just start. That’s the hard part.',
     fifteen: '15 min',
     twentyFive: '25 min',
@@ -344,7 +345,8 @@ export const en = {
     done: (name: string) => `Done! Feed ${name}`,
     endsAt: (t: string) => `Ends at ${t}`,
     twoDone: '2 minutes done. You started.',
-    twoDoneSub: 'Most people quit before this point. The momentum is yours now.',
+    twoDoneSub: 'That was the hard part. Keep going or stop here: both count.',
+    riding: 'Nice. 10 more minutes, I’m here.',
     ride: 'Ride the wave (+10 min)',
     imDone: (name: string) => `I’m done, feed ${name}`,
     timeUp: 'Time’s up! You did it.',
@@ -458,7 +460,6 @@ export const en = {
     soundCredits: 'Sounds: real recordings from Freesound (CC0)',
     dataLocal: 'Your tasks stay on your phone. No account, no server. They’re saved in your phone’s own backup (iCloud or Google) and come back when you set up a new phone. Moving between iPhone and Android? Use Export.',
   },
-} as const;
   me: {
     title: (pet: string) => `You & ${pet}`,
     settings: 'Settings',
@@ -513,3 +514,4 @@ export const en = {
       remove: (text: string) => `Delete ${text}`,
     },
   },
+} as const;

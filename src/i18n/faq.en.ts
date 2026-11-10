@@ -26,7 +26,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'How many notifications will I get?',
-    a: 'Your pet’s own nudges never go past your level: Gentle 1 a day, Normal 2, Chaos 4. None in quiet hours. Away for 3 days? One “I napped” note, then silence. Reminders and bite times you set yourself always ping (bite times not in quiet hours).',
+    a: 'Your pet’s own nudges never go past your level: Gentle 1 a day, Normal 2. None in quiet hours. Away for 3 days? One “I napped” note, then silence. Reminders and bite times you set yourself always ping (bite times not in quiet hours).',
   },
   {
     q: 'I never hear the nudges. Why?',

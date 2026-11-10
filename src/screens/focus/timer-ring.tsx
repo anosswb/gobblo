@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -20,6 +21,7 @@ export function TimerRing({
   runKey,
   emoji,
   size = 224,
+  children,
 }: {
   left: number;
   msLeft: number;
@@ -28,6 +30,8 @@ export function TimerRing({
   runKey: string;
   emoji: IconName;
   size?: number;
+  /** the clock, drawn inside the ring under a small bite icon */
+  children?: ReactNode;
 }) {
   const { colors, reduceMotion } = useTheme();
   const p = useSharedValue(left);
@@ -67,8 +71,9 @@ export function TimerRing({
       </Svg>
       <View style={styles.center}>
         <Animated.View style={food}>
-          <Icon name={emoji} size={54} color={colors.roomInk} />
+          <Icon name={emoji} size={children ? 26 : 54} color={children ? colors.roomInk2 : colors.roomInk} />
         </Animated.View>
+        {children}
       </View>
     </View>
   );
@@ -76,5 +81,4 @@ export function TimerRing({
 
 const styles = StyleSheet.create({
   center: { position: 'absolute', top: 0, bottom: 0, start: 0, end: 0, alignItems: 'center', justifyContent: 'center' },
-  emoji: { fontSize: 64, lineHeight: 76 },
 });

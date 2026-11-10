@@ -32,8 +32,6 @@ import { en } from '@/i18n/en';
 import { useLook } from '@/features/closet/use-look';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
-import { PageGuide } from '@/components/guide/page-guide';
-import { guideCopy } from '@/i18n/guides.en';
 import type { FocusSound } from '@/state/schema';
 import { duration, textSwapIn } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
@@ -56,7 +54,6 @@ const SOUND_LABEL: Record<FocusSound, string> = { none: 'Silence', brown: 'Brown
  * 2-minute "keep going" card, drift (no penalty), inline leave confirm.
  */
 export function FocusScreen() {
-  const [helpOpen, setHelpOpen] = useState(false);
   useSafeKeepAwake('focus', useAppStore((st) => st.settings.focusKeepAwake));
   const { colors, reduceMotion } = useTheme();
   const insets = useSafeAreaInsets();
@@ -194,7 +191,7 @@ export function FocusScreen() {
       <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none">
         <Defs>
           <RadialGradient id="focusGlow" cx="50%" cy="34%" r="45%">
-            <Stop offset="0" stopColor={colors.primary} stopOpacity={0.28} />
+            <Stop offset="0" stopColor={colors.primary} stopOpacity={0.16} />
             <Stop offset="1" stopColor={colors.primary} stopOpacity={0} />
           </RadialGradient>
         </Defs>
@@ -211,29 +208,25 @@ export function FocusScreen() {
             <Icon name={settings.focusSound === 'none' ? 'mute' : 'sound'} size={16} color={colors.roomInk} />
             <Text variant="caption" tone="roomInk" style={styles.semi}>{SOUND_LABEL[settings.focusSound]}</Text>
           </PressScale>
-          {/* "?" in the room's own colours (the timer keeps running behind the guide) */}
-          <PressScale accessibilityRole="button" accessibilityLabel={guideCopy.help} hitSlop={4} onPress={() => { haptics.select(); setHelpOpen(true); }} style={[styles.round, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
-            <Icon name="help" size={18} color={colors.roomInk} />
-          </PressScale>
           </View>
         </View>
-        <PageGuide id="focus" visible={helpOpen} onClose={() => setHelpOpen(false)} />
 
         <View style={styles.hero}>
           <Text variant="subhead" tone="roomInk2" numberOfLines={1} style={styles.workingOn}>
             {f.workingOn} · {focus.biteText}
           </Text>
-          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={biteIcon(focus.biteText, focus.size)} size={compact ? 168 : 224} />
-          <Text variant="timer" tone="roomInk" style={compact ? styles.timerCompact : undefined} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
-            {formatClock(left)}
-          </Text>
+          <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={biteIcon(focus.biteText, focus.size)} size={compact ? 200 : 248}>
+            <Text variant="timer" tone="roomInk" style={compact ? styles.timerCompact : styles.timerIn} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
+              {formatClock(left)}
+            </Text>
+          </TimerRingSlot>
           <Text variant="subhead" tone="roomInk2">
             {ended ? f.timeUp : f.endsAt(formatEndsAt(paused ? now + left : t.endsAt, settings.clock24h))}
           </Text>
         </View>
 
         <View style={styles.petRow}>
-          <Pet size={compact ? 70 : 92} color={look.color} hat={look.hat} face={look.face} mood={petMood} stage={stage} headphones working={!paused && !ended} />
+          <Pet size={compact ? 76 : 104} color={look.color} hat={look.hat} face={look.face} mood={petMood} stage={stage} headphones working={!paused && !ended} />
           <View style={[styles.bubble, compact && styles.bubbleCompact, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
             <Animated.View key={line} entering={textIn}>
               <Text variant="body" tone="roomInk">{line}</Text>
@@ -285,7 +278,7 @@ export function FocusScreen() {
               endedChime.current = false;
               const startNow = Date.now();
               patch({ rodeWave: true, endsAt: startNow + 10 * MIN, totalMs: 10 * MIN, pausedRemaining: null, warned: false });
-              swapLine('See? You’re already IN it.');
+              swapLine(f.riding);
             }} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.ride}</Text>
             </PressScale>
@@ -314,13 +307,16 @@ export function FocusScreen() {
               }} style={[styles.chip, { backgroundColor: colors.roomGlass }]}>
                 <Text variant="bodyBold" tone="roomInk">{f.plus5}</Text>
               </PressScale>
-              <PressScale accessibilityRole="button" accessibilityLabel={f.restartTitle} onPress={() => {
-                haptics.light();
-                setConfirmRestart(true);
-              }} style={[styles.chip, { backgroundColor: colors.roomGlass }]}>
-                <Icon name="reset" size={16} color={colors.roomInk} />
-                <Text variant="bodyBold" tone="roomInk">{f.restart}</Text>
-              </PressScale>
+              {/* Restart shows only while paused: fewer buttons to mis-tap mid-focus */}
+              {paused ? (
+                <PressScale accessibilityRole="button" accessibilityLabel={f.restartTitle} onPress={() => {
+                  haptics.light();
+                  setConfirmRestart(true);
+                }} style={[styles.chip, { backgroundColor: colors.roomGlass }]}>
+                  <Icon name="reset" size={16} color={colors.roomInk} />
+                  <Text variant="bodyBold" tone="roomInk">{f.restart}</Text>
+                </PressScale>
+              ) : null}
             </View>
             <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.done(pet.name)}</Text>
@@ -364,7 +360,8 @@ const styles = StyleSheet.create({
   petRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.m },
   bubble: { flex: 1, borderRadius: 22, borderBottomStartRadius: 6, padding: space.l, marginBottom: space.xxl, borderWidth: StyleSheet.hairlineWidth },
   controls: { gap: space.m },
-  timerCompact: { fontSize: 58, lineHeight: 64 },
+  timerIn: { fontSize: 60, lineHeight: 66 },
+  timerCompact: { fontSize: 48, lineHeight: 54 },
   bubbleCompact: { marginBottom: space.m, padding: space.m },
   row: { flexDirection: 'row', gap: space.m },
   flex: { flex: 1 },
