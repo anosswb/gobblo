@@ -2,13 +2,15 @@ import type { Mood } from '@/pet/pet';
 import type { FaceId, HatId } from '@/pet/wardrobe';
 import type { PetColor } from '@/theme/tokens';
 import type { IconName } from '@/components/icon';
+import { weekOfDrop, type DropSlot } from '@/features/weekly/logic';
 
 /**
  * Everything the pet can wear or become, and how it unlocks (DECISIONS 2026-11-07):
  * - level: free, earned by levelling up (one reward per level, 2 → 20)
  * - pack: Gobblo Plus (iOS purchase / Android sparks)
  * - free: from the start
- * - week: a free weekly surprise colour, one each pet week from day 7 (features/weekly)
+ * - week: a free weekly surprise (a hat, a colour or a room), one each pet week from day 7;
+ *   the order lives in features/weekly WEEKLY_DROPS
  * Level 20 ("Legend") is the surprise: golden form + golden crown + gold colour + golden room.
  */
 export type Unlock = { type: 'free' } | { type: 'level'; level: number } | { type: 'pack' } | { type: 'week'; week: number };
@@ -29,7 +31,8 @@ export interface Item<Id extends string = string> {
 const free: Unlock = { type: 'free' };
 const lv = (level: number): Unlock => ({ type: 'level', level });
 const pack: Unlock = { type: 'pack' };
-const wk = (week: number): Unlock => ({ type: 'week', week });
+/** unlocks in the pet week the weekly schedule gives this item */
+const wk = (slot: DropSlot, id: string): Unlock => ({ type: 'week', week: weekOfDrop(slot, id) });
 
 export const HATS: Item<HatId>[] = [
   { id: 'none', slot: 'hat', name: 'No hat', emoji: '🚫', unlock: free },
@@ -47,6 +50,13 @@ export const HATS: Item<HatId>[] = [
   { id: 'chef', slot: 'hat', name: 'Chef hat', emoji: '👨‍🍳', unlock: pack },
   { id: 'wizard', slot: 'hat', name: 'Wizard hat', emoji: '🧙', unlock: pack },
   { id: 'bunny', slot: 'hat', name: 'Bunny ears', emoji: '🐰', unlock: pack },
+  // weekly surprises (order: features/weekly WEEKLY_DROPS)
+  { id: 'mushroom', slot: 'hat', name: 'Mushroom cap', emoji: '🍄', unlock: wk('hat', 'mushroom') },
+  { id: 'friedEgg', slot: 'hat', name: 'Fried egg', emoji: '🍳', unlock: wk('hat', 'friedEgg') },
+  { id: 'bucket', slot: 'hat', name: 'Bucket hat', emoji: '🪣', unlock: wk('hat', 'bucket') },
+  { id: 'propeller', slot: 'hat', name: 'Propeller cap', emoji: '🚁', unlock: wk('hat', 'propeller') },
+  { id: 'cowboy', slot: 'hat', name: 'Cowboy hat', emoji: '🤠', unlock: wk('hat', 'cowboy') },
+  { id: 'cherries', slot: 'hat', name: 'Cherries', emoji: '🍒', unlock: wk('hat', 'cherries') },
 ];
 
 export const FACES: Item<FaceId>[] = [
@@ -68,20 +78,20 @@ export const COLORS: Item<PetColor>[] = [
   { id: 'gold', slot: 'color', name: 'Gold', emoji: '💛', unlock: lv(20) },
   { id: 'lilac', slot: 'color', name: 'Lilac', emoji: '🪻', unlock: pack },
   { id: 'mango', slot: 'color', name: 'Mango', emoji: '🥭', unlock: pack },
-  // weekly surprises, in WEEKLY_COLORS order (features/weekly/logic.ts)
-  { id: 'peach', slot: 'color', name: 'Peach', emoji: '🍑', unlock: wk(1) },
-  { id: 'lime', slot: 'color', name: 'Lime', emoji: '🍋', unlock: wk(2) },
-  { id: 'lagoon', slot: 'color', name: 'Lagoon', emoji: '🏝️', unlock: wk(3) },
-  { id: 'cocoa', slot: 'color', name: 'Cocoa', emoji: '🍫', unlock: wk(4) },
-  { id: 'plum', slot: 'color', name: 'Plum', emoji: '🫐', unlock: wk(5) },
-  { id: 'coral', slot: 'color', name: 'Coral', emoji: '🪸', unlock: wk(6) },
-  { id: 'denim', slot: 'color', name: 'Denim', emoji: '👖', unlock: wk(7) },
-  { id: 'blush', slot: 'color', name: 'Blush', emoji: '🌸', unlock: wk(8) },
-  { id: 'storm', slot: 'color', name: 'Storm', emoji: '🌧️', unlock: wk(9) },
-  { id: 'cherry', slot: 'color', name: 'Cherry', emoji: '🍒', unlock: wk(10) },
+  // weekly surprises (order: features/weekly WEEKLY_DROPS)
+  { id: 'peach', slot: 'color', name: 'Peach', emoji: '🍑', unlock: wk('color', 'peach') },
+  { id: 'lime', slot: 'color', name: 'Lime', emoji: '🍋', unlock: wk('color', 'lime') },
+  { id: 'lagoon', slot: 'color', name: 'Lagoon', emoji: '🏝️', unlock: wk('color', 'lagoon') },
+  { id: 'cocoa', slot: 'color', name: 'Cocoa', emoji: '🍫', unlock: wk('color', 'cocoa') },
+  { id: 'plum', slot: 'color', name: 'Plum', emoji: '🫐', unlock: wk('color', 'plum') },
+  { id: 'coral', slot: 'color', name: 'Coral', emoji: '🪸', unlock: wk('color', 'coral') },
+  { id: 'denim', slot: 'color', name: 'Denim', emoji: '👖', unlock: wk('color', 'denim') },
+  { id: 'blush', slot: 'color', name: 'Blush', emoji: '🌸', unlock: wk('color', 'blush') },
+  { id: 'storm', slot: 'color', name: 'Storm', emoji: '🌧️', unlock: wk('color', 'storm') },
+  { id: 'cherry', slot: 'color', name: 'Cherry', emoji: '🍒', unlock: wk('color', 'cherry') },
 ];
 
-export type RoomId = 'auto' | 'sunset' | 'ocean' | 'garden' | 'aurora' | 'galaxy' | 'golden';
+export type RoomId = 'auto' | 'sunset' | 'ocean' | 'garden' | 'aurora' | 'galaxy' | 'golden' | 'lavender' | 'sand' | 'mist' | 'rose';
 
 /** Home stage backgrounds ("rooms"). 'auto' follows the time of day. */
 export const ROOMS: Item<RoomId>[] = [
@@ -92,6 +102,11 @@ export const ROOMS: Item<RoomId>[] = [
   { id: 'golden', slot: 'room', name: 'Golden hour', emoji: '✨', unlock: lv(20) },
   { id: 'aurora', slot: 'room', name: 'Aurora', emoji: '🌈', unlock: pack },
   { id: 'galaxy', slot: 'room', name: 'Galaxy', emoji: '🪐', unlock: pack },
+  // weekly surprises (order: features/weekly WEEKLY_DROPS)
+  { id: 'lavender', slot: 'room', name: 'Lavender', emoji: '🪻', unlock: wk('room', 'lavender') },
+  { id: 'sand', slot: 'room', name: 'Sand', emoji: '🏖️', unlock: wk('room', 'sand') },
+  { id: 'mist', slot: 'room', name: 'Mist', emoji: '🌫️', unlock: wk('room', 'mist') },
+  { id: 'rose', slot: 'room', name: 'Rose', emoji: '🌹', unlock: wk('room', 'rose') },
 ];
 
 /** Moods the user can set as the pet's face on Home ('auto' reacts to the day). */

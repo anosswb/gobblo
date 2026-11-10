@@ -215,10 +215,10 @@ export const en = {
     recap: (name: string, bites: number, min: number) =>
       `Last week you fed ${name} ${bites === 1 ? '1 bite' : `${bites} bites`}${min > 0 ? ` (${min} min)` : ''}.`,
     fresh: 'Fresh week, fresh plate. Nothing to catch up on.',
-    gift: (color: string) => `This week’s free colour: ${color}`,
-    giftSub: 'It’s yours to keep, in the Closet.',
+    gift: { hat: 'A new hat', color: 'A new colour', room: 'A new room' },
+    giftSub: 'Free, and yours to keep. It lives in the Closet.',
     tryOn: 'Try it on',
-    tryLabel: (color: string, name: string) => `Try ${color} on ${name}`,
+    tryLabel: (item: string, name: string) => `Try ${item} on ${name}`,
     ok: 'Nice',
     away: 'Tap to say hi back',
   },
