@@ -25,9 +25,9 @@ import { GUIDES, GUIDE_NAMES, guideCopy, type GuideId } from '@/i18n/guides.en';
 import { PageGuide } from '@/components/guide/page-guide';
 import { duration } from '@/theme/motion';
 import { useAppStore } from '@/state/app-store';
-import type { Accent, FocusSound, NudgeSound, NudgeTime, Settings } from '@/state/schema';
+import type { FocusSound, NudgeSound, NudgeTime, Settings } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
-import { accents, fonts, petColors, radius, space, typeScale, type PetColor, type TileColor } from '@/theme/tokens';
+import { fonts, petColors, radius, space, typeScale, type PetColor, type TileColor } from '@/theme/tokens';
 
 const t = en.settings;
 
@@ -76,7 +76,6 @@ function useSettings() {
 
 function Look() {
   const { s, set } = useSettings();
-  const { scheme } = useTheme();
   return (
     <>
       <Section title={t.theme}>
@@ -85,18 +84,8 @@ function Look() {
             options={[{ value: 'system', label: t.system }, { value: 'light', label: t.light }, { value: 'dark', label: t.dark }]} />
         } />
       </Section>
-      <Section title={t.accent}>
-        <Row last stacked hideLabel label={t.accent} right={
-          <Chips<Accent> accessibilityLabel={t.accent} value={s.accent} onChange={set('accent')}
-            options={(Object.keys(accents) as Accent[]).map((a) => ({ value: a, label: accents[a].label, swatch: accents[a][scheme][0] }))} />
-        } />
-      </Section>
       <Section>
-        <Row leading={<IconTile name="motion" color="indigo" />} label={t.reduceMotion} hint={t.reduceMotionHint} right={<Toggle accessibilityLabel={t.reduceMotion} value={s.reduceMotion} onChange={set('reduceMotion')} />} />
-        <Row last stacked label={t.confetti} right={
-          <Segmented accessibilityLabel={t.confetti} value={s.confetti} onChange={set('confetti')}
-            options={[{ value: 'lots', label: t.lots }, { value: 'little', label: t.little }, { value: 'none', label: t.none }]} />
-        } />
+        <Row leading={<IconTile name="motion" color="indigo" />} last label={t.reduceMotion} hint={t.reduceMotionHint} right={<Toggle accessibilityLabel={t.reduceMotion} value={s.reduceMotion} onChange={set('reduceMotion')} />} />
       </Section>
     </>
   );
@@ -108,16 +97,8 @@ function Sound() {
     <>
       <Section>
         <Row leading={<IconTile name="sound" color="pink" />} label={t.sounds} right={<Toggle accessibilityLabel={t.sounds} value={s.sound} onChange={set('sound')} />} />
-        <Row leading={<IconTile name="sound" color="orange" />} label={t.soundOnSilent} hint={t.soundOnSilentHint} right={
+        <Row leading={<IconTile name="sound" color="orange" />} label={t.soundOnSilent} hint={t.soundOnSilentHint} last right={
           <Toggle accessibilityLabel={t.soundOnSilent} value={s.soundOnSilent} onChange={(v) => { update({ soundOnSilent: v }); if (v) setTimeout(() => play('pop'), 150); }} />
-        } />
-        <Row leading={<IconTile name="music" color="red" />} last label={t.mix} hint={t.mixHint} right={<Toggle accessibilityLabel={t.mix} value={s.mixWithMusic} onChange={set('mixWithMusic')} />} />
-      </Section>
-      <Section title={t.volume}>
-        <Row last stacked hideLabel label={t.volume} right={
-          <Segmented accessibilityLabel={t.volume} value={s.volume >= 0.85 ? '1' : s.volume >= 0.55 ? '0.7' : '0.4'}
-            onChange={(v) => { update({ volume: Number(v) }); setTimeout(() => play('pop'), 50); }}
-            options={[{ value: '0.4', label: 'Soft' }, { value: '0.7', label: 'Medium' }, { value: '1', label: 'Loud' }]} />
         } />
       </Section>
       <Section title={t.haptics}>
@@ -138,7 +119,7 @@ function Nudges() {
       <Section title={t.nudgeLevel} footer={t.nudgeFooter}>
         <Row last stacked hideLabel label={t.nudgeLevel} right={
           <Chips accessibilityLabel={t.nudgeLevel} value={s.nudge} onChange={set('nudge')}
-            options={[{ value: 'off', label: t.off }, { value: 'gentle', label: t.gentle }, { value: 'normal', label: t.normal }, { value: 'chaos', label: t.chaos }]} />
+            options={[{ value: 'off', label: t.off }, { value: 'gentle', label: t.gentle }, { value: 'normal', label: t.normal }, ...(s.nudge === 'chaos' ? [{ value: 'chaos' as const, label: t.chaos }] : [])]} />
         } />
       </Section>
       <Section title={t.nudgeTime} footer={t.nudgeTimeHint}>
@@ -271,20 +252,12 @@ function PetPage() {
             options={COLORS.filter((c) => isUnlocked(c.unlock, look.level, look.makeItYours, look.week)).map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))} />
         } />
       </Section>
-      <Section title={t.petTalk}>
-        <Row last stacked hideLabel label={t.petTalk} right={
-          <Segmented accessibilityLabel={t.petTalk} value={s.petTalk} onChange={set('petTalk')}
-            options={[{ value: 'chatty', label: t.chatty }, { value: 'quiet', label: t.quietTalk }, { value: 'silent', label: t.silent }]} />
-        } />
-      </Section>
       <Section>
+        <Row leading={<IconTile name="sparkle" color="purple" />} label={t.petTalk} right={
+          <Toggle accessibilityLabel={t.petTalk} value={s.petTalk !== 'silent'} onChange={(v) => update({ petTalk: v ? 'chatty' : 'silent' })} />
+        } />
         <Row leading={<IconTile name="bed" color="teal" />} label={t.autoSleep} right={<Toggle accessibilityLabel={t.autoSleep} value={s.autoSleep} onChange={set('autoSleep')} />} />
-        <Row leading={<IconTile name="leaf" color="green" />} label={t.mindful} hint={t.mindfulHint} right={<Toggle accessibilityLabel={t.mindful} value={s.mindfulNote} onChange={set('mindfulNote')} />} />
         <Row leading={<IconTile name="heart" color="pink" />} last label={t.jar} hint={t.jarHint} right={<Toggle accessibilityLabel={t.jar} value={s.goodThingsJar} onChange={set('goodThingsJar')} />} />
-      </Section>
-      <Section footer={t.replayHint}>
-        <Row leading={<IconTile name="sparkle" color="purple" />} last label={t.replay}
-          onPress={() => { haptics.light(); update({ onboarded: false }); router.replace('/onboarding'); }} />
       </Section>
     </>
   );
