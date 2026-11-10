@@ -3,7 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
+import { Text } from '@/components/text';
+import { duration, easing } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
+import { radius, space } from '@/theme/tokens';
 
 const N = 10;
 const SPARK = 'M0 -10 Q1.5 -1.5 10 0 Q1.5 1.5 0 10 Q-1.5 1.5 -10 0 Q-1.5 -1.5 0 -10Z';
@@ -57,7 +60,35 @@ function Spark({ index, radius, color }: { index: number; radius: number; color:
   );
 }
 
+/**
+ * "+2 ✦" lifting off the pet right after the chomp: the reward is shown where it was earned,
+ * not in a toast. Plays once per `id`. Reduce Motion: it fades in place.
+ */
+export function SparkGain({ id, amount }: { id: number; amount: number }) {
+  const { colors, reduceMotion } = useTheme();
+  const t = useSharedValue(0);
+  useEffect(() => {
+    if (id === 0) return;
+    t.set(0);
+    t.set(withTiming(1, { duration: duration.verySlow * 3, easing: easing.strongOut }));
+  }, [id, t]);
+  const style = useAnimatedStyle(() => {
+    const p = t.get();
+    return {
+      opacity: p === 0 ? 0 : p < 0.15 ? p / 0.15 : p < 0.7 ? 1 : 1 - (p - 0.7) / 0.3,
+      transform: [{ translateY: reduceMotion ? 0 : -28 * p }, { scale: reduceMotion ? 1 : 0.9 + 0.1 * Math.min(1, p * 4) }],
+    };
+  });
+  if (id === 0 || amount <= 0) return null;
+  return (
+    <Animated.View pointerEvents="none" style={[styles.gain, { backgroundColor: colors.reward }, style]} accessibilityLiveRegion="polite" accessibilityLabel={`plus ${amount} sparks`}>
+      <Text variant="bodyBold" style={{ color: colors.onReward }}>+{amount} ✦</Text>
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
+  gain: { position: 'absolute', top: -space.xl, alignSelf: 'center', paddingHorizontal: space.m, height: 32, borderRadius: radius.chip, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   wrap: { position: 'absolute', top: '50%', start: '50%', alignItems: 'center', justifyContent: 'center' },
   spark: { position: 'absolute' },
 });

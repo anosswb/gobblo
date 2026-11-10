@@ -22,7 +22,7 @@ import { LevelUp } from '@/pet/level-up';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
-import { Burst } from '@/pet/burst';
+import { Burst, SparkGain } from '@/pet/burst';
 import { Evolution } from '@/pet/evolution';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
@@ -153,14 +153,21 @@ export function HomeScreen() {
   const [burst, setBurst] = useState(0);
   const [toTop, setToTop] = useState(0);
   const [askAgain, setAskAgain] = useState(false);
+  const [gain, setGain] = useState(0);
   const eatenBefore = useRef(stats.eaten);
-  // said "Not now" in onboarding: ask once more, gently, right after a bite on day 3+
-  const maybeAskAgain = () => {
-    const st = useAppStore.getState();
-    if (!shouldAskNudgeAgain(st.settings)) return;
-    st.updateSettings({ nudgeAskedAgain: true });
-    setAskAgain(true);
-  };
+  const sparksBefore = useRef(stats.sparks);
+  // said "Not now" in onboarding: ask once more, gently, when the app opens on day 3+
+  // (never in the same visit as a feed: that moment belongs to the pet)
+  const fedThisVisit = useRef(false);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const st = useAppStore.getState();
+      if (!shouldAskNudgeAgain(st.settings, Date.now(), { eaten: st.stats.eaten, fedThisVisit: fedThisVisit.current })) return;
+      st.updateSettings({ nudgeAskedAgain: true });
+      setAskAgain(true);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, []);
   const answerAskAgain = async (yes: boolean) => {
     setAskAgain(false);
     haptics.light();
@@ -174,16 +181,26 @@ export function HomeScreen() {
   };
   useEffect(() => {
     if (stats.eaten > eatenBefore.current) {
+      // the feeding moment: bring the pet into view, chomp, then the reward lifts off the pet.
+      // Nothing else (no toast, no card) for the next 3 seconds.
+      const won = stats.sparks - sparksBefore.current;
+      fedThisVisit.current = true;
+      setAskAgain(false);
       setToTop((n) => n + 1);
       setReaction('chomp');
+      play('boop');
       const t = setTimeout(() => {
         setReaction('celebrating');
+        setGain(won);
         setBurst((b) => b + 1);
         haptics.success();
       }, 700);
-      const t2 = setTimeout(evolveIfNew, 1700);
-      const t3 = setTimeout(maybeAskAgain, 2400);
+      const t2 = setTimeout(evolveIfNew, 3000);
+      const t3 = setTimeout(() => {
+        if (useAppStore.getState().settings.goodThingsJar) toast(h.goodThingAsk, { label: en.focus.goodThing, onPress: () => router.push('/me') });
+      }, 3200);
       eatenBefore.current = stats.eaten;
+      sparksBefore.current = stats.sparks;
       return () => {
         clearTimeout(t);
         clearTimeout(t2);
@@ -191,7 +208,8 @@ export function HomeScreen() {
       };
     }
     eatenBefore.current = stats.eaten;
-  }, [stats.eaten]);
+    sparksBefore.current = stats.sparks;
+  }, [stats.eaten, stats.sparks]);
 
   const sky = skyOf(openedAt.getHours());
   // welcome back after 2+ days away: newDayCheck keeps the gap until you say hi (or feed)
@@ -299,6 +317,7 @@ export function HomeScreen() {
         <Animated.View pointerEvents="none" style={[styles.feedGlow, { backgroundColor: colors.reward }, glow]} />
         <View style={styles.pet}>
           <Burst id={burst} />
+          <SparkGain id={burst} amount={gain} />
           <Animated.View ref={petTarget}>
           <Pet
             size={stageH < 200 ? 92 : 108}
@@ -593,11 +612,10 @@ export function HomeScreen() {
         }}
         onAlready={() => {
           if (!selected) return;
-          const r = useAppStore.getState().feedDone(selected.id);
+          useAppStore.getState().feedDone(selected.id);
           setSelected(null);
           haptics.success();
           play('spark');
-          if (r) toast(en.start.alreadyDone(r.sparks));
         }}
         onStart={(minutes, mode) => {
           if (!selected) return;

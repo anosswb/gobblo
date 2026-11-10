@@ -15,4 +15,9 @@ describe('ask about nudges again', () => {
     expect(shouldAskNudgeAgain(said({ nudge: 'gentle' }), 5 * DAY)).toBe(false);
     expect(shouldAskNudgeAgain(said({ onboarded: false }), 5 * DAY)).toBe(false);
   });
+  it('never in the same visit as a feed, and only after a first fed bite', () => {
+    expect(shouldAskNudgeAgain(said(), 5 * DAY, { eaten: 3, fedThisVisit: true })).toBe(false);
+    expect(shouldAskNudgeAgain(said(), 5 * DAY, { eaten: 0, fedThisVisit: false })).toBe(false);
+    expect(shouldAskNudgeAgain(said(), 5 * DAY, { eaten: 3, fedThisVisit: false })).toBe(true);
+  });
 });

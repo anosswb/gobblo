@@ -95,6 +95,7 @@ export const en = {
   },
   home: {
     today: 'Today',
+    goodThingAsk: 'One good thing from that?',
     about: (min: number) => `~${min} min`,
     guideTitle: (name: string) => `Feed ${name} by starting`,
     guideBody: (name: string) => `Hold a bite’s food for a moment, then drag it onto ${name}. Or just tap the bite.`,
@@ -301,10 +302,10 @@ export const en = {
     firstDone: 'On top of the plate.',
     split: 'Break it into steps',
     already: 'I already did it',
-    alreadyDone: (sparks: number) => `Fed. +${sparks} ✦ Hyperfocus counts.`,
   },
   when: {
     today: 'Today',
+    goodThingAsk: 'One good thing from that?',
     tomorrow: 'Tomorrow',
     week: 'This week',
     someday: 'Someday',
@@ -378,7 +379,6 @@ export const en = {
     stay: 'Stay',
     leave: 'Leave',
     started: 'You started. +1 ✦ (that was the hard part)',
-    fed: (sparks: number, min: number) => `+${sparks} ✦ · ${min} min of focus. Delicious.`,
     goodThing: 'Add a good thing',
     soundLabel: 'Focus sound',
     closeLabel: 'Leave focus',

@@ -1,5 +1,4 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -166,15 +165,8 @@ export function FocusScreen() {
     play('spark');
     // close first, save right after: the room slides away intact and Home sees the bite land
     exit();
-    setTimeout(() => {
-      const r = endFocus(true, mins);
-      if (r) {
-        toast(
-          f.fed(r.sparks, mins),
-          settings.goodThingsJar ? { label: f.goodThing, onPress: () => router.push('/me') } : undefined,
-        );
-      }
-    }, CLOSE_MS);
+    // no toast: Home shows the chomp and the sparks lifting off the pet
+    setTimeout(() => endFocus(true, mins), CLOSE_MS);
   };
 
   const leave = () => {
