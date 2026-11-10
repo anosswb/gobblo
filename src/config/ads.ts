@@ -11,7 +11,7 @@ export const ADS = {
   /** master switch: false hides every video offer */
   enabled: true,
   /** sparks for one finished video */
-  rewardSparks: 5,
+  rewardSparks: 15,
   /** videos a person can watch per pet day */
   maxPerDay: 3,
   /**

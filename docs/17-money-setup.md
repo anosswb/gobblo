@@ -4,7 +4,7 @@ Written 2026-11-10. The money code is wired. Today it shows **Google's test ads*
 
 ## What exists today
 
-- **Android:** one optional video card on the Plus page: "Treat {pet}? Watch a video · +5 ✦". The person chooses. Max 3 a day. No banners, no pop-ups, nothing in onboarding, Focus, Feed or Brain dump.
+- **Android:** one optional video card on the Plus page: "Treat {pet}? Watch a video · +15 ✦". The person chooses. Max 3 a day. No banners, no pop-ups, nothing in onboarding, Focus, Feed or Brain dump.
 - **iPhone:** one purchase, "Plus", through RevenueCat. Hidden until you test a real purchase.
 - **Rating prompt:** after the 3rd fed bite and 2 days, once per version.
 
@@ -22,7 +22,7 @@ Written 2026-11-10. The money code is wired. Today it shows **Google's test ads*
 
 File `src/config/ads.ts`:
 - `enabled` — `false` hides every video offer.
-- `rewardSparks` — sparks for one video (5).
+- `rewardSparks` — sparks for one video (15).
 - `maxPerDay` — videos per day (3).
 
 The user also has a switch: **Settings › Privacy & data › Bonus video offers**.
