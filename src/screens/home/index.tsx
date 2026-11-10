@@ -78,7 +78,7 @@ export function HomeScreen() {
   const [whenOpen, setWhenOpen] = useState(false);
   const [laterOpen, setLaterOpen] = useState(false);
   const [selected, setSelected] = useState<Bite | null>(null);
-  // widget Start without Start Kit: gobblo://start → Home?start=<id>&at=<tap time> opens that
+  // widget Start when it cannot start the clock (not onboarded, or a timer already runs): gobblo://start → Home?start=<id>&at=<tap time> opens that
   // bite's start sheet once per tap (the param is left in place: clearing it hid the sheet)
   const { start: startParam, at: startAt } = useLocalSearchParams<{ start?: string; at?: string }>();
   const handledStart = useRef<string | undefined>(undefined);

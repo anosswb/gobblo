@@ -1,7 +1,6 @@
 import { sfSymbol, type IconName } from '@/components/icon';
 import { biteIcon } from '@/features/bites/bite-icon';
 import { FOOD, plate } from '@/features/bites/logic';
-import { hasPack } from '@/features/plus/catalog';
 import { storage } from '@/lib/storage';
 import { dayKey, type PersistedState } from '@/state/schema';
 import { petColors, type PetColor } from '@/theme/tokens';
@@ -17,8 +16,6 @@ export interface WidgetData {
   /** which bite the widget shows (1-based) after skips, and how many are on the plate */
   position: number;
   left: number;
-  /** Start Kit: the widget starts 2 minutes in one tap (free widget opens the app) */
-  canStart: boolean;
   /** a focus timer is running: show it instead of the next bite */
   focus: { text: string; endsAt: number } | null;
   fedToday: number;
@@ -61,7 +58,6 @@ export function readWidgetData(now = new Date()): WidgetData {
     bite: pick ? { id: pick.id, text: pick.text, icon, symbol: sfSymbol(icon), min: FOOD[pick.size].min } : null,
     position: index + 1,
     left: list.length,
-    canStart: hasPack(s.unlocked ?? [], 'startKit'),
     focus,
     fedToday: s.stats?.lastVisit === dayKey(now) ? (s.stats?.todayEaten ?? 0) : 0,
   };

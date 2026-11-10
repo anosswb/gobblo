@@ -70,9 +70,8 @@ function mainText(data: WidgetData): string {
 function PrimaryButton({ data, scheme, compact = false }: { data: WidgetData; scheme: Scheme; compact?: boolean }) {
   'use no memo';
   const c = PALETTE[scheme];
-  // Start Kit: one tap starts 2 minutes from the home screen. Free: opens the app on that bite's
-  // start sheet (one more tap). Both start the clock; Plus only saves a step.
-  const label = data.focus ? `Ends ${clock(data.focus.endsAt)}` : !data.bite ? 'Add bites' : data.canStart ? 'Start 2 min' : 'Start in app';
+  // one tap starts 2 minutes from the home screen, free for everyone (the core loop is never gated)
+  const label = data.focus ? `Ends ${clock(data.focus.endsAt)}` : !data.bite ? 'Add bites' : 'Start 2 min';
   const icon = data.focus ? 'timer' : !data.bite ? 'plus' : 'play';
   const uri = data.focus ? focusUri() : !data.bite ? dumpUri() : startUri(data.bite.id);
   return (

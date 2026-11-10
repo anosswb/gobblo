@@ -24,7 +24,6 @@ export function redrawWidgetsNow() {
       symbol: d.bite?.symbol ?? 'fork.knife',
       minutes: d.bite?.min ?? 2,
       left: d.left,
-      canStart: d.canStart,
       startUrl: d.bite ? Linking.createURL('/start', { queryParams: { bite: d.bite.id } }) : Linking.createURL('/'),
       openUrl: Linking.createURL('/'),
     });

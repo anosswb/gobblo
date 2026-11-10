@@ -21,14 +21,13 @@ export type NextBiteProps = {
   symbol: string;
   minutes: number;
   left: number;
-  canStart: boolean;
   /** deep links are built in the app (Linking.createURL) and passed in: the widget can't import */
   startUrl: string;
   openUrl: string;
 };
 
 /**
- * iOS widget "Next bite" (Start Kit, docs/13 §7). Home screen (small, medium) and Lock Screen
+ * iOS widget "Next bite" (docs/13 §7). Home screen (small, medium) and Lock Screen
  * (rectangular, circular). Everything it uses must be declared inside the function ('widget').
  */
 const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
@@ -38,7 +37,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
   const ink = dark ? '#FFFFFF' : '#1C1C1E';
   const ink2 = dark ? '#AEAEB2' : '#6C6C70';
   const bg = dark ? '#1C1C1E' : '#FFFFFF';
-  const url = p.biteText && p.canStart ? p.startUrl : p.openUrl;
+  const url = p.biteText ? p.startUrl : p.openUrl;
   const family = env.widgetFamily;
 
   if (family === 'accessoryCircular') {
@@ -57,7 +56,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
         <Text modifiers={[font({ size: 15, weight: 'bold' }), lineLimit(1)]}>
           {p.biteText ?? 'Plate is empty'}
         </Text>
-        <Text modifiers={[font({ size: 12 })]}>{p.biteText && p.canStart ? 'Tap: start 2 min' : `${p.left} on your plate`}</Text>
+        <Text modifiers={[font({ size: 12 })]}>{p.biteText ? 'Tap: start 2 min' : `${p.left} on your plate`}</Text>
       </VStack>
     );
   }
@@ -77,11 +76,11 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
     <Text
       modifiers={[
         font({ size: 14, weight: 'bold' }),
-        foregroundStyle(p.canStart ? '#FFFFFF' : ink),
+        foregroundStyle('#FFFFFF'),
         padding({ horizontal: 12, vertical: 7 }),
-        background(p.canStart ? tint : dark ? '#2C2C2E' : '#F2F2F7', shapes.capsule()),
+        background(tint, shapes.capsule()),
       ]}>
-      {p.canStart ? '▶ Start 2 min' : `Open · ${p.left} bites`}
+      ▶ Start 2 min
     </Text>
   ) : null;
 
@@ -115,7 +114,6 @@ export const NextBiteIOS = createWidget<NextBiteProps>('NextBite', NextBite, {
   symbol: 'fork.knife',
   minutes: 2,
   left: 0,
-  canStart: false,
   startUrl: 'gobblo://',
   openUrl: 'gobblo://',
 });
