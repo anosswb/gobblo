@@ -13,6 +13,7 @@ import { brainType } from '@/features/progress/logic';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { useLook } from '@/features/closet/use-look';
+import { en } from '@/i18n/en';
 import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { useTheme } from '@/theme/theme-provider';
@@ -34,15 +35,15 @@ export function BrainCard() {
   const share = async () => {
     haptics.light();
     if (Platform.OS === 'web' || !(await Sharing.isAvailableAsync())) {
-      toast('Sharing works on your phone.');
+      toast(en.me.brain.shareWeb);
       return;
     }
     try {
       const uri = await captureRef(ref, { format: 'png', quality: 1, result: 'tmpfile' });
       play('spark');
-      await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'Share your brain card' });
+      await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: en.me.brain.shareDialog });
     } catch {
-      toast('Couldn’t make the image. Try again?');
+      toast(en.me.brain.shareError);
     }
   };
 
@@ -52,7 +53,7 @@ export function BrainCard() {
         <LinearGradient colors={[colors.focusTop, colors.focusMid, colors.focusBottom]} style={styles.card}>
           <View style={styles.flex}>
             <Text variant="caption" tone="onFocus2">
-              My brain type
+              {en.me.brain.kicker}
             </Text>
             <Text variant="title2" tone="onFocus">
               {bt.title}
@@ -62,11 +63,11 @@ export function BrainCard() {
             </Text>
             <View style={styles.stats}>
               <Text variant="caption" tone="onFocus">
-                {stats.eaten} {stats.eaten === 1 ? 'bite' : 'bites'} · {stats.minutes} min · {stats.comebacks} {stats.comebacks === 1 ? 'comeback' : 'comebacks'}
+                {en.me.brain.stats(stats.eaten, stats.minutes, stats.comebacks)}
               </Text>
             </View>
             <Text variant="caption" tone="onFocus2" style={styles.mark}>
-              {APP_NAME} · Feed it by starting
+              {APP_NAME} · {en.me.brain.mark}
             </Text>
           </View>
           <Pet size={92} color={look.color} hat={look.hat} face={look.face} mood="confident" stage={stage} still />
@@ -74,12 +75,12 @@ export function BrainCard() {
       </View>
       <PressScale
         accessibilityRole="button"
-        accessibilityLabel="Share your brain card"
+        accessibilityLabel={en.me.brain.share}
         onPress={() => void share()}
         style={[styles.share, { backgroundColor: colors.primarySoft }]}>
         <Icon name="share" size={18} color={colors.primary} />
         <Text variant="bodyBold" tone="primary">
-          Share my brain card
+          {en.me.brain.share}
         </Text>
       </PressScale>
     </View>

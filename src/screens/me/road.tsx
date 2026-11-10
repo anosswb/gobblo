@@ -5,6 +5,7 @@ import { Icon } from '@/components/icon';
 import { Text } from '@/components/text';
 import { rewardsFor, type Item, type RoomId } from '@/features/closet/items';
 import { LEVELS, MAX_LEVEL, STAGES, stageOfLevel } from '@/features/progress/logic';
+import { en } from '@/i18n/en';
 import { Pet } from '@/pet/pet';
 import type { FaceId, HatId } from '@/pet/wardrobe';
 import { useTheme } from '@/theme/theme-provider';
@@ -23,7 +24,7 @@ function featured(level: number): Item | undefined {
 /** What a level gives, read out by screen readers. */
 function rewardLabel(level: number): string {
   const r = rewardsFor(level, STAGE_AT);
-  return [r.stageName && level > 1 ? `evolves into ${r.stageName}` : '', ...r.items.map((i) => i.name)].filter(Boolean).join(', ');
+  return [r.stageName && level > 1 ? en.me.road.evolvesInto(r.stageName) : '', ...r.items.map((i) => i.name)].filter(Boolean).join(', ');
 }
 
 /**
@@ -40,7 +41,7 @@ export function RoadTo20({ level, total, color }: { level: number; total: number
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.row}
       contentOffset={{ x: Math.max(0, (level - 2) * STEP), y: 0 }}
-      accessibilityLabel={`Level ${level} of ${MAX_LEVEL}`}>
+      accessibilityLabel={en.me.road.label(level, MAX_LEVEL)}>
       {LEVELS.map((need, i) => {
         const lv = i + 1;
         const done = lv <= level;
@@ -52,7 +53,7 @@ export function RoadTo20({ level, total, color }: { level: number; total: number
         const stage = stageOfLevel(lv);
         const room = item?.slot === 'room' ? (item.id as Exclude<RoomId, 'auto'>) : null;
         return (
-          <View key={lv} style={styles.stop} accessible accessibilityLabel={`Level ${lv}${mystery ? ', a surprise' : `: ${rewardLabel(lv) || 'your pet'}`}${done ? ', unlocked' : ''}`}>
+          <View key={lv} style={styles.stop} accessible accessibilityLabel={`${en.me.road.stop(lv)}${mystery ? `, ${en.me.road.surprise}` : `: ${rewardLabel(lv) || en.me.road.yourPet}`}${done ? `, ${en.me.road.unlocked}` : ''}`}>
             <View
               style={[
                 styles.tile,
@@ -89,8 +90,8 @@ export function RoadTo20({ level, total, color }: { level: number; total: number
                 </View>
               ) : null}
             </View>
-            <Text variant="caption" tone={now ? 'ink' : done ? 'ink2' : 'ink3'} style={now ? styles.bold : undefined}>Lv {lv}</Text>
-            <Text variant="caption" tone="ink3" style={styles.need}>{done ? (now ? 'Now' : ' ') : `${need - total} ✦`}</Text>
+            <Text variant="caption" tone={now ? 'ink' : done ? 'ink2' : 'ink3'} style={now ? styles.bold : undefined}>{en.me.road.short(lv)}</Text>
+            <Text variant="caption" tone="ink3" style={styles.need}>{done ? (now ? en.me.road.now : ' ') : en.me.road.sparksLeft(need - total)}</Text>
           </View>
         );
       })}

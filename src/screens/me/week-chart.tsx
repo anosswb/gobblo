@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } fro
 
 import { Text } from '@/components/text';
 import type { DayBucket } from '@/features/progress/logic';
+import { en } from '@/i18n/en';
 import { haptics } from '@/lib/haptics';
 import { spring, staggerDelay } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
@@ -25,14 +26,14 @@ export function WeekChart({ days, metric }: { days: DayBucket[]; metric: 'bites'
   return (
     <View style={styles.wrap}>
       <Text variant="subhead" tone="ink2" accessibilityLiveRegion="polite">
-        {sel.isToday ? 'Today' : sel.label}: {sel.bites} {sel.bites === 1 ? 'bite' : 'bites'} · {sel.minutes} min
+        {en.me.week.dayLine(sel.isToday ? en.me.week.today : sel.label, sel.bites, sel.minutes)}
       </Text>
-      <View style={styles.bars} accessibilityRole="adjustable" accessibilityLabel={`This week, ${metric}`}>
+      <View style={styles.bars} accessibilityRole="adjustable" accessibilityLabel={en.me.week.chartLabel(metric === 'bites' ? en.me.week.metricBites : en.me.week.metricMinutes)}>
         {days.map((d, i) => (
           <Pressable
             key={d.key}
             accessibilityRole="button"
-            accessibilityLabel={`${d.label}: ${d.bites} bites, ${d.minutes} minutes`}
+            accessibilityLabel={en.me.week.dayLabel(d.label, d.bites, d.minutes)}
             onPress={() => {
               haptics.select();
               setPicked(i);
