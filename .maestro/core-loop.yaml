@@ -1,0 +1,51 @@
+# The core loop, start to finish, on a fresh install:
+# onboarding (hatch by feeding) -> Home -> start 2 min -> Done -> the bite is eaten.
+# Run on a phone or emulator with the app installed:
+#   maestro test .maestro/core-loop.yaml
+# Text is matched with regex so the curly apostrophes in the copy do not matter.
+appId: app.gobblo
+---
+- launchApp:
+    clearState: true
+
+# 1. hook
+- assertVisible: "Your brain isn.t lazy\\."
+- tapOn: "Let.s go"
+
+# 2. quiz (any answer, then Next)
+- tapOn: "Starting things"
+- tapOn: "Next"
+
+# 3. feed the egg, it hatches
+- tapOn: "Text Mom back"
+- inputText: "Email my prof"
+- tapOn: "Feed it"
+- extendedWaitUntil:
+    visible: "It needs a name!"
+    timeout: 8000
+
+# 4. name (keep the random one), no nudges
+- tapOn: "Meet .*"
+- tapOn: "Not now"
+
+# 5. Home shows the first bite without scrolling
+- extendedWaitUntil:
+    visible: "Today"
+    timeout: 8000
+- assertVisible: "Email my prof"
+
+# 6. start for 2 minutes
+- tapOn: "Email my prof"
+- tapOn: "Start 2 min"
+- extendedWaitUntil:
+    visible: "Done! Feed .*"
+    timeout: 8000
+- assertVisible: "Working on.*Email my prof"
+
+# 7. done: back on Home, the bite is eaten
+- tapOn: "Done! Feed .*"
+- extendedWaitUntil:
+    visible: "Today"
+    timeout: 8000
+- assertNotVisible: "Email my prof"
+- assertVisible: ".* plate is empty"
