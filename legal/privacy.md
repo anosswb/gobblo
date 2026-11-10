@@ -5,7 +5,7 @@ permalink: /privacy
 
 # Privacy Policy — Gobblo
 
-_Last updated: 6 November 2026_
+_Last updated: 10 November 2026_
 
 Gobblo ("the app", "we") is made by **Anass Kraifa**, an independent developer in Morocco.
 Contact: **[anasskraifa79@gmail.com](mailto:anasskraifa79@gmail.com)**
@@ -40,9 +40,10 @@ and no servers that receive them. We can't see them, sell them or lose them in a
 
 ## 4. Ads (Android version only)
 
-The Android app is free and shows ads through **Google AdMob**. Most of them are optional "watch to
-earn" videos. Ads never appear in onboarding, during a focus session, while feeding your pet, during
-an evolution or in the brain dump.
+The Android app is free. Its only ads are optional "watch to earn" videos, shown through
+**Google AdMob**, and only when you choose to watch one. There are no banners and no pop-up ads. Ads
+never appear in onboarding, during a focus session, while feeding your pet, during an evolution or
+in the brain dump.
 
 - AdMob may collect device identifiers (such as the advertising ID), your IP address (for an
   approximate location), and ad interaction and diagnostic data, to show and measure ads.
