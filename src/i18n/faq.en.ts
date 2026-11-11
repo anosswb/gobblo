@@ -10,7 +10,11 @@ const android = MONETIZATION === 'ads';
 export const FAQ: { q: string; a: string }[] = [
   {
     q: 'Where are my tasks saved?',
-    a: `Only on this phone. ${APP_NAME} has no account and no server, so nobody else can read your bites.`,
+    a: `Only on this phone. ${APP_NAME} has no account and no server for your bites, so nobody else can read them.`,
+  },
+  {
+    q: 'Does my data stay on my phone?',
+    a: `Your bites and everything you type stay on your phone. ${APP_NAME} sends anonymous counts and crash reports so we can fix things. You can turn it off in Settings › Privacy & data.`,
   },
   {
     q: 'What if I lose or change my phone?',

@@ -391,6 +391,7 @@ function About() {
       <Section>
         <Row leading={<IconTile name="info" color="gray" />} label={t.version} right={<Text tone="ink2">{Constants.expoConfig?.version ?? '–'}</Text>} />
         <Row leading={<IconTile name="heart" color="gray" />} label={`${APP_NAME} ${t.notMedical}`} />
+        <Row leading={<IconTile name="lock" color="gray" />} label={t.aboutData} onPress={() => router.push('/settings/privacy')} />
         <Row leading={<IconTile name="sound" color="gray" />} last label={t.soundCredits} />
       </Section>
       <Section>

@@ -490,11 +490,12 @@ export const en = {
     about: 'About',
     version: 'Version',
     notMedical: 'is not a medical device. It’s a productivity app made for ADHD brains.',
+    aboutData: 'Your bites and everything you type stay on your phone. Only anonymous counts and crash reports are sent. Turn them off in Privacy & data.',
     privacyPolicy: 'Privacy policy',
     terms: 'Terms of use',
     contact: 'Contact us',
     soundCredits: 'Sounds: real recordings from Freesound (CC0)',
-    dataLocal: 'Your tasks stay on your phone. No account, no server. They’re saved in your phone’s own backup (iCloud or Google) and come back when you set up a new phone. Moving between iPhone and Android? Use Export.',
+    dataLocal: 'Your bites stay on your phone. No account. They’re saved in your phone’s own backup (iCloud or Google) and come back when you set up a new phone. Moving between iPhone and Android? Use Export.',
   },
   me: {
     title: (pet: string) => `You & ${pet}`,
