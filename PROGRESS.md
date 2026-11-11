@@ -67,10 +67,27 @@ Routes: `src/app/tools/index.tsx` + `src/app/tools/[tool].tsx`; bodies in `src/s
 Checks: tsc, lint, jest, web preview light + dark, DECISIONS row, commit on main (no push).
 Built: hub (`/tools`), Breathe, Calm down, Daily tip (66 tips), Unstick me, Sit with me, Reminders with "Remind me" + "Every day". Seen in the web preview: hub light, Breathe running dark, Reminders dark. Not checked yet: Android haptics and the pet-me stroke on a real phone; Screenrove check_my_ui skipped (token budget).
 
+## Done since 10 Nov (details in DECISIONS.md)
+- Lead plan (docs/15) and 20-day merged plan (docs/16): plate-first Home, 3 tabs, long-press focus mode, 5 colour themes (10 looks), pure flat backgrounds.
+- The mascot is the otter (docs/18): flat in the app, water line and happy dive on Home, spark pebble.
+- Money code with test ids: Android optional rewarded video, iOS Plus via RevenueCat (hidden until purchases are live).
+- Spark shop: any locked Closet item can be bought one at a time with sparks; optional video in the Closet (Android).
+- Anonymous analytics (PostHog) and crash reports (Sentry), one switch off, closed event list (docs/19).
+- GitHub Actions diet: light Checks on every push, builds on demand (docs/20).
+- Docs 02 and 11 rewritten to match the app; default pet name is now Pip.
+
 ## Next
-- Dev build on Anass's phone (he is logged in to EAS).
-- Phase 2: the pet (Skia, from R1 art).
+- Sounds from the owner (new sound files go in `assets/sounds/`; candidates are in `assets/sounds/candidates/`).
+- Support email address in the app and listing.
+- Make the repo private (first move the legal pages and add the secrets, docs/20).
+- Maestro flow for the core loop (needs Java).
+- Real-phone pass: gestures, long-press menu, the dive, haptics, widgets, notifications.
+- Video kit: otter model sheet in `assets/brand/`, clay videos.
+- Wire `onboarding_step` analytics (one line in onboarding `go()`), docs/19.
 
 ## Blocked / needs Anass
-- App name: **Gobblo** chosen. Anass to check USPTO/EUIPO/WIPO by hand and register gobblo.app (+ getgobblo.com) and @gobblo handles.
-- Flow art: R1 expression sheet; D1–D4 + E4 at 9:16, 2K, layered.
+- Sound files and the support email address.
+- GitHub secrets: `EXPO_PUBLIC_POSTHOG_KEY`, `EXPO_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN` (docs/19).
+- PostHog "Discard client IP data" and Sentry "Prevent storing of IP addresses" settings (docs/19).
+- A new test APK on his phone (docs/20) to check analytics, ads and the otter on a real device.
+- Store accounts: he pays around 1 December, not before (CLAUDE.md).

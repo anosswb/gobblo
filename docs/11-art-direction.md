@@ -1,39 +1,31 @@
-# 11 — Art direction: "lo-fi jelly" (chosen Nov 2026)
+# 11 — Art direction (current, Nov 2026)
 
-## The decision
-Anass generated round 1 in Google Flow. The **3D glossy jelly pet** (G1 eating the to-do list, G2 at the desk with headphones) and the **moody flat scenes** (D1–D4) won. The kawaii 2D style (faces on food, flat pets, flat paywall) felt too childish, so it moved to `assets/flow/redo/`.
+This page replaces the old "lo-fi jelly" direction (3D glossy bean pet, cobalt and lime). That look is **retired**. The mascot is now the otter (docs/18). UI rules are in docs/02.
 
-Feeling we want: **cozy, a bit funny, premium, not babyish.** Think "study with me" lo-fi stream + a collectible designer vinyl toy, not a kids' game.
+## The look in one line
+Calm and flat in the app, soft and handmade in videos. Cozy, a bit funny, premium, not babyish. One hero per screen, plain backgrounds, no glows.
 
-## Why this fits ADHD Gen Z
-- **Lo-fi / "study with me" culture** = body doubling. The focus room (D4) with the pet at a desk is exactly that vibe.
-- **Low clutter, one hero thing per screen.** Moody backgrounds keep the eye on the pet and the one action.
-- **Instant dopamine:** glossy squish, chomp, confetti. Satisfying, but short (under 1 s) so it doesn't drag.
-- **Novelty:** new hats, species and rooms drop regularly.
-- **Humor and self-awareness** ("your brain isn't lazy. it's hungry.") instead of baby talk.
-- **No shame:** the pet naps, it never cries or dies.
+## Two styles, one otter
+| Where | Style |
+|---|---|
+| The app, the icon, widgets | **Flat** (drawn in code with SVG; chubby 4-point spark pebble instead of a 5-point star) |
+| Videos, store pictures, social | **Clay** (looks handmade, not AI) |
+| The 3D toy look | dropped |
+
+Chosen by Anass on 10 Nov from Flow round 3 (DECISIONS 2026-11-10).
+
+## Flow pictures: which are current
+`assets/flow/otter/` is the current set:
+- **B1** flat standing, **B2** flat tossing, **B3** flat floating, **B4** flat icon: references for the in-app otter and the icon.
+- **C1** clay standing, **C3** clay floating, **C4** clay icon: references for videos and store pictures.
+- **A1 to A3** (3D toy): dropped, keep only as history.
+
+Not current: `assets/flow/keep/`, `assets/flow/maybe/` and `assets/flow/redo/` belong to the **retired jelly look** (jelly bean pet, cobalt and lime). Do not use them in the app or the listing. The app uses no pictures for scenes: they are drawn in code (theme tint, water line, Closet rooms).
 
 ## Rules
-- **Pet:** glossy jelly bean, subtle specular highlights, soft shadow. **Small dot eyes by default** (calm, adult). Big eyes only for strong moments (hungry, surprised). The lime antenna orb is the brand signature.
-- **Scenes:** flat illustration with soft gradients and grain. Morning/day/night by local time, the night focus room for Focus.
-- **No faces on objects** (food, items) and no kawaii stickers in the UI. Food is either emoji (v1) or small glossy 3D icons with no faces.
-- **UI:** Bricolage Grotesque display + Figtree body, chunky buttons, cobalt + lime accents. Dark mode is moody, not just inverted.
-- **Marketing/TikTok:** the 3D renders (G1, G2) + real app screen recordings.
-
-## Which file goes where (`assets/flow/keep/`)
-| file | use |
-|---|---|
-| G1-marketing-eating-todo | onboarding splash hero, App Store screenshot 1, TikTok |
-| G2-marketing-focus-desk | focus mode promo, App Store screenshot 3, landing page |
-| D1 / D2 / D3 scene | Home scene card background (morning / day / night) |
-| D4-focus-room-night | Focus screen background (with a dark gradient on top) |
-| E4-celebration-burst | Evolution screen background |
-| C2-app-icon-dark | app icon direction (polish it: bigger face, less empty space, a light version too) |
-| maybe/G3 (crop) | paywall hero (crop to the pet + food) |
-| maybe/D5, D6 | the pet's room (Plus feature): use only if redone in the jelly style |
-
-The prototype (`reference/prototype.html`, v0.3) already uses all of this. Copy its look.
-
-## In the real app (Claude Code)
-- Rebuild the pet in **Skia** (radial gradients, blurred highlights, soft shadows) so it can animate and look like G1/G2. The SVG in the prototype shows the layering. Optional upgrade later: a Rive file.
-- Backgrounds as WebP @2x/@3x, with a parallax layer split if Anass generates separate layers (sky / hills / floor).
+- Pet: smooth, soft, no realistic fur; small dot eyes, big round cheeks, cream muzzle, a pocket line, floats on its back. Never sad or angry at the user. Full rules and the "never" list: docs/18.
+- Scenes: flat tints of the chosen theme, a calm water line, Closet rooms as muted gradients. No grain, no glow.
+- No faces on food or objects, no kawaii stickers in the UI.
+- Colour: the 5 themes in docs/02. The icon is Ink deep blue with the caramel otter.
+- Marketing: clay otter videos plus real screen recordings of the app. Use one model sheet as the reference in every video tool (docs/18 §7).
+- Rights: every picture is logged in `assets/brand/RIGHTS.md` (tool, date, prompt), docs/18 §8.
