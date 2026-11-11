@@ -2,10 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
+  ReduceMotion,
   cancelAnimation,
   FadeIn,
-  FadeInUp,
-  FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -15,7 +14,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { Icon } from '@/components/icon';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
 import { Text } from '@/components/text';
@@ -25,7 +23,8 @@ import { nextPetPhase, PET_MOOD, phaseTimeout, type PetEvent, type PetPhase } fr
 import { en } from '@/i18n/en';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
-import { Pet } from '@/pet/pet';
+import { FloatHeart } from '@/pet/hearts';
+import { Pet, type Mood, type PetAct } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
 import { duration, easing, spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
@@ -54,7 +53,16 @@ export function CalmTool() {
   );
 }
 
-/** 5-4-3-2-1: one step at a time, a big number, Next. */
+/** What the otter does on each grounding step: it shows the sense you are using (the last step is a slow breath). */
+const GROUND_ACT: { act?: PetAct; mood: Mood }[] = [
+  { act: 'see', mood: 'hopeful' }, // eyes open wide
+  { act: 'touch', mood: 'happy' }, // paws pat the pebble
+  { act: 'hear', mood: 'happy' }, // ears perk up
+  { act: 'smell', mood: 'happy' }, // the nose sniffs
+  { mood: 'calm' },
+];
+
+/** 5-4-3-2-1: one step at a time, a big number, Next. The otter acts out each sense. */
 function Ground() {
   const look = useLook();
   const [step, setStep] = useState(0);
@@ -63,7 +71,7 @@ function Ground() {
   return (
     <>
       <Card style={styles.center}>
-        <Pet size={110} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={done ? 'love' : 'calm'} />
+        <Pet size={130} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={done ? 'love' : GROUND_ACT[step]?.mood ?? 'calm'} act={done ? undefined : GROUND_ACT[step]?.act} />
         <Animated.View key={step} entering={FadeIn.duration(duration.fast)} style={styles.center} accessibilityLiveRegion="polite">
           {done ? (
             <Text variant="title2" style={styles.text}>{t.groundDone}</Text>
@@ -131,10 +139,17 @@ function Shake() {
     setDone(false);
     setLeft(SHAKE_S);
     haptics.medium();
-    if (!reduceMotion) r.set(withRepeat(withSequence(withTiming(-1, { duration: 110, easing: easing.inOut }), withTiming(1, { duration: 110, easing: easing.inOut })), -1, true));
+    // the otter shakes with you (Anass's phone test, 11 Nov: it stood still). It always moves,
+    // even when the phone has animations off: calm = a slow, small sway instead of the fast shake.
+    const ms = reduceMotion ? 260 : 110;
+    const opt = { duration: ms, easing: easing.inOut, reduceMotion: ReduceMotion.Never };
+    r.set(withRepeat(withSequence(withTiming(-1, opt), withTiming(1, opt)), -1, true, undefined, ReduceMotion.Never));
   };
 
-  const wiggle = useAnimatedStyle(() => ({ transform: [{ rotate: `${r.get() * 9}deg` }, { translateX: r.get() * 6 }] }));
+  const wiggle = useAnimatedStyle(() => {
+    const k = reduceMotion ? 0.4 : 1;
+    return { transform: [{ rotate: `${r.get() * 9 * k}deg` }, { translateX: r.get() * 6 * k }] };
+  });
 
   return (
     <>
@@ -177,22 +192,28 @@ function PetMe() {
   const rot = useSharedValue(0);
   const lean = useSharedValue(0);
   const lastX = useRef(110);
-  const heartTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-  useEffect(() => () => heartTimers.current.forEach(clearTimeout), []);
+  /** the petting stopped: the hearts on screen fade out now */
+  const [heartsFading, setHeartsFading] = useState(false);
 
   const dispatch = (event: PetEvent) => setPhase((p) => nextPetPhase(p, event));
 
   const purr = (x: number) => {
     haptics.light();
+    setHeartsFading(false);
     lastX.current = x;
     setPurrs((n) => n + 1);
     const id = Date.now() + Math.random();
+    // each heart removes itself when its float ends (src/pet/hearts.tsx)
     setHearts((h) => [...h.slice(-5), { id, x }]);
-    heartTimers.current.push(setTimeout(() => setHearts((h) => h.filter((k) => k.id !== id)), 700));
   };
-  const startPetting = () => dispatch('pet');
-  const lift = () => dispatch('lift');
+  const startPetting = () => {
+    setHeartsFading(false);
+    dispatch('pet');
+  };
+  const lift = () => {
+    setHeartsFading(true);
+    dispatch('lift');
+  };
   /** Screen-reader action: the same flow as a stroke (purr, then thanks, then asking). */
   const a11yPurr = () => {
     purr(110);
@@ -271,10 +292,8 @@ function PetMe() {
               <Pet size={170} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={PET_MOOD[phase]} />
             </Animated.View>
             {hearts.map((h) => (
-              <Animated.View key={h.id} entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInUp.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)}
-                style={[styles.heart, { start: Math.max(0, Math.min(200, h.x - 10)) }]}>
-                <Icon name="heart" size={22} color={colors.pink} />
-              </Animated.View>
+              <FloatHeart key={h.id} x={Math.max(0, Math.min(200, h.x - 10))} top={16} size={22} color={colors.pink} fading={heartsFading} reduceMotion={reduceMotion}
+                onDone={() => setHearts((list) => list.filter((k) => k.id !== h.id))} />
             ))}
           </View>
         </GestureDetector>
@@ -291,5 +310,4 @@ const styles = StyleSheet.create({
   dots: { flexDirection: 'row', gap: space.s, marginTop: space.s },
   dot: { width: 8, height: 8, borderRadius: 4 },
   petZone: { width: 220, height: 220, alignItems: 'center', justifyContent: 'center' },
-  heart: { position: 'absolute', top: 16 },
 });
