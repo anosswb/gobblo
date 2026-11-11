@@ -1,6 +1,6 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LinearTransition, useAnimatedRef, useAnimatedStyle } from 'react-native-reanimated';
 
 import { Glass } from '@/components/glass';
@@ -17,7 +17,7 @@ import { useLook } from '@/features/closet/use-look';
 import { shouldAskNudgeAgain } from '@/features/nudges/ask-again';
 import { askNotificationPermission } from '@/features/nudges/schedule';
 import { levelOf, MAX_LEVEL, STAGES, stageOfLevel } from '@/features/progress/logic';
-import { skyOf, StageBackdrop } from '@/components/stage-backdrop';
+import { skyOf, StageBackdrop, StageWater, useStageLook, WATER_SHARE } from '@/components/stage-backdrop';
 import { LevelUp } from '@/pet/level-up';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
@@ -47,6 +47,11 @@ import type { IconName } from '@/components/icon';
 
 const h = en.home;
 
+/** The otter's size as a share of the stage height (its canvas is 1.2× taller than wide). */
+const PET_SHARE = 0.6;
+/** How far the canvas bottom sinks under the water line, as a share of the canvas height (about half the feet). */
+const FEET_SINK = 0.06;
+
 const dateLine = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
 /**
@@ -67,7 +72,15 @@ export function HomeScreen() {
 
   const { height: screenH } = useWindowDimensions();
   // the plate is the job: the stage takes about a quarter of the screen so bites show on open
-  const stageH = Math.round(Math.min(230, Math.max(180, screenH * 0.27)));
+  // (3 bites on a 375×812 phone, 2 on short ones); the otter is the hero inside it
+  const stageH = Math.round(Math.min(216, Math.max(172, screenH * 0.26)));
+  const [stageW, setStageW] = useState(0);
+  const waterH = Math.round(stageH * WATER_SHARE);
+  // the otter is ~half the box: its canvas is 1.2× the size and ~70 % of the canvas is otter
+  const petSize = Math.round(stageH * PET_SHARE);
+  const petH = petSize * 1.2;
+  // canvas bottom just under the water line, so the feet sit slightly in the water
+  const petBottom = waterH - Math.round(petH * FEET_SINK);
   const [openedAt] = useState(() => new Date());
   const [text, setText] = useState('');
   // the size is guessed live from the words ("write the report" → Big); a tap on the size chip overrides it
@@ -237,6 +250,7 @@ export function HomeScreen() {
   }, [stats.eaten, stats.sparks]);
 
   const sky = skyOf(openedAt.getHours());
+  const stageLook = useStageLook(look.room, sky);
   // welcome back after 2+ days away: newDayCheck keeps the gap until you say hi (or feed)
   const away = stats.lastVisit === dayKey() ? (stats.awayDays ?? 0) : daysAway(stats.lastVisit, new Date());
   const sayHi = () => {
@@ -267,7 +281,7 @@ export function HomeScreen() {
   const bubble = away >= 2 ? h.comeback(away) : say;
   const weeklyDue = recapDue(settings.weekSeen ?? 0, settings.firstOpen, new Date());
   const asleep = sky === 'night' && settings.autoSleep && list.length === 0;
-  const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'curious' : 'happy';
+  const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'hopeful' : 'happy';
   // the face chosen in the Closet wins; 'auto' reacts to the day
   const baseMood: Mood = look.homeMood === 'auto' ? autoMood : look.homeMood;
   const mood: Mood = carrying ? (overPet ? 'chomp' : 'hungry') : (reaction ?? baseMood);
@@ -349,7 +363,7 @@ export function HomeScreen() {
         </View>
       }>
       {/* hero: the pet on its stage */}
-      <View style={[styles.stage, { height: stageH }]}>
+      <View style={[styles.stage, { height: stageH }]} onLayout={(e: LayoutChangeEvent) => setStageW(e.nativeEvent.layout.width)}>
         <StageBackdrop room={look.room} sky={sky} />
 
         {bubble ? (
@@ -390,12 +404,12 @@ export function HomeScreen() {
         )}
 
         <Animated.View pointerEvents="none" style={[styles.feedGlow, { backgroundColor: colors.reward }, glow]} />
-        <View style={styles.pet}>
+        <View style={[styles.pet, { bottom: petBottom }]}>
           <Burst id={burst} />
           <SparkGain id={burst} amount={gain} />
           <Animated.View ref={petTarget}>
           <Pet
-            size={stageH < 200 ? 92 : 108}
+            size={petSize}
             color={look.color}
             hat={look.hat}
             face={look.face}
@@ -410,6 +424,8 @@ export function HomeScreen() {
           />
           </Animated.View>
         </View>
+        {/* the otter's home: calm water in front of its feet */}
+        <StageWater height={waterH} width={stageW} look={stageLook} />
       </View>
 
       {/* at most one card between the pet and the plate: the nudge ask, or the weekly surprise */}
@@ -726,7 +742,7 @@ const styles = StyleSheet.create({
   chip: { flexDirection: 'row', alignItems: 'center', gap: space.s, paddingHorizontal: space.m, height: 32 },
   chipText: { fontWeight: '600' },
   bubble: { paddingHorizontal: space.l, paddingVertical: space.s, minHeight: 32, justifyContent: 'center' },
-  pet: { position: 'absolute', bottom: 10, start: 0, end: 0, alignItems: 'center' },
+  pet: { position: 'absolute', start: 0, end: 0, alignItems: 'center' },
   note: { flexDirection: 'row', alignItems: 'center', gap: space.m, borderRadius: radius.card - 6, padding: space.l },
   askNote: { flexDirection: 'column', alignItems: 'stretch' },
   askHead: { flexDirection: 'row', alignItems: 'center', gap: space.m },

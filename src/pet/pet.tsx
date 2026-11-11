@@ -42,6 +42,7 @@ export type Mood =
   | 'sleepy'
   | 'tired'
   | 'hungry'
+  | 'hopeful'
   | 'chomp'
   | 'shocked'
   | 'curious'
@@ -130,8 +131,10 @@ const FACE: Record<Mood, { eyes: Eyes; mouth: Mouth; brows?: Brows; extra?: Extr
   determined: { eyes: 'dot', mouth: 'flat', brows: 'angry', extra: 'star' },
   sleepy: { eyes: 'closed', mouth: 'small', extra: 'zz' },
   tired: { eyes: 'closed', mouth: 'o', brows: 'worried' },
-  // hopeful, never sad: big shiny eyes, licking its lips
-  hungry: { eyes: 'big', mouth: 'lick', brows: 'raised', extra: 'drool' },
+  // hopeful, never sad: big shiny eyes, licking its lips (no floating extras: just the face)
+  hungry: { eyes: 'big', mouth: 'lick', brows: 'raised' },
+  // Home when the plate waits, and after petting ("Again?"): big shiny eyes, a soft smile
+  hopeful: { eyes: 'big', mouth: 'smile', brows: 'raised' },
   chomp: { eyes: 'happy', mouth: 'chomp' },
   shocked: { eyes: 'big', mouth: 'bigO', brows: 'raised' },
   curious: { eyes: 'dot', mouth: 'small', brows: 'one', extra: 'question' },

@@ -269,6 +269,62 @@ export const stages = {
   },
 } as const;
 
+/** A token that may be rgba() (primarySoft in some looks) as a solid hex over `base`. */
+function solidOver(c: string, base: string): string {
+  const m = /^rgba?\(([^)]+)\)$/.exec(c);
+  if (!m) return c;
+  const [r = 0, g = 0, b = 0, a = 1] = m[1].split(',').map((v) => Number(v.trim()));
+  const hex = `#${[r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`;
+  return mix(base, hex, a);
+}
+
+/** Time of day as a whisper: a warm or cool nudge on top of the theme tint. */
+const SKY_NUDGE = { morning: { to: '#FFE7CF', t: 0.06 }, day: { to: '#FFFFFF', t: 0 }, night: { to: '#D9DCF2', t: 0.06 } } as const;
+
+export type StageLook = {
+  /** the box, top → bottom */
+  gradient: [string, string, string];
+  /** calm water at the bottom of the box (otter's home), its deeper bottom and the light crest line */
+  water: string;
+  waterDeep: string;
+  crest: string;
+};
+
+/**
+ * The otter's box on Home (and the Closet preview), derived from the current look so every palette
+ * gets its own tint: card colour softly mixed toward `primarySoft`, a subtle time-of-day nudge,
+ * and calm water mixed from the soft tint toward the primary (Ink: blue, Blush: rose, Cotton:
+ * powder blue, Sage: green, Graphite: grey). Dark stays pure: no glows, just a deeper fade.
+ * Closet rooms keep their own gradient; their water is mixed from the room's bottom colour.
+ */
+export function stageLook(
+  c: Pick<ColorTokens, 'card' | 'primary' | 'primarySoft'>,
+  scheme: 'light' | 'dark',
+  sky: 'morning' | 'day' | 'night',
+  room?: readonly [string, string, string],
+): StageLook {
+  const dark = scheme === 'dark';
+  const soft = solidOver(c.primarySoft, c.card);
+  const n = SKY_NUDGE[sky];
+  const nudge = (x: string) => (dark ? x : mix(x, n.to, n.t));
+  const gradient: [string, string, string] = room
+    ? [room[0], room[1], room[2]]
+    : dark
+      ? [mix(c.card, soft, 0.45), mix(c.card, '#000000', 0.12), mix(c.card, '#000000', 0.32)]
+      : [nudge(mix(c.card, '#FFFFFF', 0.6)), nudge(mix(c.card, soft, 0.2)), nudge(mix(c.card, soft, 0.42))];
+  const water = room
+    ? mix(room[2], c.primary, 0.22)
+    : dark
+      ? mix(soft, c.primary, 0.3)
+      : mix(soft, c.primary, 0.2);
+  return {
+    gradient,
+    water,
+    waterDeep: mix(water, dark ? '#000000' : c.primary, dark ? 0.25 : 0.12),
+    crest: mix(water, '#FFFFFF', dark ? 0.35 : 0.6),
+  };
+}
+
 /** Closet "rooms": fixed scene gradients for the Home stage (top → bottom), same in both themes. */
 export const roomGradients = {
   // muted, photographic tones (premium, not candy)
