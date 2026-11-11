@@ -14,6 +14,7 @@ import { play } from '@/lib/sound';
 import { Pet } from '@/pet/pet';
 import type { HatId } from '@/pet/wardrobe';
 import { useAppStore } from '@/state/app-store';
+import { track } from '@/lib/analytics';
 import { duration, scale, spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { petColors, radius, roomGradients, space, type PetColor } from '@/theme/tokens';
@@ -45,6 +46,7 @@ export function WeeklyCard({ now }: { now: Date }) {
     } else {
       haptics.select();
     }
+    if (drop) track('closet_item_got', { slot: drop.slot, how: 'weekly' });
     st.updateSettings({ weekSeen: week });
   };
 

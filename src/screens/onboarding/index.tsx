@@ -27,6 +27,8 @@ import { guessSize } from '@/features/bites/chop';
 import { COLORS } from '@/features/closet/items';
 import { capFirst } from '@/features/bites/logic';
 import { askNotificationPermission } from '@/features/nudges/schedule';
+import { track } from '@/lib/analytics';
+import { ONBOARDING_STEPS } from '@/lib/analytics-events';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
@@ -84,6 +86,7 @@ export function OnboardingScreen() {
 
   const go = (s: Step) => {
     haptics.select();
+    track('onboarding_step', { step: s, index: ONBOARDING_STEPS.indexOf(s) });
     setStep(s);
   };
 
