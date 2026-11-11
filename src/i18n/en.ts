@@ -45,6 +45,9 @@ export const en = {
       shakeDone: 'Shook it out. Feel a bit lighter?',
       petIntro: (pet: string) => `Stroke ${pet} with your finger. Slowly.`,
       petLabel: (pet: string) => `${pet}. Drag your finger over it to pet it.`,
+      thanks: ['Mmm. Thank you.', 'That was nice.', 'So cosy.', 'Ahh, lovely.'],
+      asking: ['Again?', 'One more?', 'A little more?'],
+      settled: 'All cosy now.',
       purrs: (n: number) => (n === 0 ? 'Waiting for pets…' : n < 10 ? 'Purring…' : n < 30 ? 'Very happy purring' : 'Maximum purr'),
     },
     unstick: {

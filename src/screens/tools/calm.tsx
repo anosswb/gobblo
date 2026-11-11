@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withSequence,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -20,12 +21,13 @@ import { Segmented } from '@/components/segmented';
 import { Text } from '@/components/text';
 import { useLook } from '@/features/closet/use-look';
 import { GROUNDING } from '@/features/toolkit/logic';
+import { nextPetPhase, PET_MOOD, phaseTimeout, type PetEvent, type PetPhase } from '@/features/toolkit/pet-me';
 import { en } from '@/i18n/en';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { Pet } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
-import { duration, easing } from '@/theme/motion';
+import { duration, easing, spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { space } from '@/theme/tokens';
 
@@ -155,25 +157,83 @@ function Shake() {
 }
 
 const STROKE_PX = 36;
+const LEAN_PX = 10;
 
-/** Pet me: drag a finger over the pet. Every ~36 pt of stroking = a purr (haptic) and a heart. */
+/**
+ * Pet me: drag a finger over the pet. Every ~36 pt of stroking = a purr (haptic) and a heart.
+ * Lifting the finger: a happy shiver and a thank-you, then a hopeful "again?", then it settles.
+ */
 function PetMe() {
   const { colors, reduceMotion } = useTheme();
   const look = useLook();
   const petName = useAppStore((s) => s.pet.name);
   const [purrs, setPurrs] = useState(0);
   const [hearts, setHearts] = useState<{ id: number; x: number }[]>([]);
-  const [stroking, setStroking] = useState(false);
+  const [phase, setPhase] = useState<PetPhase>('idle');
+  const [line, setLine] = useState<string>(t.petIntro(petName));
+  const lineCount = useRef(0);
   const travelled = useSharedValue(0);
   const last = useSharedValue({ x: 0, y: 0 });
+  const rot = useSharedValue(0);
+  const lean = useSharedValue(0);
+  const lastX = useRef(110);
+  const heartTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => () => heartTimers.current.forEach(clearTimeout), []);
+
+  const dispatch = (event: PetEvent) => setPhase((p) => nextPetPhase(p, event));
 
   const purr = (x: number) => {
     haptics.light();
+    lastX.current = x;
     setPurrs((n) => n + 1);
     const id = Date.now() + Math.random();
     setHearts((h) => [...h.slice(-5), { id, x }]);
-    setTimeout(() => setHearts((h) => h.filter((k) => k.id !== id)), 700);
+    heartTimers.current.push(setTimeout(() => setHearts((h) => h.filter((k) => k.id !== id)), 700));
   };
+  const startPetting = () => dispatch('pet');
+  const lift = () => dispatch('lift');
+  /** Screen-reader action: the same flow as a stroke (purr, then thanks, then asking). */
+  const a11yPurr = () => {
+    purr(110);
+    dispatch('pet');
+    dispatch('lift');
+  };
+
+  // Timed steps. The timer is cleared whenever the phase changes or the screen goes away.
+  useEffect(() => {
+    const ms = phaseTimeout(phase);
+    if (ms === null) return;
+    const id = setTimeout(() => dispatch('timeout'), ms);
+    return () => clearTimeout(id);
+  }, [phase]);
+
+  // One line per phase, picked once when the phase starts (so screen readers hear it once).
+  useEffect(() => {
+    if (phase === 'thanks' || phase === 'asking') {
+      const list = phase === 'thanks' ? t.thanks : t.asking;
+      setLine(list[lineCount.current++ % list.length]);
+    } else if (phase === 'settled') setLine(t.settled);
+    else if (phase === 'idle') setLine(t.petIntro(petName));
+
+    cancelAnimation(rot);
+    if (phase === 'thanks' && !reduceMotion) {
+      // happy shiver: ±3°, 3 cycles, ~450 ms
+      rot.set(withSequence(
+        withTiming(3, { duration: 38 }),
+        withRepeat(withTiming(-3, { duration: 75, easing: easing.inOut }), 5, true),
+        withTiming(0, { duration: 37 }),
+      ));
+    } else rot.set(withTiming(0, { duration: duration.quick }));
+
+    const toward = lastX.current < 110 ? -1 : 1;
+    lean.set(phase === 'asking' && !reduceMotion ? withSpring(toward * LEAN_PX, spring.apple) : withSpring(0, spring.apple));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, reduceMotion]);
+
+  const petStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: lean.get() }, { rotate: `${rot.get() + lean.get() * 0.3}deg` }],
+  }));
 
   const pan = usePanGesture({
     minDistance: 2,
@@ -181,7 +241,7 @@ function PetMe() {
       'worklet';
       last.set({ x: e.x, y: e.y });
       travelled.set(0);
-      scheduleOnRN(setStroking, true);
+      scheduleOnRN(startPetting);
     },
     onUpdate: (e) => {
       'worklet';
@@ -196,7 +256,7 @@ function PetMe() {
     },
     onDeactivate: () => {
       'worklet';
-      scheduleOnRN(setStroking, false);
+      scheduleOnRN(lift);
     },
   });
 
@@ -206,8 +266,10 @@ function PetMe() {
         <GestureDetector gesture={pan}>
           <View style={styles.petZone} accessible accessibilityRole="adjustable" accessibilityLabel={t.petLabel(petName)}
             accessibilityActions={[{ name: 'increment' }, { name: 'activate' }]}
-            onAccessibilityAction={() => purr(110)}>
-            <Pet size={170} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={stroking || purrs > 0 ? 'love' : 'curious'} />
+            onAccessibilityAction={a11yPurr}>
+            <Animated.View style={petStyle}>
+              <Pet size={170} color={look.color} stage={look.stage} hat={look.hat} face={look.face} mood={PET_MOOD[phase]} />
+            </Animated.View>
             {hearts.map((h) => (
               <Animated.View key={h.id} entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInUp.duration(duration.fast)} exiting={FadeOut.duration(duration.quick)}
                 style={[styles.heart, { start: Math.max(0, Math.min(200, h.x - 10)) }]}>
@@ -217,7 +279,7 @@ function PetMe() {
           </View>
         </GestureDetector>
         <Text variant="title2" style={styles.text}>{t.purrs(purrs)}</Text>
-        <Text variant="subhead" tone="ink2" style={styles.text}>{t.petIntro(petName)}</Text>
+        <Text variant="subhead" tone="ink2" style={styles.text} accessibilityLiveRegion="polite">{line}</Text>
       </Card>
     </>
   );
