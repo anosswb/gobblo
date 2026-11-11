@@ -233,6 +233,7 @@ export function HomeScreen() {
   useEffect(() => () => after.current.forEach(clearTimeout), []);
   const dive = useHappyDive({
     depth: Math.round(petH + 24),
+    reach: Math.round(Math.min(96, stageW * 0.27)),
     reduceMotion,
     onDive: () => {
       haptics.light();
@@ -471,8 +472,14 @@ export function HomeScreen() {
         {/* the otter's home: calm water in front of its feet */}
         <StageWater height={waterH} width={stageW} look={stageLook} />
         <View pointerEvents="none" style={[styles.waterLine, { bottom: waterH }]}>
-          {dive.under ? <Bubbles color={stageLook.water} crest={stageLook.crest} reduceMotion={reduceMotion} /> : null}
-          <Splash key={dive.splash} id={dive.splash} color={stageLook.water} crest={stageLook.crest} reduceMotion={reduceMotion} />
+          {/* the bubbles follow the otter as it swims across under the water */}
+          <Animated.View style={[styles.diveTrail, dive.trail]}>
+            {dive.under ? <Bubbles color={stageLook.water} crest={stageLook.crest} reduceMotion={reduceMotion} /> : null}
+          </Animated.View>
+          {/* a splash where it goes in, and another where it comes out */}
+          <View style={[styles.diveTrail, { transform: [{ translateX: dive.splashX }] }]}>
+            <Splash key={dive.splash} id={dive.splash} color={stageLook.water} crest={stageLook.crest} reduceMotion={reduceMotion} />
+          </View>
         </View>
       </View>
 
@@ -792,6 +799,7 @@ const styles = StyleSheet.create({
   bubble: { paddingHorizontal: space.l, paddingVertical: space.s, minHeight: 32, justifyContent: 'center' },
   pet: { position: 'absolute', start: 0, end: 0, alignItems: 'center' },
   waterLine: { position: 'absolute', start: 0, end: 0, height: 0 },
+  diveTrail: { position: 'absolute', start: 0, end: 0, top: 0, height: 0 },
   note: { flexDirection: 'row', alignItems: 'center', gap: space.m, borderRadius: radius.card - 6, padding: space.l },
   askNote: { flexDirection: 'column', alignItems: 'stretch' },
   askHead: { flexDirection: 'row', alignItems: 'center', gap: space.m },

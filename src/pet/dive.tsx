@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
+  Easing,
   FadeOut,
   useAnimatedStyle,
   useSharedValue,
@@ -16,8 +17,10 @@ import { duration, easing, spring } from '@/theme/motion';
 import { addFeed, diving, FALL_MS, HOP_MS, type DivePlan, type FeedInfo } from './dive-logic';
 
 /** How high the happy hop goes before the dive, and how far above rest it shoots out. */
-export const HOP_PT = 16;
-export const RISE_PT = 12;
+export const HOP_PT = 30;
+export const RISE_PT = 34;
+/** How far the otter leans into the dive (degrees): nose first into the water. */
+export const DIVE_TILT = 105;
 /** Splash drops per splash (docs/18: 6–8). */
 export const SPLASH_DROPS = 7;
 /** Bubbles rising while it is under water. */
@@ -26,33 +29,45 @@ export const BUBBLES = 5;
 type Timer = ReturnType<typeof setTimeout>;
 
 /**
- * The happy dive choreography (docs/18 §5). `feed` is called once per feed; JS only sets a few
- * timers (hop, splash, surface), every movement runs on the UI thread. `depth` is how far down the
- * pet must go to be fully under the water line (the stage clips it).
- * Reduce Motion: no hop or dive, the pet fades out and back in.
+ * The happy dive choreography (docs/18 §5), as one smooth arc (Anass, phone test 11 Nov: "not a
+ * cut"): the otter leaps up and out to one side, tips nose-first into the water there, swims
+ * under the surface to the other side (bubbles follow it), leaps out there and lands back in its
+ * place. The side alternates each time. `feed` is called once per feed; JS only sets a few timers
+ * (hop, splash, surface), every movement runs on the UI thread. `depth` is how far down the pet
+ * must go to be fully under the water line (the stage clips it); `reach` is how far to each side.
+ * Reduce Motion: no leap, the pet fades out and back in.
  */
 export function useHappyDive({
   depth,
+  reach,
   reduceMotion,
   onDive,
   onSurface,
 }: {
   depth: number;
+  /** sideways distance of the entry and exit points from the otter's place */
+  reach: number;
   reduceMotion: boolean;
   /** it hits the water: haptic + sound */
   onDive: () => void;
   /** it is back up: show the summed reward */
   onSurface: (plan: DivePlan) => void;
 }) {
+  const x = useSharedValue(0);
   const y = useSharedValue(0);
+  const tilt = useSharedValue(0);
   const fade = useSharedValue(1);
   const [splash, setSplash] = useState(0);
+  /** where the last splash was (pt from the centre) */
+  const [splashX, setSplashX] = useState(0);
+  /** +1 = dives in on the right and comes out on the left; flips every dive */
+  const side = useRef(1);
   const [under, setUnder] = useState(false);
   const plan = useRef<DivePlan | null>(null);
   const timers = useRef<{ hop?: Timer; dive?: Timer; up?: Timer }>({});
-  const cb = useRef({ onDive, onSurface, depth, reduceMotion });
+  const cb = useRef({ onDive, onSurface, depth, reach, reduceMotion });
   useEffect(() => {
-    cb.current = { onDive, onSurface, depth, reduceMotion };
+    cb.current = { onDive, onSurface, depth, reach, reduceMotion };
   });
   useEffect(
     () => () => {
@@ -70,15 +85,26 @@ export function useHappyDive({
     setUnder(false);
     setSplash((n) => n + 1);
     if (cb.current.reduceMotion) {
+      setSplashX(0);
+      x.set(0);
       y.set(0);
+      tilt.set(0);
       fade.set(withTiming(1, { duration: duration.quick }));
     } else {
+      const out = -side.current * cb.current.reach;
+      setSplashX(out);
       fade.set(1);
-      // shoot out above the line, then settle with one soft overshoot
-      y.set(withSequence(withTiming(-RISE_PT, { duration: duration.fast, easing: easing.smoothOut }), withSpring(0, spring.sheet)));
+      // it leaps out on the far side, nose up, and arcs back to its place with one soft overshoot
+      x.set(out);
+      tilt.set(side.current * DIVE_TILT * 0.6);
+      const leap = HOP_MS + FALL_MS;
+      x.set(withTiming(0, { duration: leap, easing: Easing.out(Easing.quad) }));
+      tilt.set(withTiming(0, { duration: leap, easing: easing.inOut }));
+      y.set(withSequence(withTiming(-RISE_PT, { duration: HOP_MS, easing: easing.smoothOut }), withSpring(0, spring.sheet)));
+      side.current = -side.current;
     }
     cb.current.onSurface(p);
-  }, [y, fade]);
+  }, [x, y, tilt, fade]);
 
   const feed = useCallback((f: FeedInfo) => {
     const now = Date.now();
@@ -92,15 +118,26 @@ export function useHappyDive({
       t.hop = setTimeout(() => {
         if (cb.current.reduceMotion) return;
         const d = cb.current.depth;
+        const into = side.current * cb.current.reach;
+        // one arc: up and out to the side, then nose-first down into the water
+        // (it is at the entry point when it meets the water, which is when the swim takes over)
+        x.set(withTiming(into, { duration: HOP_MS + FALL_MS / 2, easing: Easing.linear }));
+        tilt.set(withTiming(side.current * DIVE_TILT, { duration: HOP_MS + FALL_MS, easing: easing.inOut }));
         y.set(
           withSequence(
             withTiming(-HOP_PT, { duration: HOP_MS, easing: easing.smoothOut }),
-            withTiming(d, { duration: FALL_MS, easing: easing.inOut }),
+            withTiming(d, { duration: FALL_MS, easing: Easing.in(Easing.quad) }),
           ),
         );
       }, next.hopAt - now);
       t.dive = setTimeout(() => {
         if (cb.current.reduceMotion) fade.set(withTiming(0, { duration: duration.quick }));
+        else {
+          // under the surface it swims across to the other side; the bubbles follow it
+          const swim = Math.max(duration.medium, (plan.current?.surfaceAt ?? Date.now()) - Date.now() - duration.micro);
+          x.set(withTiming(-side.current * cb.current.reach, { duration: swim, easing: easing.inOut }));
+        }
+        setSplashX(cb.current.reduceMotion ? 0 : side.current * cb.current.reach);
         setSplash((n) => n + 1);
         setUnder(true);
         cb.current.onDive();
@@ -108,12 +145,17 @@ export function useHappyDive({
     }
     clearTimeout(t.up);
     t.up = setTimeout(surface, next.surfaceAt - now);
-  }, [y, fade, surface]);
+  }, [x, y, tilt, fade, surface]);
 
-  const style = useAnimatedStyle(() => ({ opacity: fade.get(), transform: [{ translateY: y.get() }] }));
+  const style = useAnimatedStyle(() => ({
+    opacity: fade.get(),
+    transform: [{ translateX: x.get() }, { translateY: y.get() }, { rotate: `${tilt.get()}deg` }],
+  }));
+  /** follows the otter under the water (wrap the bubbles in it) */
+  const trail = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
   /** true from the feed until it surfaces (other celebrations wait) */
   const busy = useCallback(() => diving(plan.current, Date.now()), []);
-  return { feed, busy, style, splash, under };
+  return { feed, busy, style, trail, splash, splashX, under };
 }
 
 /**
