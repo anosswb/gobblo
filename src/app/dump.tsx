@@ -66,7 +66,7 @@ export default function DumpScreen() {
     if (big) {
       st.splitBite(big.id, items.map((b) => ({ text: b.text, size: b.size })));
     } else {
-      const ids = addBites(items.map((b) => ({ text: b.text, size: b.size })));
+      const ids = addBites(items.map((b) => ({ text: b.text, size: b.size })), 'dump');
       if (when !== 'today') for (const id of ids) st.setBiteWhen(id, when);
     }
     haptics.success();

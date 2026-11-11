@@ -150,6 +150,7 @@ export const en = {
     nudgeSub: 'Gentle. Max once a day. Never guilt. You can change it anytime.',
     nudgeYes: 'Yes, gentle nudges',
     nudgeNo: 'Not now',
+    usageNote: (app: string) => `${app} counts anonymous taps to get better. You can turn it off in Settings.`,
     welcome: (name: string) => `${name} is here. Your first bite is on the plate.`,
   },
   evolve: {
@@ -477,6 +478,8 @@ export const en = {
     adOffersHint: 'Shows the optional “watch a video for sparks” card on the Plus page. No other ads exist.',
     privacyOptions: 'Ad privacy options',
     lockUnavailable: 'Set up Face ID or a fingerprint on your phone first',
+    shareUsage: 'Share anonymous usage',
+    shareUsageHint: 'Sends anonymous counts (like “a bite was fed”) and crash reports, so we can fix things. Never your bites, reminders, your pet’s name or anything you type.',
     exportBackup: 'Export backup',
     exportHint: 'A file with everything. Save it anywhere',
     importBackup: 'Import backup',

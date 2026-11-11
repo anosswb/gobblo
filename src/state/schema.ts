@@ -164,6 +164,8 @@ export interface Settings {
   ratingAskedVersion?: string;
   /** Android: show the optional "watch a video for sparks" card (unset = on) */
   adOffers?: boolean;
+  /** Settings › Privacy & data › Share anonymous usage: PostHog counts + Sentry crash reports (docs/19). Default on. */
+  shareUsage: boolean;
 }
 
 export interface PersistedState {
@@ -245,6 +247,7 @@ export function freshState(now = Date.now()): PersistedState {
       guidesSeen: [],
       weekSeen: 0,
       firstOpen: now,
+      shareUsage: true,
     },
   };
 }

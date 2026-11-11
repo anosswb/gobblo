@@ -60,7 +60,7 @@ export function UnstickTool() {
           <Button label={t.did} icon="check" onPress={() => { setDid(true); haptics.success(); play('spark'); }} />
           <Button label={t.another} soft icon="repeat" onPress={() => { setIndex((i) => nextStep(i)); haptics.select(); play('tick'); }} />
           <Button label={t.add} soft icon="plus" onPress={() => {
-            addBites([{ text: step, size: 0 }]);
+            addBites([{ text: step, size: 0 }], 'unstick');
             haptics.light();
             play('pop');
             toast(t.added);

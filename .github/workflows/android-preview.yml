@@ -20,6 +20,15 @@ jobs:
       APP_BUILD_ARCHS: arm64-v8a # modern phones only, faster + less memory
       APP_VARIANT: preview
       NODE_OPTIONS: --max-old-space-size=4096
+      # Anonymous analytics + crash reports (docs/19-analytics.md). Each one is empty when its
+      # repo secret is not set: the app then simply keeps analytics / crash reports off, and with
+      # no SENTRY_AUTH_TOKEN app.config.ts switches the source-map upload off. A failed upload
+      # never fails the build (SENTRY_ALLOW_FAILURE).
+      EXPO_PUBLIC_POSTHOG_KEY: ${{ secrets.EXPO_PUBLIC_POSTHOG_KEY }}
+      EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+      SENTRY_ALLOW_FAILURE: 'true'
     steps:
       - uses: actions/checkout@v4
 

@@ -11,10 +11,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { LockGate } from '@/components/lock-gate';
 import { ToastHost } from '@/components/toast';
+import { initTelemetry, useAnalytics } from '@/hooks/use-analytics';
 import { useAppLifecycle } from '@/hooks/use-app-lifecycle';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
 
 void SplashScreen.preventAutoHideAsync();
+
+// crash reports + anonymous counts, only if the user's switch is on and this build has the keys (docs/19)
+initTelemetry();
 
 /**
  * Deep links from the widgets (gobblo://dump, /focus, /start) open with Home underneath, so
@@ -61,6 +65,7 @@ export default function RootLayout() {
 function RootStack() {
   const { scheme, colors } = useTheme();
   useAppLifecycle();
+  useAnalytics();
   return (
     <LockGate>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />

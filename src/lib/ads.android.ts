@@ -1,5 +1,7 @@
 import { ADS, AD_IDS, USE_REAL_ADS } from '@/config/ads';
 import { adErrorCode, canContinueAfterConsentError, joinReasons, shortError } from '@/features/plus/ad-reason';
+import { track } from '@/lib/analytics';
+import { adReason } from '@/lib/analytics-events';
 
 /**
  * Rewarded ads on Android (react-native-google-mobile-ads). Everything is lazy and defensive:
@@ -129,6 +131,13 @@ export function preloadRewarded(): void {
 
 /** Shows one rewarded video (the preloaded one if there is one). 'earned' only when Google says the reward was earned. */
 export async function showRewarded(): Promise<AdResult> {
+  const result = await showRewardedInner();
+  // anonymous count: the result and the reason code's prefix only (never the error text)
+  track('ad_result', { result, reason: result === 'unavailable' ? adReason(failure ?? consentNote) : 'none' });
+  return result;
+}
+
+async function showRewardedInner(): Promise<AdResult> {
   failure = null;
   if (!ADS.enabled) return 'unavailable';
   const m = load();

@@ -76,3 +76,19 @@ describe('colour themes (palette)', () => {
     expect(migrate(saved, SCHEMA_VERSION).settings.palette).toBe('sage');
   });
 });
+
+describe('share anonymous usage (docs/19)', () => {
+  it('an old save without the switch loads with it on, and keeps everything else', () => {
+    const { shareUsage: _drop, ...oldSettings } = freshState().settings;
+    const old = { ...freshState(), settings: { ...oldSettings, theme: 'dark' } };
+    const s = migrate(old, SCHEMA_VERSION);
+    expect(s.settings.shareUsage).toBe(true);
+    expect(s.settings.theme).toBe('dark');
+    expect(mergeDefaults(freshState(), old).settings.shareUsage).toBe(true);
+  });
+
+  it('keeps it off once the user turned it off', () => {
+    const saved = { ...freshState(), settings: { ...freshState().settings, shareUsage: false } };
+    expect(migrate(saved, SCHEMA_VERSION).settings.shareUsage).toBe(false);
+  });
+});

@@ -9,6 +9,7 @@ import { useLook } from '@/features/closet/use-look';
 import { adsLeftToday, afterAd } from '@/features/plus/ad-reward';
 import { en } from '@/i18n/en';
 import { lastAdError, preloadRewarded, showRewarded } from '@/lib/ads';
+import { track } from '@/lib/analytics';
 import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { Burst } from '@/pet/burst';
@@ -37,6 +38,12 @@ export function VideoTreat() {
   const left = adsLeftToday(adSparks, dayKey(), ADS.maxPerDay);
   const full = left <= 0;
   const [reason, setReason] = useState<string | null>(null);
+
+  // anonymous count: the offer card was shown (once per visit), with how many videos are left today
+  useEffect(() => {
+    track('ad_offer_shown', { left });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // get one video ready in the background, only when an offer can be shown
   useEffect(() => {

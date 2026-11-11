@@ -355,6 +355,11 @@ function Privacy() {
             onChange={async (v) => { if (await unlock()) update({ biometricLock: v }); }} />
         } />
       </Section>
+      <Section footer={t.shareUsageHint}>
+        <Row leading={<IconTile name="info" color="purple" />} last label={t.shareUsage} right={
+          <Toggle accessibilityLabel={t.shareUsage} value={s.shareUsage !== false} onChange={(v) => update({ shareUsage: v })} />
+        } />
+      </Section>
       {android ? (
         <Section footer={t.adOffersHint}>
           <Row leading={<IconTile name="play" color="orange" />} last={!adPrivacy} label={t.adOffers} right={

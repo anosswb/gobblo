@@ -22,6 +22,7 @@ import { PressScale } from '@/components/press-scale';
 import { Chips } from '@/components/settings-parts';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
+import { APP_NAME } from '@/config/app';
 import { guessSize } from '@/features/bites/chop';
 import { COLORS } from '@/features/closet/items';
 import { capFirst } from '@/features/bites/logic';
@@ -306,6 +307,7 @@ export function OnboardingScreen() {
               <View style={styles.copy}>
                 <Text variant="title" style={styles.center}>{o.nudgeTitle(name.trim() || 'Bean')}</Text>
                 <Text variant="body" tone="ink2" style={[styles.center, styles.sub]}>{o.nudgeSub}</Text>
+                <Text variant="caption" tone="ink2" style={[styles.center, styles.sub]}>{o.usageNote(APP_NAME)}</Text>
               </View>
               <View style={styles.actions}>
                 <Primary label={o.nudgeYes} onPress={() => void finish(true)} />

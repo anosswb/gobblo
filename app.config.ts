@@ -27,6 +27,22 @@ const APP_SCHEME = preview ? `${BASE_SCHEME}-preview` : BASE_SCHEME;
 const buildArchs = process.env.APP_BUILD_ARCHS?.split(',').filter(Boolean);
 
 /**
+ * Sentry crash reports (docs/19-analytics.md). Source maps are uploaded at build time ONLY when the
+ * build machine has SENTRY_AUTH_TOKEN (EAS / GitHub secret). Without it, upload is switched off and
+ * the build still succeeds. The token is only checked here for presence: it never goes in the app.
+ */
+const sentryUpload = !!process.env.SENTRY_AUTH_TOKEN;
+const sentryPlugin: [string, object] = [
+  '@sentry/react-native',
+  {
+    url: 'https://de.sentry.io/', // EU data region
+    project: process.env.SENTRY_PROJECT || 'gobblo',
+    ...(process.env.SENTRY_ORG ? { organization: process.env.SENTRY_ORG } : {}),
+    disableAutoUpload: !sentryUpload,
+  },
+];
+
+/**
  * App config. Name and bundle ID come from src/config/app-identity.json (the name may change after the
  * trademark check). Ad and purchase keys are added in Phase 6 through EAS env variables.
  */
@@ -96,6 +112,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           ] as [string, object],
         ]),
     'expo-audio',
+    sentryPlugin,
     [
       'react-native-android-widget',
       {

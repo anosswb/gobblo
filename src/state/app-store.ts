@@ -5,6 +5,8 @@ import { addBites, feed, FOOD, moveToTop, newDayCheck, newId, removeBite, reorde
 import { setTime, setWhen, type When } from '@/features/bites/when';
 import { startTimer } from '@/features/focus/timer';
 import { hasPlus, spendForPlus } from '@/features/plus/catalog';
+import { track } from '@/lib/analytics';
+import { trackBitesAdded, trackFed, trackFocusEnded, trackLevels, trackSettings, type BiteSource } from '@/lib/analytics-store';
 import { mmkvStateStorage } from '@/lib/storage';
 
 import { mergeDefaults, migrate } from './migrations';
@@ -34,7 +36,8 @@ type Actions = {
   importState: (data: PersistedState) => void;
   onAppActive: (now?: Date) => void;
   // bites
-  addBites: (items: NewBite[]) => string[];
+  /** `source` is only for the anonymous count (docs/19); unset = Home (or onboarding before it is done) */
+  addBites: (items: NewBite[], source?: BiteSource) => string[];
   /** `day` (pet day key) is the picked date for 'date' */
   setBiteWhen: (id: string, when: When, day?: string) => void;
   /** minutes since midnight, or null to clear */
@@ -79,10 +82,18 @@ export const useAppStore = create<AppState>()(
   persist<AppState, [], [], PersistedState>(
     (set, get) => ({
       ...freshState(),
-      updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
+      updateSettings: (patch) => {
+        const prev = get().settings;
+        set((s) => ({ settings: { ...s.settings, ...patch } }));
+        trackSettings(prev, get().settings);
+      },
       patchPet: (patch) => set((s) => ({ pet: { ...s.pet, ...patch } })),
       markLevelSeen: (level) => set((s) => ({ stats: { ...s.stats, seenLevel: Math.max(s.stats.seenLevel ?? 1, level) } })),
-      unlock: (id) => set((s) => (s.unlocked.includes(id) ? {} : { unlocked: [...s.unlocked, id] })),
+      unlock: (id) => {
+        if (get().unlocked.includes(id)) return;
+        set((s) => ({ unlocked: [...s.unlocked, id] }));
+        if (id === 'plus') track('closet_item_got', { slot: 'pack', how: 'plus' });
+      },
       buyPlusWithSparks: () => {
         const s = get();
         if (hasPlus(s.unlocked)) return true;
@@ -90,6 +101,7 @@ export const useAppStore = create<AppState>()(
         if (left === null) return false;
         // only the spendable sparks go down: stats.total (the level) is untouched
         set({ stats: { ...s.stats, sparks: left }, unlocked: [...s.unlocked, 'plus'] });
+        track('closet_item_got', { slot: 'pack', how: 'sparks' });
         return true;
       },
       resetAll: () => set(freshState()),
@@ -99,9 +111,10 @@ export const useAppStore = create<AppState>()(
         if (patch) set(patch);
       },
 
-      addBites: (items) => {
+      addBites: (items, source) => {
         const r = addBites(pick(get()), items);
         set({ bites: r.bites });
+        trackBitesAdded(items.map((i) => i.size), source ?? (get().settings.onboarded ? 'home' : 'onboarding'));
         return r.added;
       },
       removeBite: (id) => {
@@ -130,12 +143,15 @@ export const useAppStore = create<AppState>()(
         const session: Session = { id: newId(), biteText: b.text, plannedMin: 0, spentMin: min, mode: 'custom', startedAt: now - min * 60_000, endedAt: now, done: true, drifts: 0 };
         const r = feed(pick(s), id, session);
         set({ bites: r.bites, sessions: r.sessions, stats: r.stats });
+        trackFed(b.size, r.sparks, 'already_done');
+        trackLevels(s.stats.total, r.stats.total);
         return { sparks: r.sparks };
       },
 
       startFocus: (bite, minutes, mode) => {
         const now = Date.now();
         const t = startTimer(now, minutes);
+        const before = get().stats.total;
         set((s) => ({
           ...rewardStart(pick(s), mode === '2min'),
           focus: {
@@ -150,6 +166,8 @@ export const useAppStore = create<AppState>()(
             notificationId: null,
           },
         }));
+        track('focus_started', { minutes, preset: mode, source: bite.id ? 'bite' : 'free' });
+        trackLevels(before, get().stats.total);
       },
       patchFocus: (patch) => set((s) => (s.focus ? { focus: { ...s.focus, ...patch } } : {})),
       endFocus: (done, spentMin) => {
@@ -169,10 +187,15 @@ export const useAppStore = create<AppState>()(
         };
         if (!done) {
           set({ focus: null, sessions: [...s.sessions, session].slice(-2000) });
+          // the timer ran out (and was not paused) before the user left: 'expired', else 'left'
+          trackFocusEnded(f.pausedRemaining === null && Date.now() >= f.endsAt ? 'expired' : 'left', spentMin);
           return null;
         }
         const r = f.biteId ? feed(pick(s), f.biteId, session) : feed({ ...pick(s), bites: s.bites }, '', session);
         set({ focus: null, bites: r.bites, sessions: r.sessions, stats: r.stats });
+        trackFocusEnded('done', spentMin);
+        trackFed(f.size, r.sparks, 'timer');
+        trackLevels(s.stats.total, r.stats.total);
         return { sparks: r.sparks };
       },
 

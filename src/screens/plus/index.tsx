@@ -112,7 +112,7 @@ export function PlusScreen() {
   };
 
   const addRoutine = (id: RoutineId) => {
-    const ids = addBites(ROUTINES[id].bites);
+    const ids = addBites(ROUTINES[id].bites, 'routine');
     ids.forEach(toggleDaily);
     haptics.success();
     play('pop');

@@ -4,6 +4,8 @@
  * One non-consumable product, entitlement id "plus", the current offering's first package.
  * A network error never takes Plus away: these functions only ever say "you have it".
  */
+import { track } from '@/lib/analytics';
+
 export type BuyResult = 'bought' | 'cancelled' | 'unavailable';
 type Lib = typeof import('react-native-purchases');
 
@@ -51,7 +53,9 @@ export async function buyPlus(): Promise<BuyResult> {
     const pkg = (await p.getOfferings()).current?.availablePackages[0];
     if (!pkg) return 'unavailable';
     const { customerInfo } = await p.purchasePackage(pkg);
-    return customerInfo.entitlements.active[ENTITLEMENT] ? 'bought' : 'unavailable';
+    const bought = !!customerInfo.entitlements.active[ENTITLEMENT];
+    if (bought) track('plus_bought');
+    return bought ? 'bought' : 'unavailable';
   } catch (e) {
     // closing Apple's sheet is a choice, not an error
     return (e as { userCancelled?: boolean | null } | null)?.userCancelled ? 'cancelled' : 'unavailable';
@@ -62,7 +66,9 @@ export async function buyPlus(): Promise<BuyResult> {
 export async function restorePlus(): Promise<boolean> {
   try {
     const info = await rc()?.restorePurchases();
-    return !!info?.entitlements.active[ENTITLEMENT];
+    const found = !!info?.entitlements.active[ENTITLEMENT];
+    track('plus_restored', { found });
+    return found;
   } catch {
     return false;
   }

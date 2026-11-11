@@ -3,6 +3,7 @@ import * as StoreReview from 'expo-store-review';
 import { Platform } from 'react-native';
 
 import { shouldAskRating } from '@/features/rating/logic';
+import { track } from '@/lib/analytics';
 import { useAppStore } from '@/state/app-store';
 
 /**
@@ -24,6 +25,7 @@ export async function maybeAskRating(now = Date.now()): Promise<void> {
     });
     if (!ok || !(await StoreReview.isAvailableAsync())) return;
     st.updateSettings({ ratingAskedVersion: version });
+    track('rating_prompted');
     await StoreReview.requestReview();
   } catch {
     // a rating prompt is never worth a crash
