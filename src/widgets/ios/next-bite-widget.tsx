@@ -33,10 +33,10 @@ export type NextBiteProps = {
 const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
   'widget';
   const dark = env.colorScheme === 'dark';
-  const tint = dark ? '#FF4F96' : '#E5307D';
-  const ink = dark ? '#FFFFFF' : '#1C1C1E';
-  const ink2 = dark ? '#AEAEB2' : '#6C6C70';
-  const bg = dark ? '#1C1C1E' : '#FFFFFF';
+  const tint = dark ? '#FFD166' : '#003459';
+  const ink = dark ? '#FBEEDD' : '#00171F';
+  const ink2 = dark ? '#A9C0CF' : '#5E6F78';
+  const bg = dark ? '#003459' : '#FBEEDD';
   const url = p.biteText ? p.startUrl : p.openUrl;
   const family = env.widgetFamily;
 
@@ -76,7 +76,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
     <Text
       modifiers={[
         font({ size: 14, weight: 'bold' }),
-        foregroundStyle('#FFFFFF'),
+        foregroundStyle(dark ? '#00171F' : '#FBEEDD'),
         padding({ horizontal: 12, vertical: 7 }),
         background(tint, shapes.capsule()),
       ]}>

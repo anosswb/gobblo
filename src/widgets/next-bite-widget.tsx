@@ -18,8 +18,8 @@ import type { WidgetData } from './widget-data';
  * Native widget views can't read React theme tokens, so the palette lives here (light + dark).
  */
 const PALETTE = {
-  light: { bg: '#FFFFFF', ink: '#0B0B0D', ink2: '#6E6E73', chip: '#F1F1F3', btn: '#0B0B0D', onBtn: '#FFFFFF' },
-  dark: { bg: '#1C1C1E', ink: '#F5F5F7', ink2: '#A1A1A6', chip: '#2C2C2E', btn: '#F5F5F7', onBtn: '#0B0B0D' },
+  light: { bg: '#FBEEDD', ink: '#00171F', ink2: '#5E6F78', chip: '#F1DFC8', btn: '#003459', onBtn: '#FBEEDD' },
+  dark: { bg: '#003459', ink: '#FBEEDD', ink2: '#A9C0CF', chip: '#0A4673', btn: '#FFD166', onBtn: '#00171F' },
 } as const;
 type Scheme = 'light' | 'dark';
 

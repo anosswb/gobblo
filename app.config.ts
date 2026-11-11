@@ -69,7 +69,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: APP_ID,
     adaptiveIcon: {
-      backgroundColor: '#241A55',
+      backgroundColor: '#003459',
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
@@ -82,7 +82,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: { output: 'single', favicon: './assets/images/favicon.png' },
   plugins: [
     'expo-router',
-    ['expo-splash-screen', { backgroundColor: '#F2F2F7', image: './assets/images/splash-icon.png', imageWidth: 120, dark: { backgroundColor: '#000000' } }],
+    ['expo-splash-screen', { backgroundColor: '#003459', image: './assets/images/splash-icon.png', imageWidth: 128 }],
     ['expo-build-properties', { android: buildArchs?.length ? { buildArchs } : {} }],
     './plugins/with-gradle-memory',
     // Android rewarded ads. Your AdMob app id from src/config/ad-ids.json, else Google's public test app id.
@@ -161,7 +161,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-notifications',
       {
-        color: '#3D3BFF',
+        color: '#003459',
         enableRemoteNotifications: false, // local notifications only (docs/05)
         sounds: ['./assets/sounds/boop.wav', './assets/sounds/chime.wav', './assets/sounds/pop.wav', './assets/sounds/loud.wav'],
       },

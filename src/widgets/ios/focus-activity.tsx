@@ -22,8 +22,8 @@ export type FocusActivityProps = {
  */
 const FocusActivity = (p: FocusActivityProps, env: LiveActivityEnvironment) => {
   'widget';
-  const pink = env.isLuminanceReduced ? '#FFFFFF' : '#FF4F96';
-  const lime = env.isLuminanceReduced ? '#FFFFFF' : '#C6F432';
+  const pink = env.isLuminanceReduced ? '#FFFFFF' : '#C98B5E';
+  const lime = env.isLuminanceReduced ? '#FFFFFF' : '#FFD166';
   const range = { lower: new Date(p.startedAt), upper: new Date(p.endsAt) };
   const paused = p.pausedLeft !== null;
   const pausedMin = paused ? Math.max(1, Math.ceil((p.pausedLeft ?? 0) / 60000)) : 0;
@@ -41,11 +41,11 @@ const FocusActivity = (p: FocusActivityProps, env: LiveActivityEnvironment) => {
 
   return {
     banner: (
-      <VStack spacing={10} modifiers={[padding({ all: 16 }), activityBackgroundTint('#0B0A1A')]}>
+      <VStack spacing={10} modifiers={[padding({ all: 16 }), activityBackgroundTint('#003459')]}>
         <HStack spacing={12}>
           <Image systemName={p.symbol as never} size={28} color={pink} />
           <VStack alignment="leading" spacing={2}>
-            <Text modifiers={[font({ size: 13, weight: 'semibold' }), foregroundStyle('#AEAEB2')]}>
+            <Text modifiers={[font({ size: 13, weight: 'semibold' }), foregroundStyle('#A9C0CF')]}>
               {paused ? `${p.petName} is waiting` : `${p.petName} is working with you`}
             </Text>
             <Text modifiers={[font({ size: 17, weight: 'bold' }), foregroundStyle('#FFFFFF'), lineLimit(1)]}>{p.biteText}</Text>
@@ -69,7 +69,7 @@ const FocusActivity = (p: FocusActivityProps, env: LiveActivityEnvironment) => {
       <Text modifiers={[font({ size: 15, weight: 'bold' }), lineLimit(1)]}>{p.biteText}</Text>
     ),
     expandedBottom: paused ? (
-      <Text modifiers={[font({ size: 13 }), foregroundStyle('#AEAEB2')]}>Paused. Tap to come back.</Text>
+      <Text modifiers={[font({ size: 13 }), foregroundStyle('#A9C0CF')]}>Paused. Tap to come back.</Text>
     ) : (
       <ProgressView timerInterval={range} countsDown modifiers={[tint(lime)]} />
     ),
