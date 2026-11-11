@@ -6,6 +6,7 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withRepeat,
   withSequence,
   withSpring,
@@ -49,6 +50,12 @@ export type Mood =
   | 'confused'
   | 'worried'
   | 'overwhelmed';
+
+/**
+ * A small act for the Calm tool's grounding steps: the otter shows the sense you are using.
+ * see = eyes open wide · touch = paws pat the pebble · hear = ears perk up · smell = the nose sniffs.
+ */
+export type PetAct = 'see' | 'touch' | 'hear' | 'smell';
 
 export const MOODS: Mood[] = [
   'happy',
@@ -375,6 +382,7 @@ export function Pet({
   hat = 'none',
   face: faceItem = 'none',
   mark = true,
+  act,
   onPress,
   accessibilityLabel,
 }: {
@@ -394,6 +402,8 @@ export function Pet({
   face?: FaceId;
   /** the small cream spark on the forehead (brand mark) */
   mark?: boolean;
+  /** act out one sense (Calm › grounding). Reduce Motion: the pose shows without the movement. */
+  act?: PetAct;
   /** tap to squish (a light haptic + soft wobble) */
   onPress?: () => void;
   accessibilityLabel?: string;
@@ -494,14 +504,43 @@ export function Pet({
     return () => clearTimeout(t);
   }, [idle, hop, roll]);
 
+  // the act beat: two quick pulses, a rest, again (eyes pop, paws pat, ears perk, nose sniffs)
+  const beat = useSharedValue(0);
+  const acting = !!act && !reduceMotion && focused && appActive;
+  useEffect(() => {
+    cancelAnimation(beat);
+    if (!acting) {
+      beat.set(withTiming(act ? 0.6 : 0, { duration: duration.quick }));
+      return;
+    }
+    const up = { duration: duration.quick, easing: easing.smoothOut };
+    const down = { duration: duration.quick, easing: easing.inOut };
+    beat.set(
+      withRepeat(
+        withSequence(withTiming(1, up), withTiming(0.25, down), withTiming(1, up), withTiming(0, { duration: duration.fast, easing: easing.inOut }), withDelay(duration.verySlow, withTiming(0, { duration: 1 }))),
+        -1,
+      ),
+    );
+  }, [acting, act, beat]);
+
   const k = STAGE_SCALE[Math.max(0, Math.min(4, stage))] ?? 1;
   const pebbleOrigin = `50% ${((230 + (PEB_Y - 230) * k) / 240) * 100}%`;
   const unit = size / 200;
   const pebbleStyle = useAnimatedStyle(() => ({
     transformOrigin: pebbleOrigin,
-    transform: [{ translateY: -hop.get() * 9 * unit }, { rotate: `${roll.get()}deg` }],
+    transform: [{ translateY: -(hop.get() * 9 + (act === 'touch' ? beat.get() * 5 : 0)) * unit }, { rotate: `${roll.get() + (act === 'touch' ? beat.get() * 14 : 0)}deg` }],
   }));
-  const pawStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -hop.get() * 4 * unit }] }));
+  const pawStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -(hop.get() * 4 + (act === 'touch' ? beat.get() * 9 : 0)) * unit }] }));
+  // hear: the ears grow up and out from behind the head
+  const earStyle = useAnimatedStyle(() => ({
+    transformOrigin: `50% ${((230 + (66 - 230) * k) / 240) * 100}%`,
+    transform: [{ translateY: -beat.get() * 5 * unit }, { scale: 1 + beat.get() * 0.2 }],
+  }));
+  // see: the eyes open wide · smell: the nose lifts and sniffs
+  const senseStyle = useAnimatedStyle(() => ({
+    transformOrigin: `50% ${((230 + ((act === 'smell' ? 119 : EY) - 230) * k) / 240) * 100}%`,
+    transform: act === 'smell' ? [{ translateY: -beat.get() * 5 * unit }, { scale: 1 + beat.get() * 0.18 }] : [{ scale: 1 + beat.get() * 0.3 }],
+  }));
 
   // `still` pets draw everything in one Svg; live pets lift the pebble + paws into two thin layers
   const layered = !still;
@@ -513,6 +552,20 @@ export function Pet({
 
   const art = (
     <Animated.View style={[{ width: size, height: size * 1.2, overflow: 'visible' }, style]}>
+      {act === 'hear' && showEars && (
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, earStyle]}>
+          <Svg width={size} height={svgH} viewBox={`0 ${-HEAD_ROOM} 200 ${240 + HEAD_ROOM}`} style={svgStyle}>
+            <G transform={st}>
+              <Circle cx={36} cy={60} r={16} fill={deep} />
+              <Circle cx={37} cy={61} r={8.5} fill={deeper} />
+              <Circle cx={164} cy={60} r={16} fill={deep} />
+              <Circle cx={163} cy={61} r={8.5} fill={deeper} />
+              {/* little sound lines beside each ear */}
+              <Path d="M12 44 Q6 58 12 72 M2 38 Q-7 58 2 78 M188 44 Q194 58 188 72 M198 38 Q207 58 198 78" stroke={deep} strokeWidth={3} strokeLinecap="round" fill="none" opacity={0.7} />
+            </G>
+          </Svg>
+        </Animated.View>
+      )}
       <Svg width={size} height={svgH} viewBox={`0 ${-HEAD_ROOM} 200 ${240 + HEAD_ROOM}`} style={svgStyle}>
         <Defs>
           <ClipPath id={ids.head}>
@@ -669,6 +722,22 @@ export function Pet({
             </Svg>
           </Animated.View>
         </>
+      )}
+      {(act === 'see' || act === 'smell') && (
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, senseStyle]}>
+          <Svg width={size} height={svgH} viewBox={`0 ${-HEAD_ROOM} 200 ${240 + HEAD_ROOM}`} style={svgStyle}>
+            <G transform={st}>
+              {act === 'see' ? (
+                <EyesArt kind="big" />
+              ) : (
+                <G>
+                  <Path d={NOSE} fill={ART.ink} />
+                  <Path d="M84 104 Q81 98 85 93 M116 104 Q119 98 115 93 M100 101 V93" stroke={ART.ink} strokeWidth={2.4} strokeLinecap="round" fill="none" opacity={0.55} />
+                </G>
+              )}
+            </G>
+          </Svg>
+        </Animated.View>
       )}
     </Animated.View>
   );
