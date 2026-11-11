@@ -8,6 +8,8 @@ export const SCHEMA_VERSION = 3;
 
 export type Size = 0 | 1 | 2 | 3; // tiny, small, medium, big
 export type ThemePreference = 'system' | 'light' | 'dark';
+/** system = follow the phone · full = always animate · calm = fades only */
+export type MotionPreference = 'system' | 'full' | 'calm';
 export type NudgeLevel = 'off' | 'gentle' | 'normal' | 'chaos';
 export type HapticLevel = 'off' | 'soft' | 'strong';
 export type PetTalk = 'chatty' | 'quiet' | 'silent';
@@ -128,7 +130,9 @@ export interface Settings {
   accent: Accent;
   sound: boolean;
   haptics: HapticLevel;
+  /** legacy switch (true = calm); `motion` replaced it and wins once it is not 'system' */
   reduceMotion: boolean;
+  motion: MotionPreference;
   nudge: NudgeLevel;
   nudgeSound: NudgeSound;
   focusSound: FocusSound;
@@ -225,6 +229,7 @@ export function freshState(now = Date.now()): PersistedState {
       sound: true,
       haptics: 'soft',
       reduceMotion: false,
+      motion: 'system',
       nudge: 'gentle',
       nudgeSound: 'boop',
       focusSound: 'none',

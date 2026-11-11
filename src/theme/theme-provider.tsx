@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { createContext, useContext, useMemo, type PropsWithChildren } from 'react';
 import { useColorScheme } from 'react-native';
-import { useReducedMotion } from 'react-native-reanimated';
+import { ReducedMotionConfig, ReduceMotion, useReducedMotion } from 'react-native-reanimated';
 
 import { useAppStore } from '@/state/app-store';
 import type { ThemePreference } from '@/state/schema';
@@ -22,6 +22,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const system = useColorScheme();
   const preference = useAppStore((s) => s.settings.theme);
   const appReduceMotion = useAppStore((s) => s.settings.reduceMotion);
+  const motionPref = useAppStore((s) => s.settings.motion) ?? 'system';
+  // an old save with the "Reduce motion" switch on means calm
+  const motion = motionPref === 'system' && appReduceMotion ? 'calm' : motionPref;
   const palette = useAppStore((s) => s.settings.palette);
   const systemReduceMotion = useReducedMotion();
 
@@ -31,9 +34,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       scheme,
       colors: looksOf(palette)[scheme],
       preference,
-      reduceMotion: systemReduceMotion || appReduceMotion,
+      reduceMotion: motion === 'calm' || (motion === 'system' && systemReduceMotion),
     };
-  }, [preference, system, systemReduceMotion, appReduceMotion, palette]);
+  }, [preference, system, systemReduceMotion, motion, palette]);
 
   const navTheme = useMemo(() => {
     const base = value.scheme === 'dark' ? DarkTheme : DefaultTheme;
@@ -52,6 +55,8 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 
   return (
     <ThemeContext.Provider value={value}>
+      {/* "Full" plays every animation even when the phone has animations turned off */}
+      {motion === 'full' ? <ReducedMotionConfig mode={ReduceMotion.Never} /> : null}
       <NavThemeProvider value={navTheme}>{children}</NavThemeProvider>
     </ThemeContext.Provider>
   );

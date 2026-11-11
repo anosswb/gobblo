@@ -81,7 +81,7 @@ function useSettings() {
 }
 
 function Look() {
-  const { s, set } = useSettings();
+  const { s, set, update } = useSettings();
   return (
     <>
       <Section title={t.theme}>
@@ -94,7 +94,11 @@ function Look() {
         } />
       </Section>
       <Section>
-        <Row leading={<IconTile name="motion" color="indigo" />} last label={t.reduceMotion} hint={t.reduceMotionHint} right={<Toggle accessibilityLabel={t.reduceMotion} value={s.reduceMotion} onChange={set('reduceMotion')} />} />
+        <Row last stacked label={t.motion} hint={t.motionHint} right={
+          <Segmented accessibilityLabel={t.motion} value={s.motion === 'system' && s.reduceMotion ? 'calm' : s.motion ?? 'system'}
+            onChange={(v) => { haptics.select(); update({ motion: v, reduceMotion: false }); }}
+            options={[{ value: 'system', label: t.motionPhone }, { value: 'full', label: t.motionFull }, { value: 'calm', label: t.motionCalm }]} />
+        } />
       </Section>
     </>
   );
