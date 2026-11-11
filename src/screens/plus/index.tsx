@@ -122,7 +122,7 @@ export function PlusScreen() {
   const canSpend = sparks >= PLUS_SPARKS;
 
   return (
-    <Screen back glow={false} title={t.title}>
+    <Screen back title={t.title}>
       <Text variant="body" tone="ink2">{android ? t.introAndroid : t.intro}</Text>
       {!canShowOffer(firstOpen) ? (
         <View style={[styles.note, { backgroundColor: colors.fill }]}>

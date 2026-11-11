@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
   paletteRing: { width: SWATCH, height: SWATCH, borderRadius: SWATCH / 2, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   paletteDot: { width: SWATCH - 10, height: SWATCH - 10, borderRadius: (SWATCH - 10) / 2, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden', flexDirection: 'row' },
   paletteHalf: { flex: 1 },
-  paletteCheck: { position: 'absolute', right: -2, bottom: -2, width: 18, height: 18, borderRadius: 9, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  paletteCheck: { position: 'absolute', end: -2, bottom: -2, width: 18, height: 18, borderRadius: 9, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   faq: { borderRadius: radius.card, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
   faqHead: { paddingHorizontal: space.l, marginBottom: space.s },
   faqSep: { borderTopWidth: StyleSheet.hairlineWidth },

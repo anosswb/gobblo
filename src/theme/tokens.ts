@@ -11,11 +11,9 @@ import { alpha, mix } from './color';
 export type ColorTokens = {
   /** base background (behind the backdrop gradient) */
   bg: string;
-  /** backdrop gradient, top → bottom, and two soft glows (src/components/backdrop.tsx) */
+  /** backdrop gradient, top → bottom (src/components/backdrop.tsx), no glows */
   bgTop: string;
   bgBottom: string;
-  glowA: string;
-  glowB: string;
   /** opaque card for sheets and anything that must not show through */
   cardSolid: string;
   /** hairline edge on glass cards (light catching the edge) */
@@ -133,12 +131,10 @@ function makeLook(scheme: 'light' | 'dark', s: Seed): ColorTokens {
   return {
     ...shared,
     ...status,
-    // backdrop: a very soft vertical tone (nearly flat in dark), no glows
+    // backdrop: a very soft vertical tone (nearly flat in dark), no glows (docs/16 #2)
     bg: s.bg,
     bgTop: isDark ? mix(s.bg, s.ink, 0.025) : mix(s.bg, WHITE, 0.6),
     bgBottom: isDark ? mix(s.bg, BLACK, 0.4) : mix(s.bg, s.ink, 0.03),
-    glowA: isDark ? alpha(s.ink, 0.05) : alpha(WHITE, 0.9),
-    glowB: alpha(WHITE, 0),
     card: s.card,
     cardSolid: s.card,
     cardBorder: alpha(s.ink, isDark ? 0.09 : 0.07),

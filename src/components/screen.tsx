@@ -26,7 +26,6 @@ export function Screen({
   right,
   back = false,
   overlay,
-  glow = true,
   scrollTopKey,
   children,
 }: PropsWithChildren<{
@@ -39,8 +38,6 @@ export function Screen({
   back?: boolean;
   /** drawn above the scroll view in window coordinates (drag previews) */
   overlay?: ReactNode;
-  /** the soft background glow (off on Plus: Anass, text was hard to read over it) */
-  glow?: boolean;
   /** bump it to bring the top of the page back into view (Home: the pet is about to eat) */
   scrollTopKey?: number;
 }>) {
@@ -65,7 +62,7 @@ export function Screen({
 
   return (
     <View style={[styles.fill, { backgroundColor: colors.bg }]}>
-      <Backdrop glow={glow} />
+      <Backdrop />
       <Animated.ScrollView
         ref={scroller}
         onScroll={onScroll}
