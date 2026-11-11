@@ -361,6 +361,9 @@ function Paws({ c, line }: { c: string; line: string }) {
   );
 }
 
+/** Extra drawing space above the pet (viewBox units) so tall hats are never cut off. */
+const HEAD_ROOM = 44;
+
 export function Pet({
   size = 160,
   color,
@@ -503,9 +506,14 @@ export function Pet({
   // `still` pets draw everything in one Svg; live pets lift the pebble + paws into two thin layers
   const layered = !still;
 
+  // Headroom: tall hats poke above the 240-unit art box, so every Svg is taller and starts HEAD_ROOM units higher.
+  // The wrapper box (size x size*1.2) and the feet baseline do not move.
+  const svgH = (240 + HEAD_ROOM) * unit;
+  const svgStyle = { position: 'absolute' as const, left: 0, top: -HEAD_ROOM * unit, overflow: 'visible' as const };
+
   const art = (
-    <Animated.View style={[{ width: size, height: size * 1.2 }, style]}>
-      <Svg width="100%" height="100%" viewBox="0 0 200 240">
+    <Animated.View style={[{ width: size, height: size * 1.2, overflow: 'visible' }, style]}>
+      <Svg width={size} height={svgH} viewBox={`0 ${-HEAD_ROOM} 200 ${240 + HEAD_ROOM}`} style={svgStyle}>
         <Defs>
           <ClipPath id={ids.head}>
             <Path d={HEAD} />
@@ -647,14 +655,14 @@ export function Pet({
       {layered && (
         <>
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, pebbleStyle]}>
-            <Svg width="100%" height="100%" viewBox="0 0 200 240">
+            <Svg width={size} height={svgH} viewBox={`0 ${-HEAD_ROOM} 200 ${240 + HEAD_ROOM}`} style={svgStyle}>
               <G transform={st}>
                 <SparkPebble x={PEB_X} y={PEB_Y} s={PEB_S} />
               </G>
             </Svg>
           </Animated.View>
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, pawStyle]}>
-            <Svg width="100%" height="100%" viewBox="0 0 200 240">
+            <Svg width={size} height={svgH} viewBox={`0 ${-HEAD_ROOM} 200 ${240 + HEAD_ROOM}`} style={svgStyle}>
               <G transform={st}>
                 <Paws c={c} line={deeper} />
               </G>

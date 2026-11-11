@@ -321,7 +321,7 @@ const RX = 134;
 const EY = 110;
 
 function Heart({ x, y }: { x: number; y: number }) {
-  return <Path d="M0 8 C-14 -2 -12 -14 -4 -14 C0 -14 0 -10 0 -10 C0 -10 0 -14 4 -14 C12 -14 14 -2 0 8Z" transform={`translate(${x} ${y + 2}) scale(1.35)`} />;
+  return <Path d="M0 8 C-14 -2 -12 -14 -4 -14 C0 -14 0 -10 0 -10 C0 -10 0 -14 4 -14 C12 -14 14 -2 0 8Z" transform={`translate(${x} ${y + 5}) scale(1.6)`} />;
 }
 
 export function FaceArt({ id }: { id: FaceId }) {
@@ -345,7 +345,7 @@ export function FaceArt({ id }: { id: FaceId }) {
       );
     case 'hearts':
       return (
-        <G fill={C.red} opacity={0.92}>
+        <G fill={C.red}>
           <Heart x={LX} y={EY} />
           <Heart x={RX} y={EY} />
           <Path d={`M${LX + 18} ${EY - 4} Q100 ${EY - 9} ${RX - 18} ${EY - 4}`} stroke={C.red} strokeWidth={4} fill="none" strokeLinecap="round" />
