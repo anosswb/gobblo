@@ -13,9 +13,12 @@ export const MENU_ITEM_H = 48;
 export const MENU_GAP = 8;
 
 /** True once the finger has moved far enough from where the hold fired to become a drag. */
-export function movedEnough(dx: number, dy: number, slop: number = DRAG_SLOP): boolean {
+export function movedEnough(dx: number, dy: number, slop?: number): boolean {
   'worklet';
-  return dx * dx + dy * dy > slop * slop;
+  // no default parameter here: a worklet does not capture values used in its parameter list,
+  // so `slop = DRAG_SLOP` crashed on the UI thread ("Property 'DRAG_SLOP' doesn't exist")
+  const s = slop === undefined ? DRAG_SLOP : slop;
+  return dx * dx + dy * dy > s * s;
 }
 
 export const menuHeight = (items: number) => items * MENU_ITEM_H;

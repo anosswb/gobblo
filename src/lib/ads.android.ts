@@ -1,3 +1,5 @@
+import { TurboModuleRegistry } from 'react-native';
+
 import { ADS, AD_IDS, USE_REAL_ADS } from '@/config/ads';
 import { adErrorCode, canContinueAfterConsentError, joinReasons, shortError } from '@/features/plus/ad-reason';
 import { track } from '@/lib/analytics';
@@ -18,6 +20,12 @@ let lib: Lib | null | undefined;
 function load(): Lib | null {
   if (lib !== undefined) return lib;
   try {
+    // Ask first: in a build made before ads were added, `require` reports a fatal error through
+    // Metro instead of throwing here, so the catch below never ran (Sentry GOBBLO-1).
+    if (!TurboModuleRegistry.get('RNGoogleMobileAdsModule')) {
+      lib = null;
+      return lib;
+    }
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     lib = require('react-native-google-mobile-ads') as Lib;
   } catch {
