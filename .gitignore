@@ -63,3 +63,7 @@ founder/panel-*/briefs/
 
 # Anass only: business plan, numbers (never public)
 private/
+
+# sound candidates: local only
+assets/sounds/candidates/
+assets/sounds/candidates2/

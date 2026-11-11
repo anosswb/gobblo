@@ -1,4 +1,4 @@
-import { migrate, mergeDefaults } from './migrations';
+import { fixSettings, migrate, mergeDefaults } from './migrations';
 import { dayKey, freshState, SCHEMA_VERSION, todayKey } from './schema';
 
 describe('migrate', () => {
@@ -90,5 +90,21 @@ describe('share anonymous usage (docs/19)', () => {
   it('keeps it off once the user turned it off', () => {
     const saved = { ...freshState(), settings: { ...freshState().settings, shareUsage: false } };
     expect(migrate(saved, SCHEMA_VERSION).settings.shareUsage).toBe(false);
+  });
+});
+
+describe('focus sounds', () => {
+  it('a saved "keys" (removed) becomes rain, at boot and in the merge', () => {
+    const old = { ...freshState(), settings: { ...freshState().settings, focusSound: 'keys' } };
+    expect(migrate(old, SCHEMA_VERSION).settings.focusSound).toBe('rain');
+    expect(fixSettings(mergeDefaults(freshState(), old)).settings.focusSound).toBe('rain');
+  });
+  it('an unknown sound becomes none; current sounds stay', () => {
+    const bad = { ...freshState(), settings: { ...freshState().settings, focusSound: 'zzz' } };
+    expect(migrate(bad, SCHEMA_VERSION).settings.focusSound).toBe('none');
+    for (const k of ['none', 'rain', 'fire', 'autumn', 'brown']) {
+      const ok = { ...freshState(), settings: { ...freshState().settings, focusSound: k } };
+      expect(migrate(ok, SCHEMA_VERSION).settings.focusSound).toBe(k);
+    }
   });
 });

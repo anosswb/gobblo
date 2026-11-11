@@ -45,8 +45,8 @@ const f = en.focus;
 /** the modal's close animation; the session is saved after it */
 const CLOSE_MS = 380;
 const exitFocus = backOrHome;
-const SOUNDS: FocusSound[] = ['none', 'brown', 'rain', 'keys'];
-const SOUND_LABEL: Record<FocusSound, string> = { none: 'Silence', brown: 'Brown noise', rain: 'Rain', keys: 'Soft keys' };
+const SOUNDS: FocusSound[] = ['none', 'rain', 'fire', 'autumn', 'brown'];
+const SOUND_LABEL: Record<FocusSound, string> = { none: 'Silence', rain: 'Rain', fire: 'Fire', autumn: 'Autumn walk', brown: 'Brown noise' };
 
 /**
  * Focus = body double (docs/01 §3), direction C "night studio" in both themes.

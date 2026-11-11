@@ -9,7 +9,7 @@ import { track } from '@/lib/analytics';
 import { trackBitesAdded, trackFed, trackFocusEnded, trackLevels, trackSettings, type BiteSource } from '@/lib/analytics-store';
 import { mmkvStateStorage } from '@/lib/storage';
 
-import { mergeDefaults, migrate } from './migrations';
+import { fixSettings, mergeDefaults, migrate } from './migrations';
 import {
   freshState,
   SCHEMA_VERSION,
@@ -214,7 +214,7 @@ export const useAppStore = create<AppState>()(
       migrate: (saved, version) => migrate(saved, version),
       // deep-merge saved data onto fresh defaults, so settings added later (soundOnSilent…)
       // get their default instead of `undefined` on phones that already have data
-      merge: (saved, current) => ({ ...current, ...mergeDefaults(freshState(), saved) }),
+      merge: (saved, current) => ({ ...current, ...fixSettings(mergeDefaults(freshState(), saved)) }),
       partialize: (s) => pick(s),
     },
   ),

@@ -17,9 +17,10 @@ export type Sfx = keyof typeof SFX;
 
 /** Real CC0 field recordings from Freesound, looped and levelled (assets/sounds/CREDITS.md). */
 const LOOPS: Record<Exclude<FocusSound, 'none'>, number> = {
-  brown: require('@/assets/sounds/brown.m4a'),
   rain: require('@/assets/sounds/rain.m4a'),
-  keys: require('@/assets/sounds/keys.m4a'),
+  fire: require('@/assets/sounds/fire.m4a'),
+  autumn: require('@/assets/sounds/autumn.m4a'),
+  brown: require('@/assets/sounds/brown.m4a'),
 };
 
 /** Breathing cues: one CC0 singing bowl, its swell for the in-breath, its fade for the out-breath. */
@@ -97,7 +98,7 @@ function fade(p: AudioPlayer, to: number, ms: number, done?: () => void) {
   }, 50);
 }
 
-/** Focus soundscape with a 600 ms fade in/out (docs/03). Free: brown, rain, keys. */
+/** Focus soundscape with a 600 ms fade in/out (docs/03). Free: rain, fire, autumn walk, brown. All levelled to -24 LUFS. */
 export function startLoop(kind: FocusSound) {
   stopLoop(true);
   if (kind === 'none') return;

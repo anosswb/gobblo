@@ -45,5 +45,14 @@ export function migrate(saved: unknown, fromVersion: number): PersistedState {
     const step = steps[v];
     if (step) state = step(state);
   }
-  return mergeDefaults(freshState(), state);
+  return fixSettings(mergeDefaults(freshState(), state));
+}
+
+const FOCUS_SOUNDS: readonly string[] = ['none', 'rain', 'fire', 'autumn', 'brown'];
+
+/** A saved focus sound that no longer exists ('keys', removed 2026-11) falls back to rain; anything else unknown to none. */
+export function fixSettings<T extends { settings: { focusSound: string } }>(state: T): T {
+  const f = state.settings.focusSound;
+  if (FOCUS_SOUNDS.includes(f)) return state;
+  return { ...state, settings: { ...state.settings, focusSound: f === 'keys' ? 'rain' : 'none' } };
 }

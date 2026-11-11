@@ -14,7 +14,7 @@ export type PetTalk = 'chatty' | 'quiet' | 'silent';
 export type ConfettiAmount = 'lots' | 'little' | 'none';
 export type Accent = 'cobalt' | 'berry' | 'jade' | 'sunset';
 export type NudgeSound = 'boop' | 'chime' | 'pop' | 'loud';
-export type FocusSound = 'none' | 'brown' | 'rain' | 'keys';
+export type FocusSound = 'none' | 'rain' | 'fire' | 'autumn' | 'brown';
 export type NudgeTime = 'morning' | 'afternoon' | 'evening';
 
 export interface Bite {

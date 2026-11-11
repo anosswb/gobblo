@@ -21,7 +21,7 @@ Not done: dev build on Anass's phone (needs `eas login` + Apple/Google accounts)
 
 ## Phase 1.5: Anass's feature list (docs/12) — DONE (web preview checked; not yet on a phone)
 - Home: add bites, food size, tap → start sheet (2/5/15/25), keep daily, delete + undo, one-thing mode, pet wisdom / mindful note, comeback line, time-of-day scene, sleepy pet at night.
-- Focus: wall-clock ring timer (survives reload/kill), ends-at, pause, +5, 2-min "keep going", 2-min warning, drift, leave confirm, keep awake, end notification, brown noise / rain / soft keys.
+- Focus: wall-clock ring timer (survives reload/kill), ends-at, pause, +5, 2-min "keep going", 2-min warning, drift, leave confirm, keep awake, end notification, rain / fire / autumn walk / brown noise.
 - Me: stage, 4 stats, interactive week chart, weekly meter (never breaks), best hours, brain card share, good things jar.
 - Settings: theme, 4 accents, reduce motion, confetti, sounds, volume, haptics, mix with music, nudge level + 4 sounds + quiet hours, leaving-soon reminders, default timer, focus sound, one-thing mode, pet talk, auto-sleep, mindful, jar, week start, 24 h, biometric lock, export/import backup, reset, about (not a medical device).
 - Nudges: capped plan + quiet hours + one comeback note, Android channels per sound, iOS custom sounds. Original sounds from scripts/gen-sounds.py (CC0).

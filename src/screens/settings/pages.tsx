@@ -216,7 +216,7 @@ function Focus() {
         <Row last stacked hideLabel label={t.focusSound} right={
           <Chips<FocusSound> accessibilityLabel={t.focusSound} value={s.focusSound}
             onChange={(v) => { update({ focusSound: v }); startLoop(v); setTimeout(() => stopLoop(), 2500); }}
-            options={[{ value: 'none', label: t.soundNone }, { value: 'brown', label: t.brown }, { value: 'rain', label: t.rain }, { value: 'keys', label: t.keys }]} />
+            options={[{ value: 'none', label: t.soundNone }, { value: 'rain', label: t.rain }, { value: 'fire', label: t.fire }, { value: 'autumn', label: t.autumn }, { value: 'brown', label: t.brown }]} />
         } />
       </Section>
       <Section footer={t.oneThingHint}>
