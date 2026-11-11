@@ -46,6 +46,11 @@ export function restartTimer(t: TimerState, now: number): TimerState {
   return { startedAt: now, endsAt: now + t.totalMs, pausedRemaining: null, totalMs: t.totalMs };
 }
 
+/** The session's length in whole minutes as it is now (after +5, ride the wave), at least 1. */
+export function sessionMinutes(t: Pick<TimerState, 'totalMs'>): number {
+  return Math.max(1, Math.round(t.totalMs / MIN));
+}
+
 export function spentMinutes(t: TimerState, now: number): number {
   return Math.max(0, (t.totalMs - remainingMs(t, now)) / MIN);
 }

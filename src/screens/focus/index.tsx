@@ -19,11 +19,13 @@ import {
   remainingMs,
   restartTimer,
   resumeTimer,
+  sessionMinutes,
   shouldWarn,
   spentMinutes,
   WARNING_MS,
   type TimerState,
 } from '@/features/focus/timer';
+import { baseLine, isTwoMinuteStart, RIDE_MIN } from '@/features/focus/lines';
 import { cancelNotification, scheduleFocusEnd } from '@/features/nudges/schedule';
 import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
 import { haptics } from '@/lib/haptics';
@@ -71,10 +73,10 @@ export function FocusScreen() {
   const [now, setNow] = useState(() => Date.now());
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [confirmRestart, setConfirmRestart] = useState(false);
-  const baseLine = focus?.mode === '2min' ? f.two : f.working(pet.name);
   // a fresh start (not a reload or a resume) opens with the "you started" line for a few seconds
   const [freshStart] = useState(() => !!focus && Date.now() - focus.startedAt < 5000);
-  const [line, setLine] = useState<string>(() => (freshStart ? f.started : baseLine));
+  // null = the resting line, worked out each render from the live session (so +5 shows at once)
+  const [line, setLine] = useState<string | null>(() => (freshStart ? f.started : null));
   const endedChime = useRef(false);
   // finishing clears the session, which also renders <NoSession>: leave the screen only once
   const leaving = useRef(false);
@@ -92,7 +94,7 @@ export function FocusScreen() {
 
   useEffect(() => {
     if (!freshStart) return;
-    const id = setTimeout(() => setLine((cur) => (cur === f.started ? baseLine : cur)), 4000);
+    const id = setTimeout(() => setLine((cur) => (cur === f.started ? null : cur)), 4000);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -110,7 +112,8 @@ export function FocusScreen() {
   const paused = t?.pausedRemaining !== null && t?.pausedRemaining !== undefined;
   const left = t ? remainingMs(t, now) : 0;
   const ended = !!t && !paused && left === 0;
-  const keepGoing = ended && focus?.mode === '2min' && !focus.rodeWave;
+  // only the plain 2-minute start asks "keep going?"; after +5 it is a normal session
+  const keepGoing = ended && !!focus && isTwoMinuteStart(focus);
 
   // end notification follows the run (cancel on pause, re-plan on resume / +5)
   useEffect(() => {
@@ -191,8 +194,9 @@ export function FocusScreen() {
     haptics.select();
   };
 
-  const swapLine = (l: string) => setLine(l);
-  const petMood: Mood = ended ? 'celebrating' : paused ? 'calm' : focus.drifts > 0 && line !== f.working(pet.name) && line !== f.two && line !== f.started ? 'curious' : 'focused';
+  const swapLine = (l: string | null) => setLine(l);
+  const shownLine = line ?? baseLine(focus, pet.name);
+  const petMood: Mood = ended ? 'celebrating' : paused ? 'calm' : focus.drifts > 0 && line !== null && line !== f.started ? 'curious' : 'focused';
   const textIn = reduceMotion ? FadeIn.duration(duration.quick) : textSwapIn;
 
   return (
@@ -226,7 +230,7 @@ export function FocusScreen() {
             {f.workingOn} · {focus.biteText}
           </Text>
           <TimerRingSlot left={progressLeft(t, now)} msLeft={left} running={!paused && !ended} runKey={runKey} emoji={biteIcon(focus.biteText, focus.size)} size={compact ? 200 : 248}>
-            <Text variant="timer" tone="roomInk" style={compact ? styles.timerCompact : styles.timerIn} accessibilityRole="timer" accessibilityLabel={`${Math.ceil(left / MIN)} minutes left`}>
+            <Text variant="timer" tone="roomInk" style={compact ? styles.timerCompact : styles.timerIn} accessibilityRole="timer" accessibilityLabel={f.minutesLeft(Math.ceil(left / MIN))}>
               {formatClock(left)}
             </Text>
           </TimerRingSlot>
@@ -238,8 +242,8 @@ export function FocusScreen() {
         <View style={styles.petRow}>
           <Pet size={compact ? 76 : 104} color={look.color} hat={look.hat} face={look.face} mood={petMood} stage={stage} headphones working={!paused && !ended} />
           <View style={[styles.bubble, compact && styles.bubbleCompact, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
-            <Animated.View key={line} entering={textIn}>
-              <Text variant="body" tone="roomInk">{line}</Text>
+            <Animated.View key={shownLine} entering={textIn}>
+              <Text variant="body" tone="roomInk">{shownLine}</Text>
             </Animated.View>
           </View>
         </View>
@@ -280,17 +284,17 @@ export function FocusScreen() {
           </Animated.View>
         ) : keepGoing ? (
           <Animated.View entering={FadeIn.duration(duration.fast)} style={[styles.card, { backgroundColor: colors.roomGlass, borderColor: colors.roomGlass }]}>
-            <Text variant="heading" tone="roomInk">{f.twoDone}</Text>
+            <Text variant="heading" tone="roomInk">{f.twoDone(sessionMinutes(t))}</Text>
             <Text variant="subhead" tone="roomInk2">{f.twoDoneSub}</Text>
             <PressScale accessibilityRole="button" onPress={() => {
               haptics.medium();
               play('pop');
               endedChime.current = false;
               const startNow = Date.now();
-              patch({ rodeWave: true, endsAt: startNow + 10 * MIN, totalMs: 10 * MIN, pausedRemaining: null, warned: false });
-              swapLine(f.riding);
+              patch({ rodeWave: true, endsAt: startNow + RIDE_MIN * MIN, totalMs: RIDE_MIN * MIN, pausedRemaining: null, warned: false });
+              swapLine(f.riding(RIDE_MIN));
             }} style={[styles.btn, { backgroundColor: colors.reward }]}>
-              <Text variant="bodyBold" tone="onReward">{f.ride}</Text>
+              <Text variant="bodyBold" tone="onReward">{f.ride(RIDE_MIN)}</Text>
             </PressScale>
             <PressScale accessibilityRole="button" onPress={finish} style={[styles.btn, { backgroundColor: colors.roomGlass }]}>
               <Text variant="bodyBold" tone="roomInk">{f.imDone(pet.name)}</Text>
@@ -314,6 +318,8 @@ export function FocusScreen() {
                 endedChime.current = false;
                 const base = ended ? { ...t, endsAt: Date.now(), totalMs: t.totalMs } : t;
                 patch(addMinutes(base, 5));
+                // back to the resting line, which now states the new length ("… for 7 minutes.")
+                swapLine(null);
               }} style={[styles.chip, { backgroundColor: colors.roomGlass }]}>
                 <Text variant="bodyBold" tone="roomInk">{f.plus5}</Text>
               </PressScale>

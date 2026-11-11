@@ -47,7 +47,7 @@ export function ToolkitScreen() {
   const enter = (i: number) => (reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast).delay(staggerDelay(i)));
 
   const sit = (minutes: number) => {
-    useAppStore.getState().startFocus({ id: null, text: t.sit.task(petName), size: 1 }, minutes, 'custom');
+    useAppStore.getState().startFocus({ id: null, text: t.sit.task(petName), size: 1 }, minutes, 'custom', { sit: true });
     haptics.medium();
     play('pop');
     router.push('/focus');

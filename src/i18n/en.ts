@@ -368,7 +368,12 @@ export const en = {
   ],
   focus: {
     working: (name: string) => `${name} is working too. You’re not alone in this.`,
-    two: 'Just 2 minutes. I’m right here doing mine.',
+    /** "1 minute" / "7 minutes": every duration in words goes through this */
+    minutes: (n: number) => (n === 1 ? '1 minute' : `${n} minutes`),
+    /** the otter's line follows the live length: 2 min, then 7 after +5 */
+    two: (min: number) => `Just ${en.focus.minutes(min)}. I’m right here doing mine.`,
+    sitFor: (min: number) => `I’ll sit with you for ${en.focus.minutes(min)}.`,
+    minutesLeft: (min: number) => `${en.focus.minutes(min)} left`,
     paused: 'Taking a breather. I’ll wait.',
     back: 'Back at it. Love that.',
     drifted: ['Welcome back. Brains wander. We’re still here.', 'Drifting is normal. You came back, that’s the skill.', 'No guilt. One more tiny step?'],
@@ -385,10 +390,10 @@ export const en = {
     restarted: 'Fresh start. Same bite, I’m still here.',
     done: (name: string) => `Done! Feed ${name}`,
     endsAt: (t: string) => `Ends at ${t}`,
-    twoDone: '2 minutes done. You started.',
+    twoDone: (min: number) => `${en.focus.minutes(min)} done. You started.`,
     twoDoneSub: 'That was the hard part. Keep going or stop here: both count.',
-    riding: 'Nice. 10 more minutes, I’m here.',
-    ride: 'Ride the wave (+10 min)',
+    riding: (min: number) => `Nice. Another ${en.focus.minutes(min)}, I’m here.`,
+    ride: (min: number) => `Ride the wave (+${min} min)`,
     imDone: (name: string) => `I’m done, feed ${name}`,
     timeUp: 'Time’s up! You did it.',
     warning: '2 min left. Start wrapping up.',

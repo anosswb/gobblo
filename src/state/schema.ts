@@ -114,6 +114,8 @@ export interface ActiveFocus {
   rodeWave: boolean;
   warned: boolean;
   notificationId: string | null;
+  /** "Sit with me" (Toolkit): the pet sits with you, no bite. Optional: old saves = a bite session */
+  sit?: boolean;
 }
 
 export interface Settings {

@@ -51,7 +51,7 @@ type Actions = {
   toggleDaily: (id: string) => void;
   reorderBites: (from: number, to: number) => void;
   // focus
-  startFocus: (bite: { id: string | null; text: string; size: Size }, minutes: number, mode: Session['mode']) => void;
+  startFocus: (bite: { id: string | null; text: string; size: Size }, minutes: number, mode: Session['mode'], opts?: { sit?: boolean }) => void;
   patchFocus: (patch: Partial<ActiveFocus>) => void;
   /** ends the session; when `done`, the bite is fed and sparks are returned */
   endFocus: (done: boolean, spentMin: number) => { sparks: number } | null;
@@ -148,7 +148,7 @@ export const useAppStore = create<AppState>()(
         return { sparks: r.sparks };
       },
 
-      startFocus: (bite, minutes, mode) => {
+      startFocus: (bite, minutes, mode, opts) => {
         const now = Date.now();
         const t = startTimer(now, minutes);
         const before = get().stats.total;
@@ -164,6 +164,7 @@ export const useAppStore = create<AppState>()(
             rodeWave: false,
             warned: false,
             notificationId: null,
+            ...(opts?.sit ? { sit: true } : {}),
           },
         }));
         track('focus_started', { minutes, preset: mode, source: bite.id ? 'bite' : 'free' });
