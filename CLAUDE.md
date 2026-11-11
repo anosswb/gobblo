@@ -6,7 +6,7 @@ You are building **Gobblo**, an iOS + Android app made with **Expo (React Native
 Owner: Anass (solo founder, Morocco). He is not a native English speaker: keep messages to him short and simple, and explain any step he must do by hand (accounts, payments, store forms) one step at a time.
 
 ## One-line pitch
-A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 minutes counts. Built for ADHD brains (Gen Z, 16–30), no shame, no nagging.
+A cute otter that eats your to-do list. You feed it by **starting** tasks, even 2 minutes counts. Built for ADHD brains (Gen Z, 16–30), no shame, no nagging.
 
 ## Read these before writing code (in this order)
 1. `docs/01-product-spec.md` — what to build, every screen and state
@@ -18,9 +18,11 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 7. `docs/07-entrepreneur-findings.md` — what users hate in Finch/Tiimo/Structured, from real reviews. Every product decision should beat these.
 8. `docs/08-launch-and-listing.md` — builds, testers, store listing
 8b. `docs/09-paid-features.md` — what we sell (iOS Plus) and what ads unlock (Android)
-8d. `docs/11-art-direction.md` — the chosen "lo-fi jelly" look and which Flow image goes where (READ before any UI work)
+8d. `docs/11-art-direction.md` — the current look: flat otter in the app, clay otter for videos, and which Flow pictures are current (READ before any UI work)
+8e. `docs/18-mascot-bible.md` — the otter: who it is, its marks (spark pebble, pocket, cheeks, the dive), what it never does
+8f. `docs/16-merged-plan.md` — the approved plan (Anass, 2026-11-10) and its order of work; `docs/19-analytics.md` (events, privacy answers); `docs/20-builds.md` (how a test APK is built)
 8c. `docs/10-image-prompts.md` — the art Anass generates in Google Flow; images land in `assets/flow/`
-9. `reference/prototype.html` — a WORKING web prototype. Open it in a browser. Match its feel, flows and copy tone. Rebuild natively, do not wrap it in a WebView (Apple rejects thin web wrappers, guideline 4.2). The prototype (v0.2) already has light/dark mode, the transitions.dev motion tokens, Phosphor icons, the iPhone Plus paywall and the Android rewarded-ad flow (switch "store version" in Me › settings). Real design references are in `reference/design-refs/` (transitions.dev tokens, Screenrove motion guidelines, Screenrove Duolingo design guide + polish suggestions).
+9. `reference/prototype.html` — an early web prototype (v0.2, the OLD look and the old jelly pet). Use it only for flows and copy tone; the app's look now comes from docs/02, docs/11 and docs/18. Rebuild natively, do not wrap it in a WebView (Apple rejects thin web wrappers, guideline 4.2). The prototype (v0.2) already has light/dark mode, the transitions.dev motion tokens, Phosphor icons, the iPhone Plus paywall and the Android rewarded-ad flow (switch "store version" in Me › settings). Real design references are in `reference/design-refs/` (transitions.dev tokens, Screenrove motion guidelines, Screenrove Duolingo design guide + polish suggestions).
 
 ## Tools to use (install once, see START_HERE.md)
 - **Expo plugin for Claude Code** (`expo@claude-plugins-official`): official Expo Skills + the **Expo MCP server**. Use it to read the current Expo docs before using any API (your training data may be older than SDK 58), to run EAS builds/workflows and read their logs, and, where available, to drive a simulator, take screenshots and collect app logs so you can SEE what you built. Check that a tool exists before relying on it; some are paid or billed.
@@ -42,7 +44,7 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 - **New Architecture only.** No libraries that need the old architecture.
 - **No accounts, no backend in v1.** User content stays on the device (MMKV). Anonymous usage counts (PostHog) and crash reports (Sentry) are sent, with a switch to turn them off; never anything the user types (Anass, 2026-11-11, see docs/19). No login screen. That also means no account-deletion requirement.
 - **No WebView screens**, except opening the privacy policy/terms in the browser.
-- **Light + dark mode** everywhere, following the system by default, with a Settings override (System / Light / Dark). Every color comes from theme tokens. No hard-coded hex colors in components.
+- **Light + dark mode** everywhere, following the system by default, with a Settings override (System / Light / Dark), in each of the 5 colour themes (Ink, Blush, Cotton, Sage, Graphite). Every color comes from theme tokens. No hard-coded hex colors in components. Pastel themes: use `primaryInk` for text and icons in the theme colour and `onPrimary` on primary fills. No glow blobs: backgrounds are flat.
 - **Accessibility:** tap targets ≥ 44×44 pt, Dynamic Type / font scaling respected (cap at 1.4×), `accessibilityLabel` on every icon button, honor Reduce Motion (swap big motion for fades).
 - **No medical claims.** Never write "treats", "cures", "manages ADHD", "clinically proven". OK: "made for ADHD brains", "for brains that struggle to start". Add "Gobblo is not a medical device" in Settings > About.
 - **Notifications are local only and capped** (see spec). Gobblo's own nudges never go past the user's chosen level. The user's own times (Reminders and the time on a bite) are exempt from the cap: each one pings, but bite times still never ping in quiet hours (Anass, 2026-11-09).
@@ -50,6 +52,8 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 - **Rating prompt:** only via `expo-store-review`, only after the 3rd fed task AND at least 2 days after install, max once per app version. Never in the first session.
 - **Money per platform** (docs/06): `MONETIZATION = Platform.select({ ios: 'iap', android: 'ads' })`. Android = AdMob ads only (rewarded first, never in onboarding, Focus, Feed, Evolution or Brain dump). iOS = one-time Plus purchase via RevenueCat, no ads. Use Google's TEST ad unit IDs in development, real IDs only in the production profile via env vars.
 - **App name is a constant** (`src/config/app.ts` → `APP_NAME`). The name may change after the trademark check, so never hard-code it in copy.
+- **Sounds and art must be ours to sell:** only CC0 / properly licensed audio and art, each one listed with its source in `assets/sounds/CREDITS.md` or `assets/brand/RIGHTS.md`. Nothing recorded or downloaded from another app or site without a licence.
+- **The pet is the otter** (docs/18). It is never sad, hurt or angry at the user.
 - Copy tone: sentence case (capital first letter of every sentence, "I", proper acronyms like ADHD and Face ID; Anass's call 2026-11-06, see DECISIONS.md), warm, short, Gen-Z but not cringe. No guilt words ("failed", "missed", "lost your streak").
 
 ## How to work
@@ -59,11 +63,11 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 - **Use subagents** for side jobs: one to review a finished screen against docs/02 + docs/03, one to check store rules against docs/05 before each build.
 - **Look at your work.** Screenshot every new screen (simulator via the Expo MCP, or ask Anass for a phone screenshot) in light + dark, compare it with `reference/prototype.html` and the Screenrove references, and fix it before moving on.
 - **E2E tests with Maestro** for the core loop (onboarding → dump → drag-to-feed → 2-min focus → feed) and run them before every build.
-- Build in the phases in `START_HERE.md`. One phase at a time. At the end of each phase: run `npx expo-doctor`, `npx tsc --noEmit`, the linter, the tests, and launch the app. Then tell Anass in 3–5 short lines what works and what to try on his phone.
+- The phases in `START_HERE.md` are done; work now follows the order in `docs/16-merged-plan.md`, with no calendar (Anass: keep going, run jobs that touch different files side by side). At the end of each block of work: run `npx expo-doctor`, `npx tsc --noEmit`, the linter, the tests, and launch the app. Then tell Anass in 3–5 short lines what works and what to try on his phone.
 - After each new screen: screenshot it in light AND dark, run Screenrove `check_my_ui`, fix, then move on.
 - Keep a `PROGRESS.md` (done / next / blocked).
 - When something needs Anass (an account, a payment, a store form), stop and give him numbered steps with exact button names.
-- Commit after every working step with a clear message.
+- Commit after every working step with a clear message. Never push without Anass's yes. A test APK is built on purpose (docs/20), not on every push.
 
 ## Definition of done (per screen)
 States designed: loading, empty, error, success. Light + dark checked. Works at small (iPhone SE / 360dp Android) and big screens. Haptics + sound on key actions (respecting the sound toggle). Reduce Motion fallback. No layout jump on keyboard open. Back gesture works (Android back button too).
