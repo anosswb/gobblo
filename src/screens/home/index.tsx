@@ -417,7 +417,7 @@ export function HomeScreen() {
         <Animated.View entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast)} style={[styles.note, styles.askNote, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
           <View style={styles.askHead}>
             <View style={[styles.noteIcon, { backgroundColor: colors.primarySoft }]}>
-              <Icon name="bell" size={16} color={colors.primary} />
+              <Icon name="bell" size={16} color={colors.primaryInk} />
             </View>
             <View style={styles.flex}>
               <Text variant="bodyBold">{h.askAgainTitle(pet.name)}</Text>
@@ -532,7 +532,7 @@ export function HomeScreen() {
                   haptics.select();
                 }}
                 style={[styles.addChip, { backgroundColor: newWhen !== 'today' || newMinutes !== null ? colors.primarySoft : colors.fill }]}>
-                <Icon name="calendar" size={14} color={newWhen !== 'today' || newMinutes !== null ? colors.primary : colors.ink2} />
+                <Icon name="calendar" size={14} color={newWhen !== 'today' || newMinutes !== null ? colors.primaryInk : colors.ink2} />
                 <Text variant="caption" tone={newWhen !== 'today' || newMinutes !== null ? 'primary' : 'ink2'} style={styles.chipText}>
                   {en.when.chip(whenText(newWhen, newDay), newMinutes !== null && timed(newWhen) ? clockLabel(newMinutes, settings.clock24h) : undefined)}
                 </Text>

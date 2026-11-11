@@ -228,6 +228,8 @@ export type TileColor = keyof typeof tiles;
 
 /** Pet body colours (illustration, not UI). */
 export const petColors = {
+  // the otter's own colour (docs/18): the brand default
+  caramel: '#C98B5E',
   pink: '#FF5C9D',
   tangerine: '#FF8A3D',
   mint: '#2FD39A',

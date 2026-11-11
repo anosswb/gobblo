@@ -100,7 +100,7 @@ export function BiteRowBody({ bite, tag, pressed = false, lifted = false }: { bi
         </View>
         {bite.daily ? (
           <View style={styles.daily} accessibilityLabel={h.dailyOn}>
-            <Icon name="repeat" size={13} weight="bold" color={colors.primary} />
+            <Icon name="repeat" size={13} weight="bold" color={colors.primaryInk} />
           </View>
         ) : null}
         <View style={[styles.go, { backgroundColor: colors.fill }]}>

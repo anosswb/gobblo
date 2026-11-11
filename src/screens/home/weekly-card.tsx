@@ -54,7 +54,7 @@ export function WeeklyCard({ now }: { now: Date }) {
       style={[styles.card, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
       <View style={styles.head}>
         <View style={[styles.icon, { backgroundColor: colors.primarySoft }]}>
-          <Icon name="gift" size={16} color={colors.primary} />
+          <Icon name="gift" size={16} color={colors.primaryInk} />
         </View>
         <View style={styles.flex}>
           <Text variant="caption" tone="ink2">{item ? w.titleGift : w.title}</Text>

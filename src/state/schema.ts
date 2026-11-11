@@ -194,7 +194,7 @@ export function freshState(now = Date.now()): PersistedState {
   return {
     bites: [],
     sessions: [],
-    pet: { name: 'Bean', color: 'pink', hat: 'none', face: 'none', mood: 'auto', room: 'auto', owned: ['none'] },
+    pet: { name: 'Bean', color: 'caramel', hat: 'none', face: 'none', mood: 'auto', room: 'auto', owned: ['none'] },
     stats: {
       sparks: 0,
       total: 0,
