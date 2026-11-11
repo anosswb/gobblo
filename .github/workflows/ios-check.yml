@@ -5,10 +5,7 @@
 name: iOS compile check
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['src/**', 'modules/**', 'app.config.ts', 'package.json', 'package-lock.json', '.github/workflows/ios-check.yml']
+  workflow_dispatch: # manual button only: macOS minutes count x10 (docs/20-builds.md)
 
 concurrency:
   group: ios-check

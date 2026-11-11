@@ -3,10 +3,9 @@
 name: Android preview build (fast release APK)
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # the "Run workflow" button
   push:
-    branches: [main]
-    paths-ignore: ['docs/**', 'research/**', 'replica/**', 'reference/**', '**/*.md']
+    tags: ['apk-*'] # ask for a build on purpose: git tag apk-<date> && git push --tags (docs/20-builds.md)
 
 concurrency:
   group: android-preview

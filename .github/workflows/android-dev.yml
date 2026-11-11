@@ -3,10 +3,7 @@
 name: Android dev build
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths-ignore: ['docs/**', 'research/**', 'replica/**', 'reference/**', '**/*.md']
+  workflow_dispatch: # manual button only (saves minutes, docs/20-builds.md)
 
 concurrency:
   group: android-dev
