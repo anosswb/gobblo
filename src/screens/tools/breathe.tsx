@@ -1,7 +1,7 @@
 import { useAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { cancelAnimation, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { cancelAnimation, FadeIn, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { Glass } from '@/components/glass';
 import { Icon } from '@/components/icon';
@@ -96,7 +96,7 @@ function KeepAwake() {
 /**
  * Breathe (a mode inside Calm, no Screen of its own): the pet grows on the in-breath and shrinks on the out-breath. One tick a second drives
  * the phases (no setState per frame); the grow/shrink is one long Reanimated timing per phase.
- * Reduce Motion: no size change, the halo fades brighter / dimmer instead. Haptic on each phase, and a
+ * Reduce Motion: the pet keeps its size; the circle still grows and shrinks (it is the guide). Haptic on each phase, and a
  * soft singing-bowl cue on in / out (sound toggle respected, plus a mute on this page).
  */
 export function BreatheBody() {
@@ -136,7 +136,7 @@ export function BreatheBody() {
     if (current.kind === 'hold') haptics.select();
     else haptics.light();
     if (current.kind !== 'hold' && !muted) cues.play(cueFor(current.kind, current.seconds));
-    if (current.kind !== 'hold') v.set(withTiming(current.kind === 'in' ? 1 : 0, { duration: current.seconds * 1000, easing: easing.inOut }));
+    if (current.kind !== 'hold') v.set(withTiming(current.kind === 'in' ? 1 : 0, { duration: current.seconds * 1000, easing: easing.inOut, reduceMotion: ReduceMotion.Never }));
   // eslint-disable-next-line react-hooks/exhaustive-deps -- muting mid-phase shouldn't replay the cue
   }, [running, phase, current.kind, current.seconds, v]);
 
@@ -150,7 +150,7 @@ export function BreatheBody() {
     setFinished(rounds);
     cues.hush();
     cancelAnimation(v);
-    v.set(withTiming(0, { duration: duration.medium, easing: easing.smoothOut }));
+    v.set(withTiming(0, { duration: duration.medium, easing: easing.smoothOut, reduceMotion: ReduceMotion.Never }));
     haptics.success();
   };
 
@@ -163,9 +163,12 @@ export function BreatheBody() {
   };
 
   const petStyle = useAnimatedStyle(() => ({ transform: [{ scale: reduceMotion ? 1 : 0.82 + 0.3 * v.get() }] }));
+  // The circle IS the breathing guide, so it always grows and shrinks with the breath, even with
+  // Reduce Motion or with animations turned off on the phone (Anass's phone test: it stood still).
+  // It is slow and gentle; only the pet's own size change is skipped in calm mode.
   const haloStyle = useAnimatedStyle(() => ({
-    opacity: reduceMotion ? 0.35 + 0.65 * v.get() : 0.55 + 0.45 * v.get(),
-    transform: [{ scale: reduceMotion ? 1 : 0.7 + 0.42 * v.get() }],
+    opacity: 0.5 + 0.5 * v.get(),
+    transform: [{ scale: 0.62 + 0.5 * v.get() }],
   }));
 
   const label = !running ? t.ready : current.kind === 'in' ? t.in : current.kind === 'out' ? t.out : t.hold;
