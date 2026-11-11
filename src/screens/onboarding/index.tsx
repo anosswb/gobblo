@@ -135,7 +135,10 @@ export function OnboardingScreen() {
   return (
     <View style={[styles.fill, { backgroundColor: colors.bg }]}>
       <LinearGradient colors={stages[scheme].day} style={StyleSheet.absoluteFill} />
-      <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* 'padding' on Android too: with edge-to-edge the window no longer shrinks for the keyboard,
+          so the text box stayed hidden behind it (Anass's phone test, 11 Nov). If the window does
+          shrink, the view already ends above the keyboard and no padding is added. */}
+      <KeyboardAvoidingView style={styles.fill} behavior="padding">
         <View style={[styles.fill, { paddingTop: insets.top + space.l, paddingBottom: Math.max(insets.bottom, space.l) }]}>
           <View style={styles.dots} accessibilityElementsHidden>
             {DOTS.map((d) => (
