@@ -36,10 +36,10 @@ export function levelProgress(total: number): { level: number; progress: number;
  * 13–19 cosmic menace (aura) · 20 legend (golden, the final surprise).
  */
 export const STAGES = [
-  { level: 1, at: LEVELS[0], name: 'Baby blob' },
-  { level: 3, at: LEVELS[2], name: 'Lil gremlin' },
-  { level: 7, at: LEVELS[6], name: 'Big chonk' },
-  { level: 13, at: LEVELS[12], name: 'Cosmic menace' },
+  { level: 1, at: LEVELS[0], name: 'Tiny pup' },
+  { level: 3, at: LEVELS[2], name: 'Pebble juggler' },
+  { level: 7, at: LEVELS[6], name: 'River rascal' },
+  { level: 13, at: LEVELS[12], name: 'Tide chaser' },
   { level: 20, at: LEVELS[19], name: 'Legend' },
 ] as const;
 

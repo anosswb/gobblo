@@ -69,6 +69,7 @@ export const FACES: Item<FaceId>[] = [
 ];
 
 export const COLORS: Item<PetColor>[] = [
+  { id: 'caramel', slot: 'color', name: 'Caramel', emoji: '🤎', unlock: free },
   { id: 'pink', slot: 'color', name: 'Bubblegum', emoji: '🩷', unlock: free },
   { id: 'tangerine', slot: 'color', name: 'Tangerine', emoji: '🧡', unlock: free },
   { id: 'mint', slot: 'color', name: 'Mint', emoji: '💚', unlock: free },

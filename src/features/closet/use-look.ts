@@ -40,7 +40,7 @@ export function useLook(): Look {
   return {
     level,
     stage: stageOfLevel(level),
-    color: pick(COLORS, pet.color, level, miy, 'pink', week),
+    color: pick(COLORS, pet.color, level, miy, 'caramel', week),
     hat: pick(HATS, pet.hat, level, miy, 'none', week),
     face: pick(FACES, pet.face ?? 'none', level, miy, 'none'),
     room: pick(ROOMS, pet.room ?? 'auto', level, miy, 'auto', week),

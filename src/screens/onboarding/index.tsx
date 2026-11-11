@@ -66,7 +66,7 @@ export function OnboardingScreen() {
   const [hatched, setHatched] = useState(false);
   const [burst, setBurst] = useState(0);
   const [name, setName] = useState<string>(() => o.names[Math.floor(Math.random() * o.names.length)]);
-  const [color, setColor] = useState<PetColor>('pink');
+  const [color, setColor] = useState<PetColor>('caramel');
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
   const later = (ms: number, fn: () => void) => timers.current.push(setTimeout(fn, ms));
