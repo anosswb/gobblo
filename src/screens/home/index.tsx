@@ -23,6 +23,8 @@ import { haptics } from '@/lib/haptics';
 import { play } from '@/lib/sound';
 import { en } from '@/i18n/en';
 import { Burst, SparkGain } from '@/pet/burst';
+import { Bubbles, Splash, useHappyDive } from '@/pet/dive';
+import { feedInfo } from '@/pet/dive-logic';
 import { maybeAskRating } from '@/lib/rating';
 import { Evolution } from '@/pet/evolution';
 import { Pet, type Mood } from '@/pet/pet';
@@ -51,6 +53,8 @@ const h = en.home;
 const PET_SHARE = 0.6;
 /** How far the canvas bottom sinks under the water line, as a share of the canvas height (about half the feet). */
 const FEET_SINK = 0.06;
+/** After the otter surfaces: the level-up / evolution, the good-things toast and the rating ask wait this long (the moment belongs to the pet). */
+const AFTER_SURFACE = { evolve: 1300, goodThing: 1500, rating: 2800 } as const;
 
 const dateLine = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
@@ -175,12 +179,6 @@ export function HomeScreen() {
       setLevelUp(lv);
     }
   };
-  useFocusEffect(
-    useCallback(() => {
-      const t = setTimeout(evolveIfNew, 900);
-      return () => clearTimeout(t);
-    }, []),
-  );
 
   // a bite was eaten (focus finished): chomp, then celebrate with a sparkle burst
   const [burst, setBurst] = useState(0);
@@ -212,42 +210,62 @@ export function HomeScreen() {
     if (ok) useAppStore.getState().updateSettings({ nudge: 'gentle' });
     toast(ok ? h.askAgainOn : h.askAgainLater);
   };
+  // the happy dive (docs/18 §5): chomp → hop → dive under the water line → bubbles → back up
+  // with a splash and the pebble: that is when the "+N ✦" shows. Nothing else pops up meanwhile.
+  const after = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => after.current.forEach(clearTimeout), []);
+  const dive = useHappyDive({
+    depth: Math.round(petH + 24),
+    reduceMotion,
+    onDive: () => {
+      haptics.light();
+      play('pop');
+    },
+    onSurface: (p) => {
+      setReaction(reduceMotion ? 'chomp' : 'celebrating');
+      setGain(p.total);
+      setBurst((b) => b + 1);
+      haptics.success();
+      play('spark');
+      after.current.forEach(clearTimeout);
+      after.current = [
+        setTimeout(evolveIfNew, AFTER_SURFACE.evolve),
+        setTimeout(() => {
+          if (useAppStore.getState().settings.goodThingsJar) toast(h.goodThingAsk, { label: en.focus.goodThing, onPress: () => router.push('/me') });
+        }, AFTER_SURFACE.goodThing),
+        // store rating (rules in features/rating): after the moment is over, never over a celebration
+        setTimeout(() => {
+          if (!celebrating.current) void maybeAskRating();
+        }, AFTER_SURFACE.rating),
+      ];
+    },
+  });
+  const { feed: diveFeed, busy: diveBusy } = dive;
+  // coming back to Home: celebrate a new level (not while the otter is diving: it does that after it surfaces)
+  useFocusEffect(
+    useCallback(() => {
+      const t = setTimeout(() => {
+        if (!diveBusy()) evolveIfNew();
+      }, 900);
+      return () => clearTimeout(t);
+    }, [diveBusy]),
+  );
+  const totalBefore = useRef(stats.total);
   useEffect(() => {
     if (stats.eaten > eatenBefore.current) {
-      // the feeding moment: bring the pet into view, chomp, then the reward lifts off the pet.
-      // Nothing else (no toast, no card) for the next 3 seconds.
+      // the feeding moment: bring the pet into view and chomp; the dive takes it from there
       const won = stats.sparks - sparksBefore.current;
       fedThisVisit.current = true;
       setAskAgain(false);
       setToTop((n) => n + 1);
       setReaction('chomp');
       play('boop');
-      const t = setTimeout(() => {
-        setReaction('celebrating');
-        setGain(won);
-        setBurst((b) => b + 1);
-        haptics.success();
-      }, 700);
-      const t2 = setTimeout(evolveIfNew, 3000);
-      const t3 = setTimeout(() => {
-        if (useAppStore.getState().settings.goodThingsJar) toast(h.goodThingAsk, { label: en.focus.goodThing, onPress: () => router.push('/me') });
-      }, 3200);
-      // store rating (rules in features/rating): after the moment is over, never over a celebration
-      const t4 = setTimeout(() => {
-        if (!celebrating.current) void maybeAskRating();
-      }, 4500);
-      eatenBefore.current = stats.eaten;
-      sparksBefore.current = stats.sparks;
-      return () => {
-        clearTimeout(t);
-        clearTimeout(t2);
-        clearTimeout(t3);
-        clearTimeout(t4);
-      };
+      diveFeed(feedInfo(won, totalBefore.current, stats.total));
     }
     eatenBefore.current = stats.eaten;
     sparksBefore.current = stats.sparks;
-  }, [stats.eaten, stats.sparks]);
+    totalBefore.current = stats.total;
+  }, [stats.eaten, stats.sparks, stats.total, diveFeed]);
 
   const sky = skyOf(openedAt.getHours());
   const stageLook = useStageLook(look.room, sky);
@@ -406,8 +424,11 @@ export function HomeScreen() {
         <Animated.View pointerEvents="none" style={[styles.feedGlow, { backgroundColor: colors.reward }, glow]} />
         <View style={[styles.pet, { bottom: petBottom }]}>
           <Burst id={burst} />
-          <SparkGain id={burst} amount={gain} />
+          {/* the reward starts at the paws (it comes up holding the pebble) */}
+          <SparkGain id={burst} amount={gain} top={Math.round(petH * 0.66)} rise={Math.round(petH * 0.75)} />
+          {/* the drop zone stays put; only the inner view dives */}
           <Animated.View ref={petTarget}>
+          <Animated.View style={dive.style}>
           <Pet
             size={petSize}
             color={look.color}
@@ -423,9 +444,14 @@ export function HomeScreen() {
             }}
           />
           </Animated.View>
+          </Animated.View>
         </View>
         {/* the otter's home: calm water in front of its feet */}
         <StageWater height={waterH} width={stageW} look={stageLook} />
+        <View pointerEvents="none" style={[styles.waterLine, { bottom: waterH }]}>
+          {dive.under ? <Bubbles color={stageLook.water} crest={stageLook.crest} reduceMotion={reduceMotion} /> : null}
+          <Splash key={dive.splash} id={dive.splash} color={stageLook.water} crest={stageLook.crest} reduceMotion={reduceMotion} />
+        </View>
       </View>
 
       {/* at most one card between the pet and the plate: the nudge ask, or the weekly surprise */}
@@ -713,8 +739,8 @@ export function HomeScreen() {
           if (!selected) return;
           useAppStore.getState().feedDone(selected.id);
           setSelected(null);
-          haptics.success();
-          play('spark');
+          // a light tap now; the success tap and the spark sound come when the otter surfaces
+          haptics.light();
         }}
         onStart={(minutes, mode) => {
           if (!selected) return;
@@ -743,6 +769,7 @@ const styles = StyleSheet.create({
   chipText: { fontWeight: '600' },
   bubble: { paddingHorizontal: space.l, paddingVertical: space.s, minHeight: 32, justifyContent: 'center' },
   pet: { position: 'absolute', start: 0, end: 0, alignItems: 'center' },
+  waterLine: { position: 'absolute', start: 0, end: 0, height: 0 },
   note: { flexDirection: 'row', alignItems: 'center', gap: space.m, borderRadius: radius.card - 6, padding: space.l },
   askNote: { flexDirection: 'column', alignItems: 'stretch' },
   askHead: { flexDirection: 'row', alignItems: 'center', gap: space.m },

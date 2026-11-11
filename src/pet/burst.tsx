@@ -63,8 +63,9 @@ function Spark({ index, radius, color }: { index: number; radius: number; color:
 /**
  * "+2 ✦" lifting off the pet right after the chomp: the reward is shown where it was earned,
  * not in a toast. Plays once per `id`. Reduce Motion: it fades in place.
+ * `top` / `rise` (pt) let it start at the paws and lift further (Home's happy dive).
  */
-export function SparkGain({ id, amount }: { id: number; amount: number }) {
+export function SparkGain({ id, amount, top, rise = 28 }: { id: number; amount: number; top?: number; rise?: number }) {
   const { colors, reduceMotion } = useTheme();
   const t = useSharedValue(0);
   useEffect(() => {
@@ -76,12 +77,12 @@ export function SparkGain({ id, amount }: { id: number; amount: number }) {
     const p = t.get();
     return {
       opacity: p === 0 ? 0 : p < 0.15 ? p / 0.15 : p < 0.7 ? 1 : 1 - (p - 0.7) / 0.3,
-      transform: [{ translateY: reduceMotion ? 0 : -28 * p }, { scale: reduceMotion ? 1 : 0.9 + 0.1 * Math.min(1, p * 4) }],
+      transform: [{ translateY: reduceMotion ? 0 : -rise * p }, { scale: reduceMotion ? 1 : 0.9 + 0.1 * Math.min(1, p * 4) }],
     };
   });
   if (id === 0 || amount <= 0) return null;
   return (
-    <Animated.View pointerEvents="none" style={[styles.gain, { backgroundColor: colors.reward }, style]} accessibilityLiveRegion="polite" accessibilityLabel={`plus ${amount} sparks`}>
+    <Animated.View pointerEvents="none" style={[styles.gain, { backgroundColor: colors.reward }, top === undefined ? null : { top }, style]} accessibilityLiveRegion="polite" accessibilityLabel={`plus ${amount} sparks`}>
       <Text variant="bodyBold" style={{ color: colors.onReward }}>+{amount} ✦</Text>
     </Animated.View>
   );
