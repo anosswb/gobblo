@@ -108,3 +108,13 @@ describe('focus sounds', () => {
     }
   });
 });
+
+describe('focus session saved before sit / autoPaused existed', () => {
+  it('loads as a bite session that is not auto-paused', () => {
+    const focus = { biteId: null, biteText: 'x', size: 1, mode: 'custom', startedAt: 0, endsAt: 600_000, pausedRemaining: null, totalMs: 600_000, drifts: 0, rodeWave: false, warned: false, notificationId: null };
+    const s = migrate({ ...freshState(), focus }, SCHEMA_VERSION);
+    expect(s.focus).toEqual(focus);
+    expect(s.focus?.sit).toBeUndefined();
+    expect(s.focus?.autoPaused).toBeUndefined();
+  });
+});

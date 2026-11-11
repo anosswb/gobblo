@@ -116,6 +116,8 @@ export interface ActiveFocus {
   notificationId: string | null;
   /** "Sit with me" (Toolkit): the pet sits with you, no bite. Optional: old saves = a bite session */
   sit?: boolean;
+  /** Sit with me only: paused because the app went to the background; resumes by itself on return */
+  autoPaused?: boolean;
 }
 
 export interface Settings {

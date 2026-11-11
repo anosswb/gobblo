@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { AppState, BackHandler, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,6 +25,7 @@ import {
   WARNING_MS,
   type TimerState,
 } from '@/features/focus/timer';
+import { pauseForAway, resumeFromAway } from '@/features/focus/away';
 import { baseLine, isTwoMinuteStart, RIDE_MIN } from '@/features/focus/lines';
 import { cancelNotification, scheduleFocusEnd } from '@/features/nudges/schedule';
 import { useSafeKeepAwake } from '@/hooks/use-safe-keep-awake';
@@ -152,6 +153,32 @@ export function FocusScreen() {
     }
   });
 
+  // Sit with me waits while you are out of the app ('background' only: iOS's 'inactive' blip from
+  // Control Center or the app switcher is not leaving). Bite sessions keep running (features/focus/away.ts).
+  useEffect(() => {
+    const comeBack = () => {
+      const st = useAppStore.getState();
+      const p = st.focus && resumeFromAway(st.focus, Date.now());
+      if (!p) return;
+      st.patchFocus(p);
+      setLine(f.sitBack[Math.floor(Math.random() * f.sitBack.length)]);
+    };
+    // the app was closed while away: carry on when the screen opens again
+    comeBack();
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') return comeBack();
+      if (next !== 'background') return;
+      const st = useAppStore.getState();
+      const cur = st.focus;
+      const p = cur && pauseForAway(cur, Date.now());
+      if (!cur || !p) return;
+      // cancel the "time's up" note now, while JS still runs; it is planned again on return
+      void cancelNotification(cur.notificationId);
+      st.patchFocus({ ...p, notificationId: null });
+    });
+    return () => sub.remove();
+  }, []);
+
   // Android back = ask before leaving
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -274,7 +301,7 @@ export function FocusScreen() {
                 haptics.medium();
                 play('pop');
                 endedChime.current = false;
-                patch({ ...restartTimer(t, Date.now()), warned: false });
+                patch({ ...restartTimer(t, Date.now()), warned: false, autoPaused: false });
                 setConfirmRestart(false);
                 swapLine(f.restarted);
               }} style={[styles.btn, styles.flex, { backgroundColor: colors.fill }]}>
@@ -291,7 +318,7 @@ export function FocusScreen() {
               play('pop');
               endedChime.current = false;
               const startNow = Date.now();
-              patch({ rodeWave: true, endsAt: startNow + RIDE_MIN * MIN, totalMs: RIDE_MIN * MIN, pausedRemaining: null, warned: false });
+              patch({ rodeWave: true, endsAt: startNow + RIDE_MIN * MIN, totalMs: RIDE_MIN * MIN, pausedRemaining: null, warned: false, autoPaused: false });
               swapLine(f.riding(RIDE_MIN));
             }} style={[styles.btn, { backgroundColor: colors.reward }]}>
               <Text variant="bodyBold" tone="onReward">{f.ride(RIDE_MIN)}</Text>
@@ -306,7 +333,8 @@ export function FocusScreen() {
               <PressScale accessibilityRole="button" disabled={ended} onPress={() => {
                 haptics.light();
                 const nowMs = Date.now();
-                patch(paused ? resumeTimer(t, nowMs) : pauseTimer(t, nowMs));
+                // a pause by hand is never auto-resumed
+                patch({ ...(paused ? resumeTimer(t, nowMs) : pauseTimer(t, nowMs)), autoPaused: false });
                 swapLine(paused ? f.back : f.paused);
               }} style={[styles.chip, { backgroundColor: colors.roomGlass, opacity: ended ? 0.4 : 1 }]}>
                 <Icon name={paused ? 'play' : 'pause'} size={16} color={colors.roomInk} />

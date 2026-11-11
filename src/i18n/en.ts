@@ -374,6 +374,8 @@ export const en = {
     two: (min: number) => `Just ${en.focus.minutes(min)}. I’m right here doing mine.`,
     sitFor: (min: number) => `I’ll sit with you for ${en.focus.minutes(min)}.`,
     minutesLeft: (min: number) => `${en.focus.minutes(min)} left`,
+    /** Sit with me paused while you were out of the app; said when it carries on by itself */
+    sitBack: ['I waited for you.', 'You’re back. I kept your spot warm.', 'There you are. Let’s keep going.'],
     paused: 'Taking a breather. I’ll wait.',
     back: 'Back at it. Love that.',
     drifted: ['Welcome back. Brains wander. We’re still here.', 'Drifting is normal. You came back, that’s the skill.', 'No guilt. One more tiny step?'],
