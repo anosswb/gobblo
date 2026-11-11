@@ -124,7 +124,7 @@ export function OnboardingScreen() {
     if (nudges) await askNotificationPermission().catch(() => false);
     updateSettings({ nudge: nudges ? 'gentle' : 'off', onboarded: true });
     router.replace('/');
-    setTimeout(() => toast(o.welcome(name.trim() || 'Bean')), 500);
+    setTimeout(() => toast(o.welcome(name.trim() || 'Pip')), 500);
   };
 
   const enter = reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.medium);
@@ -290,9 +290,9 @@ export function OnboardingScreen() {
                 />
               </View>
               <Primary
-                label={o.meet(name.trim() || 'Bean')}
+                label={o.meet(name.trim() || 'Pip')}
                 onPress={() => {
-                  patchPet({ name: capFirst(name.trim()) || 'Bean', color });
+                  patchPet({ name: capFirst(name.trim()) || 'Pip', color });
                   go('nudge');
                 }}
               />
@@ -308,7 +308,7 @@ export function OnboardingScreen() {
                 <Pet size={130} color={color} mood="curious" />
               </View>
               <View style={styles.copy}>
-                <Text variant="title" style={styles.center}>{o.nudgeTitle(name.trim() || 'Bean')}</Text>
+                <Text variant="title" style={styles.center}>{o.nudgeTitle(name.trim() || 'Pip')}</Text>
                 <Text variant="body" tone="ink2" style={[styles.center, styles.sub]}>{o.nudgeSub}</Text>
                 <Text variant="caption" tone="ink2" style={[styles.center, styles.sub]}>{o.usageNote(APP_NAME)}</Text>
               </View>

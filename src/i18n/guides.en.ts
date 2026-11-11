@@ -43,10 +43,10 @@ export const GUIDES = {
       demo: 'sparkle',
       title: 'Locked items',
       body: android
-        ? 'Most open as you level up. A few are part of Plus: the spark price is on the item. A free new colour arrives every week.'
+        ? 'Most open as you level up. Want one sooner? Tap it and buy just that item with sparks. A free new colour arrives every week.'
         : PLUS_VISIBLE
-          ? 'Most open as you level up. A few are part of Plus. A free new colour arrives every week.'
-          : 'They open as you level up, and a free new colour arrives every week.',
+          ? 'Most open as you level up. A few are part of Plus. You can also buy a single item with sparks. A free new colour arrives every week.'
+          : 'They open as you level up, or you can buy one item at a time with sparks. A free new colour arrives every week.',
     },
     { demo: 'shake', title: 'Pick a face', body: 'The face you choose is {pet}’s face on Home. “Auto” reacts to your day.' },
   ],
@@ -94,7 +94,7 @@ export const GUIDES = {
   ],
   plus: android
     ? [
-        { demo: 'sparkle', title: 'Earned, not bought', body: 'Plus opens with 150 sparks you earn by starting bites. No payments, no subscription.' },
+        { demo: 'sparkle', title: 'Earned, not bought', body: 'Spend sparks on single Closet items, or save 150 to open all of Plus. No payments, no subscription.' },
         { demo: 'list', title: 'The basics stay free', body: 'Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.' },
         { demo: 'tap', title: 'Your level is safe', body: 'Spending sparks never lowers your level.' },
       ]

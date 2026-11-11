@@ -109,7 +109,7 @@ const NextBite = (p: NextBiteProps, env: WidgetEnvironment) => {
 };
 
 export const NextBiteIOS = createWidget<NextBiteProps>('NextBite', NextBite, {
-  petName: 'Bean',
+  petName: 'Pip',
   biteText: null,
   symbol: 'fork.knife',
   minutes: 2,

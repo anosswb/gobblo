@@ -130,10 +130,10 @@ export function preloadRewarded(): void {
 }
 
 /** Shows one rewarded video (the preloaded one if there is one). 'earned' only when Google says the reward was earned. */
-export async function showRewarded(): Promise<AdResult> {
+export async function showRewarded(place?: 'plus' | 'closet'): Promise<AdResult> {
   const result = await showRewardedInner();
   // anonymous count: the result and the reason code's prefix only (never the error text)
-  track('ad_result', { result, reason: result === 'unavailable' ? adReason(failure ?? consentNote) : 'none' });
+  track('ad_result', { result, reason: result === 'unavailable' ? adReason(failure ?? consentNote) : 'none', place });
   return result;
 }
 

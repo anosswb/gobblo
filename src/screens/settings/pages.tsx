@@ -17,7 +17,8 @@ import { toast } from '@/components/toast';
 import { Toggle } from '@/components/toggle';
 import { APP_NAME, LINKS } from '@/config/app';
 import { exportBackup, importBackup } from '@/features/backup/backup';
-import { COLORS, isUnlocked } from '@/features/closet/items';
+import { COLORS } from '@/features/closet/items';
+import { itemOpen } from '@/features/closet/shop';
 import { useLook } from '@/features/closet/use-look';
 import { haptics } from '@/lib/haptics';
 import { canUseBiometrics, unlock } from '@/lib/lock';
@@ -297,7 +298,7 @@ function PetPage() {
       <Section title={t.petColor}>
         <Row last stacked hideLabel label={t.petColor} right={
           <Chips<PetColor> accessibilityLabel={t.petColor} value={look.color} onChange={(c) => patchPet({ color: c })}
-            options={COLORS.filter((c) => isUnlocked(c.unlock, look.level, look.plus, look.week)).map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))} />
+            options={COLORS.filter((c) => itemOpen(c, look)).map((c) => ({ value: c.id, label: c.name, swatch: petColors[c.id] }))} />
         } />
       </Section>
       <Section>

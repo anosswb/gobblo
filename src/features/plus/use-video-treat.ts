@@ -55,7 +55,7 @@ export function useVideoTreat(place: VideoPlace) {
     setPhase('loading');
     setReason(null);
     haptics.light();
-    const r = await showRewarded().catch(() => 'unavailable' as const);
+    const r = await showRewarded(place).catch(() => 'unavailable' as const);
     if (r !== 'earned') {
       if (r === 'unavailable' && !USE_REAL_ADS) setReason(lastAdError());
       setPhase(r === 'closed' ? 'later' : 'none');

@@ -8,7 +8,7 @@ const s = (end: Date, min = 5, done = true): Session => ({
 
 describe('stages', () => {
   it('maps sparks to stages', () => {
-    // level 3 (10 ✦) = lil gremlin, level 7 (74) = big chonk, 13 (300) = cosmic, 20 (940) = legend
+    // level 3 (10 ✦) = pebble juggler, level 7 (74) = river rascal, 13 (300) = tide chaser, 20 (940) = legend
     expect([0, 9, 10, 73, 74, 299, 300, 939, 940, 5000].map(stageOf)).toEqual([0, 0, 1, 1, 2, 2, 3, 3, 4, 4]);
     expect(stageProgress(5000).toNext).toBeNull();
   });
@@ -42,8 +42,8 @@ describe('insights', () => {
   });
   it('picks a brain type', () => {
     const st = freshState(0).stats;
-    expect(brainType(st, 'Bean').title).toBe('Fresh hatchling');
-    expect(brainType({ ...st, eaten: 4, starts2: 3 }, 'Bean').title).toBe('2-minute legend');
-    expect(brainType({ ...st, eaten: 4, byPart: { morning: 0, day: 1, night: 3 } }, 'Bean').title).toBe('Midnight hyperfocus goblin');
+    expect(brainType(st, 'Pip').title).toBe('Fresh hatchling');
+    expect(brainType({ ...st, eaten: 4, starts2: 3 }, 'Pip').title).toBe('2-minute legend');
+    expect(brainType({ ...st, eaten: 4, byPart: { morning: 0, day: 1, night: 3 } }, 'Pip').title).toBe('Midnight hyperfocus goblin');
   });
 });

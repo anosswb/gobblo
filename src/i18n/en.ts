@@ -145,7 +145,7 @@ export const en = {
     namePlaceholder: 'Name',
     dice: 'Random name',
     meet: (name: string) => `Meet ${name}`,
-    names: ['Bean', 'Mochi', 'Gizmo', 'Noodle', 'Pickle', 'Tofu', 'Nugget', 'Biscuit', 'Pudding', 'Waffle', 'Zuzu', 'Pip', 'Boba', 'Kiwi', 'Yuzu', 'Dumpling'],
+    names: ['Otto', 'Mochi', 'Gizmo', 'Noodle', 'Pickle', 'Tofu', 'Nugget', 'Biscuit', 'Pudding', 'Waffle', 'Zuzu', 'Pip', 'Boba', 'Kiwi', 'Yuzu', 'Dumpling'],
     nudgeTitle: (name: string) => `Can ${name} nudge you?`,
     nudgeSub: 'Gentle. Max once a day. Never guilt. You can change it anytime.',
     nudgeYes: 'Yes, gentle nudges',

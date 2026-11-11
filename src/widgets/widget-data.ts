@@ -52,7 +52,7 @@ export function readWidgetData(now = new Date()): WidgetData {
   const focus = s.focus && (s.focus.pausedRemaining !== null || s.focus.endsAt > now.getTime()) ? { text: s.focus.biteText, endsAt: s.focus.endsAt } : null;
   const icon = pick ? biteIcon(pick.text, pick.size) : 'list';
   return {
-    petName: s.pet?.name ?? 'Bean',
+    petName: s.pet?.name ?? 'Pip',
     petColor: petColors[(s.pet?.color as PetColor) ?? 'caramel'] ?? petColors.caramel,
     mood: focus ? 'focused' : hour >= 23 || hour < 6 ? 'sleepy' : pick ? 'hungry' : 'happy',
     bite: pick ? { id: pick.id, text: pick.text, icon, symbol: sfSymbol(icon), min: FOOD[pick.size].min } : null,

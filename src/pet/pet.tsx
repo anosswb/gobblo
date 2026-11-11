@@ -394,7 +394,7 @@ export function Pet({
   face?: FaceId;
   /** the small cream spark on the forehead (brand mark) */
   mark?: boolean;
-  /** tap to squish (a light haptic + jelly wobble) */
+  /** tap to squish (a light haptic + soft wobble) */
   onPress?: () => void;
   accessibilityLabel?: string;
 }) {

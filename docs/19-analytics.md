@@ -48,8 +48,8 @@ it off in Settings."
 | `tool_opened` | `tool` (unstick, calm, pick, reminders, other) | use-analytics (`/tools/<id>`) | toolkit use |
 | `closet_item_got` | `slot` (hat, face, color, room, pack), `how` (level, sparks, plus, weekly) | store (level rewards, Plus unlock) | what motivates |
 | `theme_picked` | `palette` (the 5 palettes) or `scheme` (system, light, dark) | store `updateSettings` | theme popularity |
-| `ad_offer_shown` | `left` (videos left today) | `src/screens/plus/video-treat.tsx` | Android offer reach |
-| `ad_result` | `result` (earned, closed, unavailable), `reason` (code prefix only) | `src/lib/ads.android.ts` | ad fill + the "No video" bug |
+| `ad_offer_shown` | `left` (videos left today), `place` (plus, closet) | `src/screens/plus/video-treat.tsx` | Android offer reach |
+| `ad_result` | `result` (earned, closed, unavailable), `reason` (code prefix only), `place` (plus, closet) | `src/lib/ads.android.ts` | ad fill + the "No video" bug |
 | `plus_seen` | none | use-analytics (`/plus`) | paywall reach |
 | `plus_bought` | none | `src/lib/purchases.ios.ts` | conversions |
 | `plus_restored` | `found` (bool) | `src/lib/purchases.ios.ts` | restore works |

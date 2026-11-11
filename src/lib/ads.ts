@@ -14,7 +14,7 @@ export function lastAdError(): string | null {
 /** Loads one ad in the background (Android only). */
 export function preloadRewarded(): void {}
 
-export async function showRewarded(): Promise<AdResult> {
+export async function showRewarded(_place?: 'plus' | 'closet'): Promise<AdResult> {
   return 'unavailable';
 }
 

@@ -32,8 +32,8 @@ export function levelProgress(total: number): { level: number; progress: number;
 
 /**
  * Evolution forms (what the pet looks like). Level → form:
- * 1–2 baby blob · 3–6 lil gremlin (ears) · 7–12 big chonk (belly, tooth) ·
- * 13–19 cosmic menace (aura) · 20 legend (golden, the final surprise).
+ * 1–2 tiny pup · 3–6 pebble juggler · 7–12 river rascal · 13–19 tide chaser ·
+ * 20 legend (golden, the final surprise). The names are in STAGES below.
  */
 export const STAGES = [
   { level: 1, at: LEVELS[0], name: 'Tiny pup' },
