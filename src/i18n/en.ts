@@ -269,6 +269,17 @@ export const en = {
     sparkBadge: (n: number) => `✦ ${n}`,
     lvBadge: (lv: number) => `Lv ${lv}`,
     preview: 'Preview',
+    /** spark shop (features/closet/shop): one item at a time */
+    earlyLevel: (lv: number) => `Free at level ${lv}, or get it now`,
+    earlyWeek: (days: number) => (days <= 1 ? 'A free surprise tomorrow, or get it now' : `A free surprise in ${days} days, or get it now`),
+    plusItem: 'Part of Plus, or get just this one',
+    sparkItem: 'A special one for your sparks',
+    getIt: (n: number) => `Get it · ✦ ${n}`,
+    short: (n: number) => `${n} ✦ short`,
+    sparksFrom: (pet: string) => `Sparks come from feeding ${pet}`,
+    orPlus: 'Or get everything with Plus',
+    got: (item: string) => `${item} is yours. Looking good.`,
+    priceA11y: (n: number) => `${n} sparks`,
   },
   dump: {
     title: 'Brain dump',
