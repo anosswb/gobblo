@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import Animated, { FadeIn, FadeInUp, FadeOut, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { Icon } from '@/components/icon';
 import { haptics } from '@/lib/haptics';
+import { FloatHeart } from '@/pet/hearts';
 import { duration, spring } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 
@@ -38,6 +38,9 @@ type Timer = ReturnType<typeof setTimeout>;
 export function usePetting({ reduceMotion, onAsk }: { reduceMotion: boolean; onAsk: () => void }) {
   const [phase, setPhase] = useState<PetPhase>('idle');
   const [hearts, setHearts] = useState<{ id: number; x: number }[]>([]);
+  /** the petting stopped: the hearts on screen fade out now */
+  const [heartsFading, setHeartsFading] = useState(false);
+  const dropHeart = useCallback((id: number) => setHearts((h) => h.filter((k) => k.id !== id)), []);
   const purrs = useRef(0);
   const timers = useRef<Timer[]>([]);
   const askRef = useRef(onAsk);
@@ -56,6 +59,7 @@ export function usePetting({ reduceMotion, onAsk }: { reduceMotion: boolean; onA
   /** back to the normal mood (a feed, a tap, or nobody petted it again) */
   const reset = useCallback(() => {
     clear();
+    setHeartsFading(true);
     setPhase('idle');
     look.set(withSpring(0, spring.apple));
   }, [look]);
@@ -63,6 +67,7 @@ export function usePetting({ reduceMotion, onAsk }: { reduceMotion: boolean; onA
   const start = () => {
     clear();
     purrs.current = 0;
+    setHeartsFading(false);
     setPhase('stroke');
     look.set(withSpring(0, spring.apple));
   };
@@ -72,12 +77,13 @@ export function usePetting({ reduceMotion, onAsk }: { reduceMotion: boolean; onA
     purrs.current += 1;
     if (purrs.current % HEART_EVERY !== 1) return;
     const id = Date.now() + Math.random();
+    // each heart removes itself when its float ends (src/pet/hearts.tsx): no timer to lose
     setHearts((h) => [...h.slice(-3), { id, x }]);
-    timers.current.push(setTimeout(() => setHearts((h) => h.filter((k) => k.id !== id)), duration.verySlow + duration.fast));
   };
 
   const release = (x: number, width: number) => {
     clear();
+    setHeartsFading(true);
     setPhase('content');
     if (!reduceMotion) {
       shiver.set(
@@ -105,14 +111,14 @@ export function usePetting({ reduceMotion, onAsk }: { reduceMotion: boolean; onA
     transform: [{ translateX: look.get() * LOOK_PT }, { rotate: `${shiver.get() + look.get() * LOOK_DEG}deg` }],
   }));
 
-  return { phase, hearts, style, start, purr, release, reset };
+  return { phase, hearts, heartsFading, dropHeart, style, start, purr, release, reset };
 }
 
 /** The stroke area over the otter: a pan that feeds `usePetting`, plus the little hearts. */
 export function PetStroke({
   petting,
   children,
-}: PropsWithChildren<{ petting: Pick<ReturnType<typeof usePetting>, 'hearts' | 'start' | 'purr' | 'release'> }>) {
+}: PropsWithChildren<{ petting: Pick<ReturnType<typeof usePetting>, 'hearts' | 'heartsFading' | 'dropHeart' | 'start' | 'purr' | 'release'> }>) {
   const { colors, reduceMotion } = useTheme();
   const travelled = useSharedValue(0);
   const last = useSharedValue({ x: 0, y: 0 });
@@ -150,20 +156,10 @@ export function PetStroke({
       <View onLayout={(e) => box.set(e.nativeEvent.layout.width)}>
         {children}
         {petting.hearts.map((h) => (
-          <Animated.View
-            key={h.id}
-            pointerEvents="none"
-            entering={reduceMotion ? FadeIn.duration(duration.quick) : FadeInUp.duration(duration.fast)}
-            exiting={FadeOut.duration(duration.quick)}
-            style={[styles.heart, { start: h.x - 10 }]}>
-            <Icon name="heart" size={20} color={colors.pink} />
-          </Animated.View>
+          <FloatHeart key={h.id} x={h.x - 10} color={colors.pink} fading={petting.heartsFading} reduceMotion={reduceMotion} onDone={() => petting.dropHeart(h.id)} />
         ))}
       </View>
     </GestureDetector>
   );
 }
 
-const styles = StyleSheet.create({
-  heart: { position: 'absolute', top: 8 },
-});
