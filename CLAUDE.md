@@ -40,7 +40,7 @@ A cute pet that eats your to-do list. You feed it by **starting** tasks, even 2 
 ## Hard rules
 - **Expo SDK 58** (React Native 0.88, iOS 27 SDK). Always add packages with `npx expo install <pkg>` so versions match the SDK. TypeScript strict. React Native's Strict TypeScript API is the default in 0.87+: no deep imports from `react-native/Libraries/*`.
 - **New Architecture only.** No libraries that need the old architecture.
-- **No accounts, no backend in v1.** All data stays on the device (MMKV). No login screen. That also means no account-deletion requirement.
+- **No accounts, no backend in v1.** User content stays on the device (MMKV). Anonymous usage counts (PostHog) and crash reports (Sentry) are sent, with a switch to turn them off; never anything the user types (Anass, 2026-11-11, see docs/19). No login screen. That also means no account-deletion requirement.
 - **No WebView screens**, except opening the privacy policy/terms in the browser.
 - **Light + dark mode** everywhere, following the system by default, with a Settings override (System / Light / Dark). Every color comes from theme tokens. No hard-coded hex colors in components.
 - **Accessibility:** tap targets ≥ 44×44 pt, Dynamic Type / font scaling respected (cap at 1.4×), `accessibilityLabel` on every icon button, honor Reduce Motion (swap big motion for fades).
