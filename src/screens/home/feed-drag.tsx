@@ -12,12 +12,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { spring } from '@/theme/motion';
+import { duration, spring } from '@/theme/motion';
 import { Icon, type IconName } from '@/components/icon';
 import { useTheme } from '@/theme/theme-provider';
 
+import { useBiteFocus } from './focus-context';
+import { HOLD_MS, movedEnough } from './focus-logic';
+
 /**
- * Drag-to-feed (docs/01 §1, the signature interaction): long-press a bite's food, drag it onto
+ * Drag-to-feed (docs/01 §1, the signature interaction): hold a bite, drag it onto
  * the pet. The pet opens its mouth while you carry food, chomps when you are over it, and a drop
  * opens the start sheet for that bite. A miss springs the food home. All on the UI thread; React
  * only hears start / over / drop / end.
@@ -50,30 +53,56 @@ export function useFeedDragState() {
 
 const PAD = 28; // the pet's mouth zone is generous: thumbs are big
 
-/** Wrap a food tile; long-press (220 ms) turns it into a draggable bite. */
-export function DraggableFood({ id, emoji, children }: PropsWithChildren<{ id: string; emoji: IconName }>) {
+/** idle → holding (lifted, menu shown, finger down) → dragging (food follows the finger) */
+const IDLE = 0;
+const HOLDING = 1;
+const DRAGGING = 2;
+
+/**
+ * The whole bite row is the handle (docs/16 point 6). One press, two results:
+ * - hold still (HOLD_MS) → the bite lifts into focus mode with its menu (bite-focus.tsx);
+ * - keep holding and move more than DRAG_SLOP → the menu goes and drag-to-feed takes over.
+ * Moving before the hold fires fails the pan (RNGH: ~10 pt), so a scroll or a sideways swipe on
+ * the list does nothing here and the ScrollView keeps scrolling (same pattern as the old food-only
+ * handle: no simultaneous relations needed). `rowRef` is the row's box, measured on the UI thread.
+ */
+export function HoldBite({ id, emoji, rowRef, children }: PropsWithChildren<{ id: string; emoji: IconName; rowRef: AnimatedRef<Animated.View> }>) {
   const ctx = useContext(FeedDragContext);
+  const focus = useBiteFocus();
   const zone = useSharedValue<Zone>({ x: 0, y: 0, w: 0, h: 0 });
   const home = useSharedValue({ x: 0, y: 0 });
+  const phase = useSharedValue(IDLE);
 
   const pan = usePanGesture({
-    activateAfterLongPress: 220,
-    enabled: !!ctx,
+    activateAfterLongPress: HOLD_MS,
+    enabled: !!ctx || !!focus,
     onActivate: (e) => {
       'worklet';
-      if (!ctx) return;
-      const m = measure(ctx.target);
-      if (m) zone.set({ x: m.pageX - PAD, y: m.pageY - PAD, w: m.width + PAD * 2, h: m.height + PAD * 2 });
       home.set({ x: e.absoluteX, y: e.absoluteY });
-      ctx.x.set(e.absoluteX);
-      ctx.y.set(e.absoluteY);
-      ctx.over.set(0);
-      ctx.shown.set(withTiming(1, { duration: 120 }));
-      scheduleOnRN(ctx.onStart, id, emoji);
+      phase.set(HOLDING);
+      if (!focus) return;
+      const r = measure(rowRef);
+      const c = measure(focus.container);
+      if (r) scheduleOnRN(focus.onHold, id, { x: r.pageX - (c?.pageX ?? 0), y: r.pageY - (c?.pageY ?? 0), w: r.width, h: r.height });
     },
     onUpdate: (e) => {
       'worklet';
       if (!ctx) return;
+      if (phase.get() === HOLDING) {
+        const h = home.get();
+        if (!movedEnough(e.absoluteX - h.x, e.absoluteY - h.y)) return;
+        // still holding and moving: this is drag-to-feed
+        phase.set(DRAGGING);
+        const m = measure(ctx.target);
+        if (m) zone.set({ x: m.pageX - PAD, y: m.pageY - PAD, w: m.width + PAD * 2, h: m.height + PAD * 2 });
+        ctx.x.set(h.x);
+        ctx.y.set(h.y);
+        ctx.over.set(0);
+        ctx.shown.set(withTiming(1, { duration: duration.micro }));
+        if (focus) scheduleOnRN(focus.onDragStart);
+        scheduleOnRN(ctx.onStart, id, emoji);
+      }
+      if (phase.get() !== DRAGGING) return;
       ctx.x.set(e.absoluteX);
       ctx.y.set(e.absoluteY);
       const z = zone.get();
@@ -85,19 +114,26 @@ export function DraggableFood({ id, emoji, children }: PropsWithChildren<{ id: s
     },
     onDeactivate: (e) => {
       'worklet';
-      if (!ctx) return;
+      const was = phase.get();
+      phase.set(IDLE);
+      if (was === HOLDING) {
+        if (focus) scheduleOnRN(focus.onHoldRelease, e.canceled);
+        return;
+      }
+      if (was !== DRAGGING || !ctx) return;
       if (!e.canceled && ctx.over.get() === 1) {
-        ctx.shown.set(withTiming(0, { duration: 160 }));
+        ctx.shown.set(withTiming(0, { duration: duration.quick }));
         scheduleOnRN(ctx.onDrop, id);
       } else {
         // a miss: the food flies back to its plate, carrying the release velocity feel
         const h = home.get();
         ctx.x.set(withSpring(h.x, spring.sheet));
         ctx.y.set(withSpring(h.y, spring.sheet));
-        ctx.shown.set(withTiming(0, { duration: 260 }));
+        ctx.shown.set(withTiming(0, { duration: duration.fast }));
       }
       ctx.over.set(0);
       scheduleOnRN(ctx.onEnd);
+      if (focus) scheduleOnRN(focus.onDragEnd);
     },
   });
 

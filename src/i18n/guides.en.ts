@@ -14,7 +14,7 @@ const android = MONETIZATION === 'ads';
 export const GUIDES = {
   home: [
     { demo: 'list', title: 'Add a bite', body: 'Type a task. I guess its icon and size as you type. Tap the chips to change the size or pick when.' },
-    { demo: 'drag', title: 'Feed {pet}', body: 'Hold a bite’s food and drag it to {pet}, or just tap the bite to start it.' },
+    { demo: 'drag', title: 'Feed {pet}', body: 'Hold a bite and drag it to {pet}, or just tap it to start. Hold still for more.' },
     { demo: 'timer', title: 'Two minutes counts', body: 'Starting is the whole trick. Even 2 minutes feeds {pet}.' },
     { demo: 'tap', title: 'Later and tools', body: 'Bites for later wait folded under the list. The toolbox up top has calm-down and get-unstuck tools.' },
   ],

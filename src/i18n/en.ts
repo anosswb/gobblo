@@ -77,7 +77,7 @@ export const en = {
     pickHint: 'Can’t choose? Let your pet pick one bite',
     about: (min: number) => `~${min} min`,
     guideTitle: (name: string) => `Feed ${name} by starting`,
-    guideBody: (name: string) => `Hold a bite’s food for a moment, then drag it onto ${name}. Or just tap the bite.`,
+    guideBody: (name: string) => `Hold a bite and drag it onto ${name}. Hold still for more, or just tap it.`,
     guideOk: 'Got it',
     addPlaceholder: 'Add a bite… (text Mom, laundry)',
     add: 'Add',
@@ -103,6 +103,14 @@ export const en = {
     askAgainLater: 'No worries. You can turn nudges on in Settings anytime.',
     sizeLabel: 'Change size',
     sizeChip: (label: string, min: number) => `${label} · ~${min} min`,
+    /** focus mode: hold a bite (docs/16 point 6) */
+    holdHint: 'Tap to start. Hold for more.',
+    actStart: 'Start',
+    actFirst: 'Do first',
+    actLater: 'Later',
+    actRemove: 'Remove',
+    focusClose: 'Close',
+    focusMenu: (bite: string) => `Actions for ${bite}`,
   },
   onboarding: {
     hookTitle: 'Your brain isn’t lazy.',

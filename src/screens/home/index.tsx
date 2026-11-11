@@ -32,6 +32,7 @@ import { duration, staggerDelay } from '@/theme/motion';
 import { useTheme } from '@/theme/theme-provider';
 import { fonts, radius, space, typeScale } from '@/theme/tokens';
 
+import { BiteFocusProvider } from './bite-focus';
 import { BiteRow } from './bite-row';
 import { WeeklyCard } from './weekly-card';
 import { DragGuide } from './drag-guide';
@@ -298,10 +299,37 @@ export function HomeScreen() {
     if (removed) toast(h.removed, { label: h.undo, onPress: () => restoreBite(removed) });
   };
 
+  // the bite actions, shared by the start sheet, the hold menu (focus mode) and screen readers
+  const openStart = (b: Bite) => {
+    haptics.select();
+    play('pop');
+    setSelected(b);
+  };
+  const doFirst = (b: Bite) => {
+    const st = useAppStore.getState();
+    st.moveToTop(b.id);
+    if (b.when) st.setBiteWhen(b.id, 'today');
+    haptics.light();
+    toast(en.start.firstDone);
+  };
+  // "Later" from the hold menu: one tap moves it to Tomorrow; Undo puts the exact bite back
+  const moveLater = (b: Bite) => {
+    useAppStore.getState().setBiteWhen(b.id, 'tomorrow');
+    haptics.light();
+    toast(en.when.moved(movedLabel('tomorrow')), { label: h.undo, onPress: () => restoreBite(b) });
+  };
+  const rowActions = (b: Bite) => ({
+    onOpen: () => openStart(b),
+    onFirst: () => doFirst(b),
+    onLater: b.when ? undefined : () => moveLater(b),
+    onRemove: () => removeWithUndo(b.id),
+  });
+
   const enter = (i: number) =>
     reduceMotion ? FadeIn.duration(duration.quick) : FadeInDown.duration(duration.fast).delay(staggerDelay(i));
 
   return (
+    <BiteFocusProvider actions={{ onStart: openStart, onFirst: doFirst, onLater: moveLater, onRemove: (b) => removeWithUndo(b.id) }}>
     <Screen
       overlay={<FloatingFood emoji={floatEmoji} x={drag.x} y={drag.y} shown={drag.shown} over={drag.over} />}
       eyebrow={dateLine(openedAt)}
@@ -541,15 +569,7 @@ export function HomeScreen() {
                 entering={enter(i)}
                 exiting={reduceMotion ? undefined : FadeOut.duration(duration.quick)}
                 layout={reduceMotion ? undefined : LinearTransition.duration(duration.fast)}>
-                <BiteRow
-                  bite={b}
-                  onOpen={() => {
-                    haptics.select();
-                    play('pop');
-                    setSelected(b);
-                  }}
-                  onRemove={() => removeWithUndo(b.id)}
-                />
+                <BiteRow bite={b} {...rowActions(b)} />
               </Animated.View>
             ))
           )}
@@ -612,16 +632,7 @@ export function HomeScreen() {
                     <Text variant="caption" tone="ink2" style={[styles.footer, styles.chipText]}>{whenText(g.when, g.day)}</Text>
                     <View style={[styles.list, { backgroundColor: colors.card, borderColor: colors.cardBorder, borderWidth: StyleSheet.hairlineWidth }]}>
                       {g.bites.map((b) => (
-                        <BiteRow
-                          key={b.id}
-                          bite={b}
-                          tag={whenText(g.when, g.day)}
-                          onOpen={() => {
-                            haptics.select();
-                            setSelected(b);
-                          }}
-                          onRemove={() => removeWithUndo(b.id)}
-                        />
+                        <BiteRow key={b.id} bite={b} tag={whenText(g.when, g.day)} {...rowActions(b)} />
                       ))}
                     </View>
                   </View>
@@ -673,11 +684,8 @@ export function HomeScreen() {
         }}
         onFirst={() => {
           if (!selected) return;
-          useAppStore.getState().moveToTop(selected.id);
-          if (selected.when) useAppStore.getState().setBiteWhen(selected.id, 'today');
           setSelected(null);
-          haptics.light();
-          toast(en.start.firstDone);
+          doFirst(selected);
         }}
         onSplit={() => {
           if (!selected) return;
@@ -702,6 +710,7 @@ export function HomeScreen() {
         }}
       />
     </Screen>
+    </BiteFocusProvider>
   );
 }
 
