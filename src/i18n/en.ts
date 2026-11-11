@@ -278,6 +278,7 @@ export const en = {
     short: (n: number) => `${n} ✦ short`,
     sparksFrom: (pet: string) => `Sparks come from feeding ${pet}`,
     orPlus: 'Or get everything with Plus',
+    allPlus: 'Or all with Plus',
     got: (item: string) => `${item} is yours. Looking good.`,
     priceA11y: (n: number) => `${n} sparks`,
   },

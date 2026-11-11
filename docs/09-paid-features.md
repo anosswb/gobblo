@@ -2,6 +2,8 @@
 
 > **2026-11-10:** One single Plus (no more Start Kit / Make It Yours / bundle). Plus = full closet + lock-screen focus timer + routine packs. Android: 150 sparks. iOS: one-time purchase, display default $4.99 (real price from the store). The widget one-tap 2-minute start is free for everyone: starting a task is the core loop. Old pack ids in `unlocked` still count as Plus.
 
+> **2026-11-11: spark shop.** Every locked Closet item can also be bought one at a time with sparks, on both stores (`SHOP_PRICES` in `src/features/closet/shop.ts`): a level item early 20–60 ✦ (only while waiting would be slower; Legend level-20 items never), a Plus item 40–60 ✦, the next weekly surprise 25 ✦. Plus stays the bundle (150 ✦ on Android, one purchase on iOS once live) and is far cheaper than the ~430 ✦ of its items singly. Android's rewarded video is offered on the Plus page and in the Closet (when short of sparks), and stays after Plus while sparks still buy something.
+
 Principle (from the review research in docs/07): the core loop stays free forever, and paid features are things people WANT to show off or that make the app feel more alive. No paywalled basics like notification sounds. That exact thing got a 1★ review for Structured.
 
 ## iOS: Gobblo Plus (one-time, launch $6.99, then $9.99)

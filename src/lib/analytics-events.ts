@@ -105,7 +105,7 @@ export const EVENTS = {
   tool_opened: { tool: TOOLS },
   closet_item_got: { slot: ['hat', 'face', 'color', 'room', 'pack'] as const, how: ['level', 'sparks', 'plus', 'weekly'] as const },
   theme_picked: { palette: PALETTES, scheme: ['system', 'light', 'dark'] as const },
-  ad_offer_shown: { left: num },
+  ad_offer_shown: { left: num, place: ['plus', 'closet'] as const },
   ad_result: { result: ['earned', 'closed', 'unavailable'] as const, reason: AD_REASONS },
   plus_seen: {},
   plus_bought: {},

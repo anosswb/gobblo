@@ -6,68 +6,42 @@ import { PressScale } from '@/components/press-scale';
 import { Text } from '@/components/text';
 import { ADS, USE_REAL_ADS } from '@/config/ads';
 import { useLook } from '@/features/closet/use-look';
-import { adsLeftToday, afterAd } from '@/features/plus/ad-reward';
+import { useVideoTreat } from '@/features/plus/use-video-treat';
 import { en } from '@/i18n/en';
-import { lastAdError, preloadRewarded, showRewarded } from '@/lib/ads';
-import { track } from '@/lib/analytics';
-import { haptics } from '@/lib/haptics';
-import { play } from '@/lib/sound';
 import { Burst } from '@/pet/burst';
 import { Pet, type Mood } from '@/pet/pet';
 import { useAppStore } from '@/state/app-store';
-import { dayKey } from '@/state/schema';
 import { useTheme } from '@/theme/theme-provider';
 import { radius, space } from '@/theme/tokens';
 
 const v = en.plus.video;
-type Phase = 'idle' | 'loading' | 'thanks' | 'later' | 'none';
 
 /**
  * "Treat your pet": the only ad in the app (Android). The person chooses to watch one short
  * video and the pet gets sparks. The feeling is a happy pet, never a sad or begging one: closing
  * the video early is "no worries", the daily limit is "I'm full" (no guilt, CLAUDE.md).
- * Sparks from videos count for unlocking Plus but never for the level (stats.total is untouched).
+ * Sparks from videos buy Plus and Closet items but never count for the level (stats.total is
+ * untouched). The logic is shared with the Closet offer (features/plus/use-video-treat).
  */
 export function VideoTreat() {
   const { colors } = useTheme();
   const look = useLook();
   const petName = useAppStore((s) => s.pet.name);
-  const adSparks = useAppStore((s) => s.stats.adSparks);
-  const [phase, setPhase] = useState<Phase>('idle');
+  const { phase, reason, left, full, watch: watchVideo, preload, trackShown } = useVideoTreat('plus');
   const [burst, setBurst] = useState(0);
-  const left = adsLeftToday(adSparks, dayKey(), ADS.maxPerDay);
-  const full = left <= 0;
-  const [reason, setReason] = useState<string | null>(null);
 
   // anonymous count: the offer card was shown (once per visit), with how many videos are left today
   useEffect(() => {
-    track('ad_offer_shown', { left });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    trackShown();
+  }, [trackShown]);
 
   // get one video ready in the background, only when an offer can be shown
   useEffect(() => {
-    if (ADS.enabled && left > 0) preloadRewarded();
-  }, [left]);
+    if (left > 0) preload();
+  }, [left, preload]);
 
   const watch = async () => {
-    if (phase === 'loading' || full) return;
-    setPhase('loading');
-    setReason(null);
-    haptics.light();
-    const r = await showRewarded().catch(() => 'unavailable' as const);
-    if (r !== 'earned') {
-      if (r === 'unavailable' && !USE_REAL_ADS) setReason(lastAdError());
-      setPhase(r === 'closed' ? 'later' : 'none');
-      return;
-    }
-    const st = useAppStore.getState();
-    const next = afterAd(st.stats.adSparks, dayKey(), ADS.maxPerDay);
-    if (next) useAppStore.setState({ stats: { ...st.stats, sparks: st.stats.sparks + ADS.rewardSparks, adSparks: next } });
-    setBurst((b) => b + 1);
-    haptics.success();
-    play('spark');
-    setPhase('thanks');
+    if (await watchVideo()) setBurst((b) => b + 1);
   };
 
   const mood: Mood = phase === 'thanks' ? 'love' : phase === 'loading' ? 'excited' : full ? 'sleepy' : 'happy';

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
@@ -10,10 +10,12 @@ import { skyOf, StageBackdrop, stageIsDark } from '@/components/stage-backdrop';
 import { Text } from '@/components/text';
 import { capFirst } from '@/features/bites/logic';
 import { COLORS, FACES, HATS, ROOMS, type HomeMood, type Item, type RoomId, type Slot } from '@/features/closet/items';
-import { itemOpen, priceOf, type ShopCtx } from '@/features/closet/shop';
+import { anythingToBuy, itemOpen, priceOf, type ShopCtx } from '@/features/closet/shop';
 import { useLook } from '@/features/closet/use-look';
 import { buyItemNow } from '@/features/closet/use-shop';
-import { PLUS_VISIBLE } from '@/config/monetization';
+import { ADS } from '@/config/ads';
+import { MONETIZATION, PLUS_VISIBLE } from '@/config/monetization';
+import { useVideoTreat, videoOffersOn } from '@/features/plus/use-video-treat';
 import { STAGES } from '@/features/progress/logic';
 import { daysUntilWeek } from '@/features/weekly/logic';
 import { haptics } from '@/lib/haptics';
@@ -42,12 +44,14 @@ type Tile = { key: string; tab: Tab; label: string; item?: Item; mood?: HomeMood
  * shop, features/closet/shop) get that one item now with sparks: "Get it · ✦ 40".
  */
 export function ClosetScreen() {
-  const { colors, scheme } = useTheme();
+  const { colors, scheme, reduceMotion } = useTheme();
   const look = useLook();
   const pet = useAppStore((s) => s.pet);
   const patchPet = useAppStore((s) => s.patchPet);
   const firstOpen = useAppStore((s) => s.settings.firstOpen);
   const sparks = useAppStore((s) => s.stats.sparks);
+  const adOffers = useAppStore((s) => s.settings.adOffers);
+  const video = useVideoTreat('closet');
   const [tab, setTab] = useState<Tab>('mood');
   const [preview, setPreview] = useState<Tile | null>(null);
   /** the tile just bought (shows a small "it's yours" line, no big celebration) */
@@ -78,6 +82,7 @@ export function ClosetScreen() {
   const choose = (tile: Tile) => {
     setPreview(tile);
     setGot(null);
+    video.reset();
     if (!unlocked(tile)) {
       // for sale = a calm preview; not for sale (Legend) = the old "locked" nudge
       if (price(tile) !== null) haptics.select();
@@ -107,9 +112,22 @@ export function ClosetScreen() {
 
   const previewPrice = preview && !unlocked(preview) ? price(preview) : null;
   const short = previewPrice !== null ? Math.max(0, previewPrice - sparks) : 0;
+  // Android only, on a tap only: "Watch a video · +15 ✦" when an item is out of reach today
+  const videoOn = videoOffersOn(adOffers, anythingToBuy(shop, MONETIZATION === 'ads')) && short > 0 && !video.full;
+  const videoKey = videoOn && preview ? preview.key : null;
+  useEffect(() => {
+    if (!videoKey) return;
+    video.preload(); // a video is ready by the time they tap
+    video.trackShown();
+    // once per previewed item
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoKey]);
+  const videoLine =
+    video.phase === 'thanks' ? en.plus.video.thanks(ADS.rewardSparks) : video.phase === 'later' ? en.plus.video.later : video.phase === 'none' ? en.plus.video.none : null;
 
   const status = (() => {
     if (preview?.item && got === preview.key) return t.got(preview.item.name);
+    if (videoLine && previewPrice !== null) return short > 0 ? `${videoLine} ${t.short(short)}.` : videoLine;
     if (preview && !unlocked(preview) && preview.item) {
       const u = preview.item.unlock;
       if (previewPrice === null) return u.type === 'level' ? t.lockedLevel(u.level) : t.lockedPlus;
@@ -133,22 +151,44 @@ export function ClosetScreen() {
       <View style={[styles.hero, { borderColor: colors.cardBorder }]}>
         <StageBackdrop room={show.room} sky={sky} glowY={64} />
         {/* the pet moves up a little while the buy row is showing, so nothing covers it */}
-        <Animated.View layout={LinearTransition.duration(duration.fast)} style={hasActions ? styles.petUp : null}>
+        <Animated.View layout={reduceMotion ? undefined : LinearTransition.duration(duration.fast)} style={hasActions ? styles.petUp : null}>
           <Pet size={150} color={show.color} mood={show.mood} stage={look.stage} hat={show.hat} face={show.face} onPress={() => play('boop')} accessibilityLabel={pet.name} />
         </Animated.View>
         <Animated.View key={status} entering={FadeIn.duration(duration.quick)} style={styles.status}>
           <Text variant="subhead" tone={stageTone} style={styles.center} accessibilityLiveRegion="polite">{status}</Text>
-          {hasActions && short === 0 ? (
-            <PressScale accessibilityRole="button" onPress={getIt} style={[styles.buyBtn, { backgroundColor: colors.primary }]}>
-              <Text variant="bodyBold" tone="onPrimary">{t.getIt(previewPrice)}</Text>
-            </PressScale>
+          {hasActions && (short === 0 || videoOn) ? (
+            // one action row: the main button, and (Plus items) the quiet "everything" link beside it
+            <View style={styles.actions}>
+              {short === 0 ? (
+                <PressScale accessibilityRole="button" onPress={getIt} style={[styles.buyBtn, { backgroundColor: colors.primary }]}>
+                  <Text variant="bodyBold" tone="onPrimary">{t.getIt(previewPrice)}</Text>
+                </PressScale>
+              ) : (
+                <PressScale
+                  accessibilityRole="button"
+                  accessibilityState={{ busy: video.phase === 'loading', disabled: video.phase === 'loading' }}
+                  disabled={video.phase === 'loading'}
+                  onPress={() => void video.watch()}
+                  style={[styles.buyBtn, styles.videoBtn, { backgroundColor: colors.cardSolid, borderColor: colors.cardBorder, opacity: video.phase === 'loading' ? 0.6 : 1 }]}>
+                  <Icon name="play" size={14} color={colors.ink} />
+                  <Text variant="bodyBold">{video.phase === 'loading' ? en.plus.video.loading : en.plus.video.watch(ADS.rewardSparks)}</Text>
+                </PressScale>
+              )}
+              {plusLink ? (
+                <PressScale accessibilityRole="link" hitSlop={10} onPress={() => router.push('/plus')} style={styles.linkTap}>
+                  <Text variant="caption" tone={stageTone} style={styles.link}>{t.allPlus}</Text>
+                </PressScale>
+              ) : null}
+            </View>
           ) : hasActions ? (
-            <Text variant="caption" tone={stageTone} style={styles.center}>{t.sparksFrom(pet.name)}</Text>
-          ) : null}
-          {plusLink ? (
-            <PressScale accessibilityRole="link" hitSlop={10} onPress={() => router.push('/plus')} style={styles.linkTap}>
-              <Text variant="caption" tone={stageTone} style={styles.link}>{t.orPlus}</Text>
-            </PressScale>
+            <>
+              <Text variant="caption" tone={stageTone} style={styles.center}>{t.sparksFrom(pet.name)}</Text>
+              {plusLink ? (
+                <PressScale accessibilityRole="link" hitSlop={10} onPress={() => router.push('/plus')} style={styles.linkTap}>
+                  <Text variant="caption" tone={stageTone} style={styles.link}>{t.orPlus}</Text>
+                </PressScale>
+              ) : null}
+            </>
           ) : null}
         </Animated.View>
       </View>
@@ -246,6 +286,8 @@ const styles = StyleSheet.create({
   status: { position: 'absolute', bottom: space.l, start: space.l, end: space.l, alignItems: 'center', gap: space.s },
   petUp: { marginBottom: 56 },
   buyBtn: { minHeight: 44, paddingHorizontal: space.xl, borderRadius: radius.button, justifyContent: 'center' },
+  videoBtn: { flexDirection: 'row', alignItems: 'center', gap: space.s, paddingHorizontal: space.l, borderWidth: StyleSheet.hairlineWidth },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', columnGap: space.m, rowGap: space.xs },
   linkTap: { minHeight: 24, justifyContent: 'center' },
   link: { textDecorationLine: 'underline' },
   tabs: { gap: space.s, paddingVertical: space.xs },

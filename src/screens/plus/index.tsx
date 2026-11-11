@@ -9,11 +9,13 @@ import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
 import { LINKS } from '@/config/app';
-import { ADS } from '@/config/ads';
 import { MONETIZATION } from '@/config/monetization';
+import { anythingToBuy } from '@/features/closet/shop';
+import { useLook } from '@/features/closet/use-look';
 import { askNotificationPermission } from '@/features/nudges/schedule';
 import { canShowOffer, DISPLAY_PRICE, hasPlus, PLUS_SPARKS } from '@/features/plus/catalog';
 import { ROUTINE_IDS, ROUTINES, type RoutineId } from '@/features/plus/routines';
+import { videoOffersOn } from '@/features/plus/use-video-treat';
 import { en } from '@/i18n/en';
 import { haptics } from '@/lib/haptics';
 import { buyPlus, getPlusPrice, restorePlus } from '@/lib/purchases';
@@ -47,6 +49,9 @@ export function PlusScreen() {
   const unlock = useAppStore((s) => s.unlock);
   const android = MONETIZATION === 'ads';
   const owned = hasPlus(unlocked);
+  const look = useLook();
+  // Plus itself is sold for sparks on Android, so it counts as something to buy until owned
+  const sparksBuySomething = anythingToBuy(look, android);
   const [price, setPrice] = useState(DISPLAY_PRICE);
   const [busy, setBusy] = useState(false);
 
@@ -160,8 +165,9 @@ export function PlusScreen() {
         ) : null}
       </View>
 
-      {/* the only ad in the app: optional, Android, hidden once Plus is yours (sparks have no other use) */}
-      {android && !owned && ADS.enabled && adOffers !== false ? <VideoTreat /> : null}
+      {/* the optional video (Android): also after Plus, while sparks still buy Closet items;
+          hidden once there is nothing left to buy (never offer sparks that buy nothing) */}
+      {videoOffersOn(adOffers, sparksBuySomething) ? <VideoTreat /> : null}
 
       {widgetsSupported ? (
         <PressScale accessibilityRole="button" accessibilityHint={t.addWidgetHint}

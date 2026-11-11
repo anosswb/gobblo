@@ -49,22 +49,22 @@ export const FAQ: { q: string; a: string }[] = [
     a: 'Every level gives your pet something: a hat, a colour, a room or a face. It changes form 5 times on the way to level 20, with a surprise at the end. Levels never go down. From your second week, a free new colour also arrives every week.',
   },
   {
-    q: 'Does spending sparks lower my level?',
-    a: 'No. Your level comes from all the sparks you ever earned. Spending only lowers the sparks you can spend.',
+    q: 'What do sparks buy? Does spending them lower my level?',
+    a: 'Any locked Closet item, one at a time: tap it to see its price. Level items stay free when you reach their level, sparks just get them sooner. Spending never lowers your level: it comes from all the sparks you ever earned.',
   },
   android
     ? {
         q: 'Is there anything to pay for?',
-        a: 'No payments on Android. Plus (the full closet, the lock-screen timer and routine packs) costs 150 sparks, which you earn by starting bites. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.',
+        a: 'No payments on Android. Sparks come from starting bites, and from an optional short video if you want (max 3 a day). They buy Closet items one at a time, or Plus for 150: the full closet, the lock-screen timer and routine packs. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good.',
       }
     : !PLUS_VISIBLE
       ? {
           q: 'Is there anything to pay for?',
-          a: 'No. Everything you see in the app is free.',
+          a: 'No. Everything you see in the app is free. Closet items unlock as you level up, or with the sparks you earn by starting bites.',
         }
       : {
           q: 'What is Plus?',
-          a: 'One unlock you buy once: the full closet, the lock-screen timer and routine packs. No subscription, offered only after your first week. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good. Restore purchases is at the bottom of the Plus page.',
+          a: 'One unlock you buy once: the full closet, the lock-screen timer and routine packs. No subscription, offered only after your first week. You can also get Closet items one at a time with the sparks you earn. Bites, focus, feeding, brain dump, the toolkit and reminders are free for good. Restore purchases is at the bottom of the Plus page.',
         },
   {
     q: 'Do I lose anything if I skip days?',

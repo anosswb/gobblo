@@ -4,7 +4,8 @@ Written 2026-11-10. The money code is wired. Today it shows **Google's test ads*
 
 ## What exists today
 
-- **Android:** one optional video card on the Plus page: "Treat {pet}? Watch a video · +15 ✦". The person chooses. Max 3 a day. No banners, no pop-ups, nothing in onboarding, Focus, Feed or Brain dump.
+- **Android:** one optional video offer, "Watch a video · +15 ✦", in two places: the card on the Plus page, and in the Closet on a locked item you are short of sparks for. The person chooses. Max 3 a day in total. It stays after Plus is owned, as long as sparks still buy something, and disappears when everything is yours. No banners, no pop-ups, nothing in onboarding, Focus, Feed, Evolution or Brain dump.
+- **Spark shop (both phones):** every locked Closet item can be bought one at a time with sparks. Prices are in ONE table: `SHOP_PRICES` in `src/features/closet/shop.ts` (change the numbers there).
 - **iPhone:** one purchase, "Plus", through RevenueCat. Hidden until you test a real purchase.
 - **Rating prompt:** after the 3rd fed bite and 2 days, once per version.
 
@@ -32,7 +33,7 @@ The user also has a switch: **Settings › Privacy & data › Bonus video offers
 Today iPhone has **no ads** (project rule: iPhone earns with Plus). The place for the IDs exists (`ios.appId`, `ios.rewardedId` in the same file), but ads on iPhone are **off**, because turning them on changes three things:
 1. The App Store privacy label goes from "almost nothing collected" to "data used for advertising".
 2. iPhone shows the "Allow tracking?" pop-up.
-3. On iPhone sparks buy nothing (Plus is bought with money), so "+5 ✦" has no use there yet.
+3. On iPhone, sparks only buy Closet items one at a time (Plus is bought with money).
 
 If you still want them, tell me and choose the reward (for example: one video = try a Plus hat for a day). Then I remove one line in `package.json` (`expo.autolinking.ios.exclude`), set `ios: true` in `src/config/ads.ts`, and update the rule in CLAUDE.md with your OK.
 
