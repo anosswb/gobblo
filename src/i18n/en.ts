@@ -114,6 +114,8 @@ export const en = {
     actRemove: 'Remove',
     focusClose: 'Close',
     focusMenu: (bite: string) => `Actions for ${bite}`,
+    /** after petting on Home, asked once (warm, never needy) */
+    again: ['Again?', 'One more?', 'That was nice.', 'Mmm. Again sometime?'],
   },
   onboarding: {
     hookTitle: 'Your brain isn’t lazy.',

@@ -38,6 +38,7 @@ import { BiteFocusProvider } from './bite-focus';
 import { BiteRow } from './bite-row';
 import { WeeklyCard } from './weekly-card';
 import { DragGuide } from './drag-guide';
+import { PetStroke, usePetting, type PetPhase } from './pet-stroke';
 import { FeedDragProvider, FloatingFood, useFeedDragState } from './feed-drag';
 import { FoodIcon } from '@/components/food-icon';
 import { BiteIcon } from '@/components/bite-icon';
@@ -55,6 +56,9 @@ const PET_SHARE = 0.6;
 const FEET_SINK = 0.06;
 /** After the otter surfaces: the level-up / evolution, the good-things toast and the rating ask wait this long (the moment belongs to the pet). */
 const AFTER_SURFACE = { evolve: 1300, goodThing: 1500, rating: 2800 } as const;
+
+/** The face while you pet it: purring, content after, then hopeful when it asks for more. */
+const PET_MOOD: Record<PetPhase, Mood | null> = { idle: null, stroke: 'love', content: 'calm', asking: 'hopeful' };
 
 const dateLine = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
@@ -210,6 +214,19 @@ export function HomeScreen() {
     if (ok) useAppStore.getState().updateSettings({ nudge: 'gentle' });
     toast(ok ? h.askAgainOn : h.askAgainLater);
   };
+  // the pet's voice: one line in the bubble (tap, or asking for more after petting)
+  const [say, setSay] = useState<string | null>(null);
+  // petting: after a stroke it asks once for more ("Again?"), unless Pet talk is off
+  const againAt = useRef(0);
+  const petting = usePetting({
+    reduceMotion,
+    onAsk: () => {
+      if (useAppStore.getState().settings.petTalk === 'silent') return;
+      againAt.current = (againAt.current + 1) % h.again.length;
+      setSay(h.again[againAt.current]);
+    },
+  });
+  const { reset: resetPetting } = petting;
   // the happy dive (docs/18 §5): chomp → hop → dive under the water line → bubbles → back up
   // with a splash and the pebble: that is when the "+N ✦" shows. Nothing else pops up meanwhile.
   const after = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -258,6 +275,7 @@ export function HomeScreen() {
       fedThisVisit.current = true;
       setAskAgain(false);
       setToTop((n) => n + 1);
+      resetPetting();
       setReaction('chomp');
       play('boop');
       diveFeed(feedInfo(won, totalBefore.current, stats.total));
@@ -265,7 +283,7 @@ export function HomeScreen() {
     eatenBefore.current = stats.eaten;
     sparksBefore.current = stats.sparks;
     totalBefore.current = stats.total;
-  }, [stats.eaten, stats.sparks, stats.total, diveFeed]);
+  }, [stats.eaten, stats.sparks, stats.total, diveFeed, resetPetting]);
 
   const sky = skyOf(openedAt.getHours());
   const stageLook = useStageLook(look.room, sky);
@@ -284,7 +302,6 @@ export function HomeScreen() {
     return () => clearTimeout(t);
   }, [away]);
   // the pet's voice: one line in the bubble when you tap it (Pet talk off = it stays quiet)
-  const [say, setSay] = useState<string | null>(null);
   const lineAt = useRef(openedAt.getDate());
   const speak = () => {
     if (settings.petTalk === 'silent') return;
@@ -302,7 +319,7 @@ export function HomeScreen() {
   const autoMood: Mood = asleep ? 'sleepy' : stats.todayEaten >= 4 ? 'love' : stats.todayEaten === 0 && list.length > 0 ? 'hopeful' : 'happy';
   // the face chosen in the Closet wins; 'auto' reacts to the day
   const baseMood: Mood = look.homeMood === 'auto' ? autoMood : look.homeMood;
-  const mood: Mood = carrying ? (overPet ? 'chomp' : 'hungry') : (reaction ?? baseMood);
+  const mood: Mood = carrying ? (overPet ? 'chomp' : 'hungry') : (PET_MOOD[petting.phase] ?? reaction ?? baseMood);
 
   const add = () => {
     if (!text.trim()) {
@@ -429,6 +446,8 @@ export function HomeScreen() {
           {/* the drop zone stays put; only the inner view dives */}
           <Animated.View ref={petTarget}>
           <Animated.View style={dive.style}>
+          <Animated.View style={petting.style}>
+          <PetStroke petting={petting}>
           <Pet
             size={petSize}
             color={look.color}
@@ -439,10 +458,13 @@ export function HomeScreen() {
             accessibilityLabel={`${pet.name}, ${h.belly(stats.todayEaten)}`}
             onPress={() => {
               play('boop');
+              resetPetting();
               setReaction(asleep ? 'tired' : (['excited', 'love', 'celebrating', 'confident'] as Mood[])[Math.floor(Math.random() * 4)]);
               if (!asleep) speak();
             }}
           />
+          </PetStroke>
+          </Animated.View>
           </Animated.View>
           </Animated.View>
         </View>
