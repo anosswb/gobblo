@@ -1,8 +1,10 @@
 import { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
 /**
- * The pet's wardrobe (Closet): hats on the head, items on the face. Original vector art on the
- * pet's 200 × 240 canvas (head top at y 54, eyes at x 80 / 120, y 128, mouth at y 152).
+ * The pet's wardrobe (Closet): hats on the head, items on the face. Original vector art.
+ * Hats are drawn on their own 200-wide grid (brim around y 76-86) and pet.tsx scales them onto the
+ * otter's wide round head (HAT_TRANSFORM). Face items sit on the otter's face directly: eyes at
+ * x 66 / 134, y 110; nose at y 113-125; mouth at y 127.
  * Art colours live here on purpose: illustration, not UI.
  */
 export type HatId =
@@ -31,18 +33,17 @@ export type HatId =
 
 export type FaceId = 'none' | 'shades' | 'round' | 'hearts' | 'stars' | 'mustache';
 
-/** Hats that sit where the antenna is: the antenna hides under them. */
-export const HIDES_ANTENNA: ReadonlySet<HatId> = new Set<HatId>([
-  'party',
+/** Where the hat grid lands on the otter head (pet.tsx wraps HatArt in this). */
+export const HAT_TRANSFORM = 'translate(100 50) scale(1.42) translate(-100 -72)';
+
+/** Hats that cover the top-sides of the head: the round ears tuck under them (no poking through). */
+export const HIDES_EARS: ReadonlySet<HatId> = new Set<HatId>([
   'beanie',
   'cap',
-  'sprout',
-  'halo',
-  'crown',
+  'catEars',
+  'bunny',
   'topHat',
-  'chef',
   'wizard',
-  'goldCrown',
   'mushroom',
   'friedEgg',
   'bucket',
@@ -314,6 +315,11 @@ export function HatArt({ id }: { id: HatId }) {
   }
 }
 
+// otter face anchors (pet.tsx)
+const LX = 66;
+const RX = 134;
+const EY = 110;
+
 function Heart({ x, y }: { x: number; y: number }) {
   return <Path d="M0 8 C-14 -2 -12 -14 -4 -14 C0 -14 0 -10 0 -10 C0 -10 0 -14 4 -14 C12 -14 14 -2 0 8Z" transform={`translate(${x} ${y + 2}) scale(1.35)`} />;
 }
@@ -323,48 +329,50 @@ export function FaceArt({ id }: { id: FaceId }) {
     case 'shades':
       return (
         <G>
-          <Rect x={62} y={118} width={36} height={22} rx={9} fill={C.black} />
-          <Rect x={102} y={118} width={36} height={22} rx={9} fill={C.black} />
-          <Path d="M98 124 Q100 121 102 124 M62 124 L48 118 M138 124 L152 118" stroke={C.black} strokeWidth={4} fill="none" strokeLinecap="round" />
-          <Path d="M68 124 L78 124 M108 124 L118 124" stroke={C.white} strokeWidth={3} opacity={0.55} strokeLinecap="round" />
+          <Rect x={LX - 21} y={EY - 11} width={42} height={23} rx={10} fill={C.black} />
+          <Rect x={RX - 21} y={EY - 11} width={42} height={23} rx={10} fill={C.black} />
+          <Path d={`M${LX + 21} ${EY - 5} Q100 ${EY - 10} ${RX - 21} ${EY - 5} M${LX - 21} ${EY - 5} L26 ${EY - 12} M${RX + 21} ${EY - 5} L174 ${EY - 12}`} stroke={C.black} strokeWidth={4} fill="none" strokeLinecap="round" />
+          <Path d={`M${LX - 14} ${EY - 5} L${LX - 4} ${EY - 5} M${RX - 14} ${EY - 5} L${RX - 4} ${EY - 5}`} stroke={C.white} strokeWidth={3} opacity={0.55} strokeLinecap="round" />
         </G>
       );
     case 'round':
       return (
         <G>
-          <Circle cx={80} cy={128} r={16} fill={C.white} opacity={0.18} stroke={C.ink} strokeWidth={4} />
-          <Circle cx={120} cy={128} r={16} fill={C.white} opacity={0.18} stroke={C.ink} strokeWidth={4} />
-          <Path d="M96 126 Q100 122 104 126 M64 126 L50 120 M136 126 L150 120" stroke={C.ink} strokeWidth={4} fill="none" strokeLinecap="round" />
+          <Circle cx={LX} cy={EY} r={17} fill={C.white} opacity={0.18} stroke={C.ink} strokeWidth={4} />
+          <Circle cx={RX} cy={EY} r={17} fill={C.white} opacity={0.18} stroke={C.ink} strokeWidth={4} />
+          <Path d={`M${LX + 17} ${EY - 3} Q100 ${EY - 9} ${RX - 17} ${EY - 3} M${LX - 17} ${EY - 3} L28 ${EY - 9} M${RX + 17} ${EY - 3} L172 ${EY - 9}`} stroke={C.ink} strokeWidth={4} fill="none" strokeLinecap="round" />
         </G>
       );
     case 'hearts':
       return (
         <G fill={C.red} opacity={0.92}>
-          <Heart x={80} y={128} />
-          <Heart x={120} y={128} />
-          <Path d="M96 124 Q100 121 104 124" stroke={C.red} strokeWidth={4} fill="none" strokeLinecap="round" />
+          <Heart x={LX} y={EY} />
+          <Heart x={RX} y={EY} />
+          <Path d={`M${LX + 18} ${EY - 4} Q100 ${EY - 9} ${RX - 18} ${EY - 4}`} stroke={C.red} strokeWidth={4} fill="none" strokeLinecap="round" />
         </G>
       );
     case 'stars':
       return (
         <G>
-          {[80, 120].map((x) => (
+          {[LX, RX].map((x) => (
             <Path
               key={x}
               d="M0 -18 L5 -6 L18 -6 L8 2 L12 15 L0 7 L-12 15 L-8 2 L-18 -6 L-5 -6Z"
-              transform={`translate(${x} 128)`}
+              transform={`translate(${x} ${EY})`}
               fill={C.gold}
               stroke={C.goldDeep}
               strokeWidth={2}
             />
           ))}
-          <Path d="M97 124 Q100 121 103 124" stroke={C.goldDeep} strokeWidth={4} fill="none" strokeLinecap="round" />
+          <Path d={`M${LX + 18} ${EY - 4} Q100 ${EY - 9} ${RX - 18} ${EY - 4}`} stroke={C.goldDeep} strokeWidth={4} fill="none" strokeLinecap="round" />
         </G>
       );
     case 'mustache':
+      // sits right under the nose, over the "w" mouth
       return (
         <Path
           d="M100 144 C94 138 82 138 76 146 C72 152 66 150 64 146 C66 156 80 158 90 152 C95 149 98 147 100 147 C102 147 105 149 110 152 C120 158 134 156 136 146 C134 150 128 152 124 146 C118 138 106 138 100 144Z"
+          transform="translate(0 -18)"
           fill={C.brown}
         />
       );

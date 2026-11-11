@@ -1,22 +1,25 @@
 import { useEffect, useId } from 'react';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-import Svg, { Circle, Defs, Ellipse, G, Path, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, Ellipse, G, Path } from 'react-native-svg';
 
 import { useTheme } from '@/theme/theme-provider';
 import { petColors, type PetColor } from '@/theme/tokens';
 
+import { OTTER_CARAMEL, SparkPebble } from './pet';
+
 /**
- * The egg before hatching: glossy, tinted with the pet's colour, the lime orb already peeking
- * through the top (brand signature). `cracks` 0–3 draws the crack stages. Idles with a lazy
- * wobble; Reduce Motion keeps it still. Illustration colours live here on purpose.
+ * The egg before hatching: a flat cream egg speckled in the pet's colour (caramel by default),
+ * with a tiny spark mark (docs/18) and a soft two-tone shade. `cracks` 0–3 draws the crack
+ * stages. Idles with a lazy wobble; Reduce Motion keeps it still. Illustration colours live here
+ * on purpose.
  */
-const ART = { shell: '#FFF6FA', crack: '#7A2E4F', white: '#FFFFFF', orb: '#C6F432', orbLight: '#F4FFC2', shade: '#000000' };
+const ART = { shell: '#FBEEDD', crack: '#4A2E22', shade: '#000000', spark: '#FFD166' };
 const SHELL = 'M100 26 C142 26 168 96 168 142 C168 192 138 222 100 222 C62 222 32 192 32 142 C32 96 58 26 100 26Z';
 
-export function Egg({ size = 180, color = 'pink', cracks = 0, wobble = true }: { size?: number; color?: PetColor; cracks?: number; wobble?: boolean }) {
+export function Egg({ size = 180, color, cracks = 0, wobble = true }: { size?: number; color?: PetColor; cracks?: number; wobble?: boolean }) {
   const { reduceMotion } = useTheme();
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
-  const c = petColors[color];
+  const c = color ? petColors[color] : OTTER_CARAMEL;
   const tilt = useSharedValue(0);
 
   useEffect(() => {
@@ -37,33 +40,26 @@ export function Egg({ size = 180, color = 'pink', cracks = 0, wobble = true }: {
     <Animated.View style={[{ width: size, height: size * 1.2 }, style]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Svg width="100%" height="100%" viewBox="0 0 200 240">
         <Defs>
-          <RadialGradient id={`s${uid}`} cx="36%" cy="26%" r="85%">
-            <Stop offset="0" stopColor={ART.white} />
-            <Stop offset="0.55" stopColor={ART.shell} />
-            <Stop offset="1" stopColor={c} stopOpacity={0.55} />
-          </RadialGradient>
-          <RadialGradient id={`o${uid}`} cx="38%" cy="34%" r="70%">
-            <Stop offset="0" stopColor={ART.orbLight} />
-            <Stop offset="1" stopColor={ART.orb} />
-          </RadialGradient>
-          <RadialGradient id={`g${uid}`} cx="50%" cy="50%" r="50%">
-            <Stop offset="0.4" stopColor={ART.orb} stopOpacity={0.5} />
-            <Stop offset="1" stopColor={ART.orb} stopOpacity={0} />
-          </RadialGradient>
+          <ClipPath id={`s${uid}`}>
+            <Path d={SHELL} />
+          </ClipPath>
         </Defs>
-        <Ellipse cx={100} cy={229} rx={56} ry={7} fill={ART.shade} opacity={0.14} />
-        {/* the orb glows through the top of the shell */}
-        <Circle cx={100} cy={30} r={22} fill={`url(#g${uid})`} />
-        <Path d={SHELL} fill={`url(#s${uid})`} />
-        {/* spots in the pet's colour */}
-        <Ellipse cx={128} cy={96} rx={13} ry={10} fill={c} opacity={0.75} transform="rotate(20 128 96)" />
-        <Ellipse cx={70} cy={150} rx={16} ry={12} fill={c} opacity={0.7} transform="rotate(-15 70 150)" />
-        <Ellipse cx={134} cy={176} rx={10} ry={8} fill={c} opacity={0.65} />
-        <Ellipse cx={92} cy={198} rx={8} ry={6} fill={c} opacity={0.55} />
-        <Circle cx={100} cy={30} r={9} fill={`url(#o${uid})`} />
-        {/* speculars */}
-        <Ellipse cx={70} cy={84} rx={14} ry={28} transform="rotate(-22 70 84)" fill={ART.white} opacity={0.6} />
-        <Ellipse cx={64} cy={70} rx={5} ry={10} transform="rotate(-22 64 70)" fill={ART.white} opacity={0.95} />
+        <Ellipse cx={100} cy={229} rx={56} ry={7} fill={ART.shade} opacity={0.12} />
+        <Path d={SHELL} fill={ART.shell} />
+        <G clipPath={`url(#s${uid})`}>
+          {/* flat two-tone shade on the right side */}
+          <Ellipse cx={150} cy={150} rx={44} ry={100} fill={c} opacity={0.14} />
+          {/* speckles in the pet's colour */}
+          <Ellipse cx={128} cy={96} rx={11} ry={8} fill={c} transform="rotate(20 128 96)" />
+          <Ellipse cx={68} cy={150} rx={14} ry={10} fill={c} transform="rotate(-15 68 150)" />
+          <Ellipse cx={136} cy={176} rx={9} ry={7} fill={c} />
+          <Ellipse cx={92} cy={200} rx={7} ry={5} fill={c} />
+          <Circle cx={78} cy={92} r={4} fill={c} />
+          <Circle cx={112} cy={140} r={3.5} fill={c} />
+          <Circle cx={56} cy={186} r={3} fill={c} />
+        </G>
+        {/* the tiny spark mark */}
+        <SparkPebble x={100} y={66} s={0.5} fill={ART.spark} />
         {/* cracks */}
         <G stroke={ART.crack} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" fill="none">
           {cracks >= 1 && <Path d="M148 110 L136 122 L145 132 L132 142" />}
