@@ -27,6 +27,7 @@ type Event = {
 
 let started = false;
 let enabled = false;
+let sentry: typeof import('@sentry/react-native') | null = null;
 
 const MAX_VALUE = 200;
 
@@ -86,7 +87,52 @@ function start(): void {
       beforeBreadcrumb: () => null,
       beforeSend: (event) => scrubEvent(event as Event) as typeof event | null,
     });
+    sentry = Sentry;
     started = true;
+  } catch {
+    // crash reporting is never worth a crash
+  }
+}
+
+/**
+ * Home-screen widget trail (Anass 2026-11-12: widgets stayed on an old bite with no clue why).
+ * Sentry breadcrumbs stay off; instead the last few widget steps are kept here as numbers only
+ * (how many placed widgets were found, how many bites are on the plate) and sent with a widget
+ * error as the `widget` context. Never a bite's text or the pet's name.
+ */
+type WidgetStep = Record<string, number | string>;
+const widgetTrail: WidgetStep[] = [];
+const MAX_STEPS = 12;
+
+export function widgetStep(step: string, counts: Record<string, number> = {}): void {
+  widgetTrail.push({ step, at: Math.round(Date.now() / 1000), ...counts });
+  if (widgetTrail.length > MAX_STEPS) widgetTrail.shift();
+}
+
+/** For tests. */
+export const widgetTrailForTests = (): readonly WidgetStep[] => widgetTrail;
+
+/** Text in quotes inside an error message could be a bite: keep only the shape of the message. */
+export function scrubErrorText(message: string): string {
+  return message.replace(/(["'“”‘’`]).*?\1/g, '"…"').replace(/[“”‘’][^“”‘’]*[“”‘’]/g, '"…"').slice(0, 160);
+}
+
+/**
+ * A widget redraw or the headless widget task failed: report it (when the user's switch is on).
+ * `stage` says where (read, render:NextBite, request:PetSmall, task:WIDGET_UPDATE, pin).
+ */
+export function reportWidgetError(stage: string, error: unknown): void {
+  widgetStep(`error:${stage}`);
+  if (!started || !enabled || !sentry) return;
+  try {
+    const raw = error instanceof Error ? error : new Error(String(error));
+    const clean = new Error(`widget ${stage}: ${scrubErrorText(raw.message)}`);
+    clean.name = raw.name || 'Error';
+    if (raw.stack) clean.stack = raw.stack.split('\n').filter((l) => !l.includes(raw.message)).join('\n');
+    sentry.captureException(clean, {
+      tags: { area: 'widget', widget_stage: stage.split(':')[0] },
+      contexts: { widget: { stage, trail: JSON.stringify(widgetTrail) } },
+    });
   } catch {
     // crash reporting is never worth a crash
   }

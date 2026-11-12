@@ -8,7 +8,7 @@ import { PressScale } from '@/components/press-scale';
 import { Screen } from '@/components/screen';
 import { Text } from '@/components/text';
 import { toast } from '@/components/toast';
-import { LINKS } from '@/config/app';
+import { APP_NAME, LINKS } from '@/config/app';
 import { MONETIZATION } from '@/config/monetization';
 import { anythingToBuy } from '@/features/closet/shop';
 import { useLook } from '@/features/closet/use-look';
@@ -174,7 +174,7 @@ export function PlusScreen() {
           onPress={async () => {
             haptics.light();
             const ok = await addWidgetToHomeScreen();
-            toast(ok ? t.widgetAdded : t.widgetManual);
+            toast(ok ? t.widgetAdded : t.widgetManual(Constants.expoConfig?.name ?? APP_NAME));
           }}
           style={[styles.btn, { backgroundColor: colors.fill }]}>
           <Text variant="bodyBold">{t.addWidget}</Text>

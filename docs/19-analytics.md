@@ -21,6 +21,11 @@ Spec: docs/16 point 12. Decision: DECISIONS.md (2026-11-11). Code: `src/lib/anal
   hierarchy, no replay, tracing off (0), no session tracking. `beforeSend` removes `user`,
   `request`, `extra`, `breadcrumbs`, plain messages, log entries, the device name and any `state`
   context, and cuts error values to 200 characters.
+- **Home-screen widget errors** (Android, 2026-11-12) go to Sentry as an error tagged
+  `area: widget` + `widget_stage` (read, render, link, request, task, pin), with a `widget`
+  context: the last 12 widget steps as **numbers only** (placed widgets found per kind, bites on
+  the plate). Text in quotes in the error message is replaced by "…"; never a bite or pet name.
+  The headless widget task starts crash reports itself, with the same switch.
 - **Off when the key is missing.** No `EXPO_PUBLIC_POSTHOG_KEY` → analytics off. No
   `EXPO_PUBLIC_SENTRY_DSN` → crash reports off. Web preview and jest: always off.
 

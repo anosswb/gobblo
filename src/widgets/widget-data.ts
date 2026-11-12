@@ -38,6 +38,11 @@ function readState(): Partial<PersistedState> {
   return {};
 }
 
+/** Settings › Privacy & data › Share anonymous usage, read headless (the widget task has no store). */
+export function shareUsageOn(): boolean {
+  return readState().settings?.shareUsage !== false;
+}
+
 /**
  * Reads the saved app state straight from MMKV. The widget task runs headless (the app may be
  * closed), so it cannot use the React store.

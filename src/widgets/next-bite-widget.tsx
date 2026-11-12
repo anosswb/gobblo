@@ -1,7 +1,10 @@
 'use no memo'; // react-native-android-widget needs plain functions: no React Compiler here
 
 import * as Linking from 'expo-linking';
+import { cloneElement, type ReactNode } from 'react';
 import { FlexWidget, OverlapWidget, SvgWidget, TextWidget } from 'react-native-android-widget';
+
+import { reportWidgetError } from '@/lib/crash';
 
 import { iconSvg, mix, petSvg } from './svg-art';
 import type { WidgetData } from './widget-data';
@@ -32,10 +35,23 @@ export type WidgetName = (typeof WIDGET_NAMES)[number];
 /** Custom click: show the next bite (handled headless in task-handler.tsx). */
 export const SKIP_ACTION = 'SKIP_BITE';
 
-/** Uses the running app's own scheme (gobblo:// or gobblo-preview:// for the preview build). */
-export const startUri = (biteId: string) => Linking.createURL('/start', { queryParams: { bite: biteId } });
-const dumpUri = () => Linking.createURL('/dump');
-const focusUri = () => Linking.createURL('/focus');
+/**
+ * Uses the running app's own scheme (gobblo:// or gobblo-preview:// for the preview build).
+ * createURL throws when it cannot read the app config; a widget must still draw then, so a
+ * missing link becomes null and the button just opens the app (OPEN_APP).
+ */
+function link(path: string, queryParams?: Record<string, string>): string | null {
+  try {
+    return Linking.createURL(path, queryParams ? { queryParams } : undefined);
+  } catch (e) {
+    reportWidgetError('link', e);
+    return null;
+  }
+}
+const startUri = (biteId: string) => link('/start', { bite: biteId });
+const dumpUri = () => link('/dump');
+const focusUri = () => link('/focus');
+const clickTo = (uri: string | null) => (uri ? { clickAction: 'OPEN_URI', clickActionData: { uri } } : { clickAction: 'OPEN_APP' });
 
 const RADIUS = 28;
 
@@ -76,8 +92,7 @@ function PrimaryButton({ data, scheme, compact = false }: { data: WidgetData; sc
   const uri = data.focus ? focusUri() : !data.bite ? dumpUri() : startUri(data.bite.id);
   return (
     <FlexWidget
-      clickAction="OPEN_URI"
-      clickActionData={{ uri }}
+      {...clickTo(uri)}
       style={{
         flex: 1,
         height: compact ? 40 : 44,
@@ -96,13 +111,12 @@ function PrimaryButton({ data, scheme, compact = false }: { data: WidgetData; sc
 }
 
 /** Round chip button (Skip, Add). */
-function RoundButton({ icon, scheme, action, uri, size = 44 }: { icon: 'skip' | 'plus'; scheme: Scheme; action?: string; uri?: string; size?: number }) {
+function RoundButton({ icon, scheme, action, uri = null, size = 44 }: { icon: 'skip' | 'plus'; scheme: Scheme; action?: string; uri?: string | null; size?: number }) {
   'use no memo';
   const c = PALETTE[scheme];
   return (
     <FlexWidget
-      clickAction={action ?? 'OPEN_URI'}
-      clickActionData={uri ? { uri } : undefined}
+      {...(action ? { clickAction: action } : clickTo(uri))}
       style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: c.chip, alignItems: 'center', justifyContent: 'center' }}>
       <SvgWidget svg={iconSvg(icon, c.ink, 2.4)} style={{ width: 18, height: 18 }} />
     </FlexWidget>
@@ -116,8 +130,7 @@ export function PetSmallWidget({ data, scheme }: { data: WidgetData; scheme: Sch
   const uri = data.focus ? focusUri() : data.bite ? startUri(data.bite.id) : null;
   return (
     <OverlapWidget
-      clickAction={uri ? 'OPEN_URI' : 'OPEN_APP'}
-      clickActionData={uri ? { uri } : undefined}
+      {...clickTo(uri)}
       style={{ height: 'match_parent', width: 'match_parent', backgroundColor: c.tint, borderRadius: RADIUS }}>
       <FlexWidget style={{ height: 'match_parent', width: 'match_parent', alignItems: 'center', justifyContent: 'center' }}>
         <SvgWidget svg={petSvg(data.petColor, data.mood)} style={{ width: 46, height: 55 }} />
@@ -204,4 +217,40 @@ export function renderWidgetFor(name: string, data: WidgetData) {
   'use no memo';
   const W = name === SMALL_WIDGET ? PetSmallWidget : name === SQUARE_WIDGET ? NextBiteSquareWidget : NextBiteWidget;
   return { light: <W data={data} scheme="light" />, dark: <W data={data} scheme="dark" /> };
+}
+
+/**
+ * The library builds the tree inside its own un-awaited loop, so an error there was lost and the
+ * placed widget silently kept its old picture. Build here instead: on error, report it and draw
+ * the plain "open the app" widget, so the home screen never shows a bite that is gone.
+ */
+export function renderWidgetSafe(name: string, data: WidgetData, stage: string) {
+  'use no memo';
+  const build = (d: WidgetData) => {
+    const r = renderWidgetFor(name, d);
+    // calling the components here surfaces their errors now, not inside the library
+    return { light: expand(r.light), dark: expand(r.dark) };
+  };
+  try {
+    return build(data);
+  } catch (e) {
+    reportWidgetError(`render:${stage}:${name}`, e);
+    return build({ ...data, bite: null, focus: null, left: 0, position: 1, fedToday: 0 });
+  }
+}
+
+/**
+ * Runs every one of our function components down to the library's widget elements (what the
+ * library's buildWidgetTree would do later), so any error is thrown here, inside our try.
+ */
+function expand(el: React.JSX.Element): React.JSX.Element {
+  'use no memo';
+  let node = el;
+  while (typeof node.type === 'function' && !(node.type as { __name__?: string }).__name__) {
+    node = (node.type as (p: unknown) => React.JSX.Element)(node.props);
+  }
+  const kids = (node.props as { children?: unknown }).children;
+  if (kids === undefined || kids === null || typeof kids !== 'object') return node;
+  const list = (Array.isArray(kids) ? kids : [kids]).flat(1) as unknown[];
+  return cloneElement(node, undefined, ...list.map((k) => (k && typeof k === 'object' ? expand(k as React.JSX.Element) : (k as ReactNode))));
 }

@@ -29,7 +29,7 @@ export function useAppLifecycle() {
     const sub = AppState.addEventListener('change', (s) => {
       if (s === 'active') refresh();
       // leaving the app: everything is saved by now, so the home-screen widgets match the app
-      if (s === 'background') redrawWidgetsNow();
+      if (s === 'background') void redrawWidgetsNow();
     });
     // nudge settings or reminders changed → rebuild the plan
     const unsub = useAppStore.subscribe((s, prev) => {

@@ -14,7 +14,7 @@ const widget: { updateSnapshot: (p: NextBiteProps) => void } | null = iosWidgets
 export const widgetsSupported = iosWidgetsEnabled;
 
 /** Redraw the iOS widget (home + lock screen) now, from what is saved in MMKV. */
-export function redrawWidgetsNow() {
+export async function redrawWidgetsNow(): Promise<void> {
   if (!widget) return;
   try {
     const d = readWidgetData();
@@ -39,7 +39,7 @@ export function updateWidgets() {
   if (pending) clearTimeout(pending);
   pending = setTimeout(() => {
     pending = null;
-    redrawWidgetsNow();
+    void redrawWidgetsNow();
   }, 120);
 }
 

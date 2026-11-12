@@ -197,7 +197,8 @@ export const en = {
     addWidget: 'Add the widget to your home screen',
     addWidgetHint: 'Shows your next bite. One tap starts 2 minutes, free for everyone.',
     widgetAdded: 'Widget added. Say hi to your pet on the home screen.',
-    widgetManual: 'Long-press your home screen, tap + (or Widgets), then find Gobblo',
+    /** `app` is this install's own name ("Gobblo Preview" on a test build): another install's widget never updates from here */
+    widgetManual: (app: string) => `Long-press your home screen, tap + (or Widgets), then find ${app}`,
     routinesTitle: 'Routine packs',
     routinesSub: 'One tap adds them as daily bites. Remove any you don’t want.',
     routinesLocked: 'Unlock Plus to add them.',
